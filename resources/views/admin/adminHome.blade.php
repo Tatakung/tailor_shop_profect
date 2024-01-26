@@ -28,7 +28,7 @@
 
 <div class="container d-flex justify-content-start">
     <div class="table-responsive text-start" style="width: 100%;">
-        <h2 class="text text-start py-4">สวัสดีแอดมิกกกน</h2>
+        <h2 class="text text-start py-4">สวัสดีแอดมิน</h2>
 
 
         
