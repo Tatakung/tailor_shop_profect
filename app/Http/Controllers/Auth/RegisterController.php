@@ -136,13 +136,7 @@ class RegisterController extends Controller
     return view('admin.EmployeeDetail', compact('employeefind'));
 }
 
-// //เปลี่ยนสถานะ
-// public function changeStatus($id){
-//     $employee = User::findOrFail($id);
-//     $employee->status = $employee->status == 1 ? 0 : 1;
-//     $employee->save();
-//     return redirect()->back()->with('success',"เปลี่ยนสถานะแล้ว");
-// }
+
 
 
 public function changeStatus($id) {
