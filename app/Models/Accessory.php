@@ -14,7 +14,7 @@ class Accessory extends Model
     
     protected $fillable = [
         'accessory_name',
-        'accessory_code',
+        'accessory_code_new',
         'accessory_count',
         'accessory_price',
         'accessory_image',

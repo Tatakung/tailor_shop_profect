@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('accessories', function (Blueprint $table) {
             $table->id();
             $table->string('accessory_name')->nullable(); 
-            $table->string('accessory_code')->nullable(); 
+            // $table->string('accessory_code')->nullable(); 
             $table->integer('accessory_count')->nullable(); 
             $table->decimal('accessory_price', 10, 2)->nullable(); 
             $table->string('accessory_image')->nullable();
