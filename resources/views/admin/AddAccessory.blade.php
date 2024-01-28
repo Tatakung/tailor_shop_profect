@@ -17,7 +17,7 @@
 
             <div class="mb-3">
                 <label for="accessory_name" class="form-label">ชื่อเครื่องประดับ</label>
-                <select class="form-select" name="accessory_name" id="accessory_name" required>
+                <select class="form-select" name="accessory_name" id="accessory_name" required >
                     <option value="" selected disabled>เลือกชื่อเครื่องประดับ</option>
                     @foreach($accessoryName as $name)
                     <option value="{{$name}}">{{$name}}</option>
@@ -25,15 +25,12 @@
                     <option value="other">อื่นๆ</option>
                 </select>
                 
-                {{-- กรอกอื่นๆ --}}
                 <div id="other123"  style="display: none;">
                     <label for="other" class="form-label">ชื่อเครื่องประดับ(อื่นๆ)</label>
-                    <input type="text" class="form-control" id="other" name="other">
+                    <input type="text" class="form-control" id="other" name="other_new">
                 </div>
 
             </div>
-
-
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -50,16 +47,40 @@
                     });
                 });
             </script>
-  
 
+
+
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var accessorySelect = document.getElementById('accessory_name');    //เลือกดรอปดาว
+                    var accessoryCodeInput = document.getElementById('accessory_code');   //รหัสเครื่องประดับ
+
+                    accessorySelect.addEventListener('change', function() {
+                        if (accessorySelect.value === 'other') {
+                            accessoryCodeInput.value = '1'; // กำหนดให้accessory_code เริ่ม1
+                        } 
+                        else {
+                            
+                            fetch('/getCode/' + accessorySelect.value)  //fetchเพื่อทำการส่งHTTP request ไปยังserverและรอรับ response จาก server
+                                .then(response => response.json())  //เมื่อได้ response จาก server ให้แปลง response เป็น JSON
+                                .then(data => {
+                                    accessoryCodeInput.value = data.maxCode + 1;   //หลังจากแปลงเป็น JSON กำหนดค่าใน input + 1  จากค่าที่ได้จาก server.
+                                });
+                        }
+                    });
+                });
+            </script>
+            
             <div class="mb-3">
                 <label for="accessory_code" class="form-label">รหัสเครื่องประดับ</label>
-                <input type="text" class="form-control" id="accessory_code" name="accessory_code" required readonly>
+                <input type="text" class="form-control" id="accessory_code" name="accessory_code" value="" readonly>
             </div>
-
+            
             <div class="mb-3">
                 <label for="accessory_count" class="form-label">จำนวนเครื่องประดับ</label>
                 <input type="number" class="form-control" id="accessory_count" name="accessory_count" required>
+                
             </div>
 
             <div class="mb-3">

@@ -43,6 +43,10 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     //เครื่องประดับ
     Route::get('/admin/accessory/create',[AccessoryController::class,'formaccessory'])->name('admin.formaccessory');//แบบฟอร์มเพิ่มเครื่องประดับ
     Route::post('/admin/storeaccessory',[AccessoryController::class,'store'])->name('admin.store');//บันทึก
+    
+    Route::get('/getCode/{accessory_name}', [AccessoryController::class, 'getMaxAccessoryCode']);
+
+    Route::get('/admin/showaccessory',[AccessoryController::class,'showAccessory'])->name('admin.showAccessory');//แบบฟอร์มเพิ่มเครื่องประดับ
 
 
 
