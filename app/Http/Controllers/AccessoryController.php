@@ -80,6 +80,53 @@ class AccessoryController extends Controller
         return view('admin.EditAccessory',compact('editaccessory'));
     }
 
+    public function updateAccessory(Request $request, $id){
+        $request->validate([
+            'accessory_price' => 'required|numeric',
+            'accessory_description' => 'nullable|string',
+            'accessory_image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        $AccessoryUpdate = Accessory::find($id); //หาก่อนว่าจะบันทึกไว้ในไอดีไหน
+
+
+        //เช็ครูปภาพ
+        if ($request->hasFile('accessory_image')) {
+            $AccessoryUpdate->accessory_image = $request->file('accessory_image')->store('accessory_images','public');
+        }
+
+
+        //เช็คเพิ่มลบ
+        if ($request->input('action_type') == "add"){
+            $AccessoryUpdate->accessory_count += $request->input('quantity');
+        }
+        else{
+            $AccessoryUpdate->accessory_count -= $request->input('quantity');
+            $AccessoryUpdate->accessory_count = max(0, $AccessoryUpdate->accessory_count);
+        }
+
+        //บันทึกลงในฐานข้อมูล
+        $AccessoryUpdate->update([
+            'accessory_price' => $request->input('accessory_price'),
+            'accessory_description' => $request->input('accessory_description'),
+        ]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return redirect()->back()->with('success','อัพเดตเสร็จสิ้น');
+    }
+
     
 
 
