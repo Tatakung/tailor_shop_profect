@@ -40,13 +40,17 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/employeedetail/{id}',[RegisterController::class,'EmployeeDetail'])->name('admin.employeedetail');//แสดงรายละเอียดพนักงาน
     Route::get('/admin/changestatus/{id}',[RegisterController::class,'changeStatus'])->name('admin.changestatus');//เปลี่ยนสถานะพนักงานนะ
 
+
     //เครื่องประดับ
     Route::get('/admin/accessory/create',[AccessoryController::class,'formaccessory'])->name('admin.formaccessory');//แบบฟอร์มเพิ่มเครื่องประดับ
     Route::post('/admin/storeaccessory',[AccessoryController::class,'store'])->name('admin.store');//บันทึก
     
     Route::get('/getCode/{accessory_name}', [AccessoryController::class, 'getMaxAccessoryCode']);
 
-    Route::get('/admin/showaccessory',[AccessoryController::class,'showAccessory'])->name('admin.showAccessory');//แบบฟอร์มเพิ่มเครื่องประดับ
+    Route::get('/admin/showaccessory',[AccessoryController::class,'showAccessory'])->name('admin.showAccessory');//แสดงเครื่องประดับ
+    Route::get('/admin/detailaccessory/{id}',[AccessoryController::class,'detailAccessory'])->name('admin.detailAccessory');//แสดงรายละเอียดเครื่องประดับ
+
+    Route::get('/admin/editaccessory/{id}',[AccessoryController::class,'editAccessory'])->name('admin.editAccessory');//หน้าแก้ไข
 
 
 

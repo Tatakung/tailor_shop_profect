@@ -12,6 +12,7 @@
                 <table class="table table-bordered table-hover text-start">
                     <thead class="table-dark">
                         <tr class="text text-center">
+                            <th scope="col" class="col-1">ไอดี</th>
                             <th scope="col" class="col-1">รูปภาพ</th>
                             <th scope="col" class="col-1">ชื่อ</th>
                             <th scope="col" class="col-3">แบบ</th>
@@ -23,6 +24,7 @@
 
                     @foreach ($accessorytotal as $show )
                         <tr>
+                            <td>{{$show->id}}</td>
                             <td>
                                 <img src="{{ asset('storage/' . $show->accessory_image)}} " style="width:50px; height: 50px;">
                             </td>
@@ -31,7 +33,7 @@
                             <td>{{$show->accessory_price}}</td>
                             <td>{{$show->accessory_count}}</td>
                             <td>
-                                <a href="#">ดูรายละเอียด</a>
+                                <a href="{{route('admin.detailAccessory',['id' => $show->id])}}">ดูรายละเอียด</a>
                             </td>
                         </tr>
                     @endforeach

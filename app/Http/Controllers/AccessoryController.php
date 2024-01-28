@@ -69,6 +69,19 @@ class AccessoryController extends Controller
         return view('admin.ShowAccessory',compact('accessorytotal'));
     }
 
+    //แสดงรายละเอียดเครื่องประดับ
+    public function detailAccessory($id){
+        $showdetail = Accessory::findOrFail($id);
+        return view('admin.DetailAccessory',compact('showdetail'));
+    }
+    //แสดงหน้าแก้ไขเครื่องประดับ
+    public function editAccessory($id){
+        $editaccessory = Accessory::find($id);
+        return view('admin.EditAccessory',compact('editaccessory'));
+    }
+
+    
+
 
 
 
