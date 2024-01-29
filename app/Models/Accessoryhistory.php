@@ -14,6 +14,7 @@ class Accessoryhistory extends Model
     protected $fillable = [
         'accessory_id',
         'action',
+        'old_amount',
         'new_amount',
     ];
     //M-1

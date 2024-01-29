@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Accessory;
+use App\Models\Accessoryhistory;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,9 @@ class AccessoryController extends Controller
         return view('admin.EditAccessory',compact('editaccessory'));
     }
 
+
+
+    //////////////////////////////////////////////////////////////////////อัพเดต///////////////////////////////
     public function updateAccessory(Request $request, $id){
         $request->validate([
             'accessory_price' => 'required|numeric',
@@ -89,6 +93,10 @@ class AccessoryController extends Controller
             'quantity' => 'nullable|integer|min:1'
         ]);
         $AccessoryUpdate = Accessory::find($id); //หาก่อนว่าจะบันทึกไว้ในไอดีไหน
+
+        //ตรวจสอบว่ามีการแก้ไขราคาไหม
+        $validateprice = $AccessoryUpdate->accessory_price != $request->input('accessory_price'); //true
+        $validatedes = $AccessoryUpdate->accessory_description != $request->input('accessory_description');
 
 
         //เช็ครูปภาพ
@@ -115,6 +123,34 @@ class AccessoryController extends Controller
             'accessory_price' => $request->input('accessory_price'),
             'accessory_description' => $request->input('accessory_description'),
         ]);
+
+
+        // if($request->input('accessory_price') < $AccessoryUpdate->accessory_price){
+        //     $textprice = "แก้ไขราคาลง";
+        // }
+        // elseif($request->input('accessory_price') > $AccessoryUpdate->accessory_price){
+        //     $textprice = "เพิ่มราคาขึ้น"
+        // }
+
+
+        //บันทึกประวัติ
+        if($validateprice){
+            $price_history = new Accessoryhistory();
+            $price_history->accessory_id = $AccessoryUpdate->id;
+            $price_history->action = "เปลี่ยนแปลงราคา";
+            $price_history->new_amount = $request->input('accessory_price');
+            $price_history->save();
+        }
+
+        if($validatedes){
+            $price_history = new Accessoryhistory();
+            $price_history->accessory_id = $AccessoryUpdate->id;
+            $price_history->action = "แก้ไขรายละเอียด";
+            $price_history->new_amount = "123";
+            $price_history->save();
+        }
+
+        //บันทึกประวัตินะ 
 
         return redirect()->back()->with('success','อัพเดตเสร็จสิ้น');
     }
