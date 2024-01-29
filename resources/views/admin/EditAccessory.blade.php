@@ -153,6 +153,6 @@
             </div>
         </div>
 
-
+        {{-- <a href="{{route('history.accessory',['id' => $editaccessory->id])}}">ดูประวัติ</a> --}}
 
         @endsection
