@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('accessory_id'); //เพิ่ม accessory_id
             $table->string('action')->nullable();
-            $table->decimal('old_amount', 8, 2)->nullable(); 
             $table->decimal('new_amount', 8, 2)->nullable(); 
             $table->timestamps();
             $table->softDeletes();
