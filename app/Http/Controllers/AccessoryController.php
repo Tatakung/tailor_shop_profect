@@ -85,6 +85,8 @@ class AccessoryController extends Controller
             'accessory_price' => 'required|numeric',
             'accessory_description' => 'nullable|string',
             'accessory_image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'action_type' => 'nullable|in:add,remove',
+            'quantity' => 'nullable|integer|min:1'
         ]);
         $AccessoryUpdate = Accessory::find($id); //หาก่อนว่าจะบันทึกไว้ในไอดีไหน
 
@@ -99,30 +101,20 @@ class AccessoryController extends Controller
         if ($request->input('action_type') == "add"){
             $AccessoryUpdate->accessory_count += $request->input('quantity');
         }
-        else{
+        elseif($request->input('action_type') == "remove"){
+
+            if($request->input('quantity') >  $AccessoryUpdate->accessory_count){
+                return redirect()->back()->with('T','ไม่สามารถลบเครื่องประดับมากกว่าจำนวนที่มีได้');
+            }
             $AccessoryUpdate->accessory_count -= $request->input('quantity');
-            $AccessoryUpdate->accessory_count = max(0, $AccessoryUpdate->accessory_count);
         }
+
 
         //บันทึกลงในฐานข้อมูล
         $AccessoryUpdate->update([
             'accessory_price' => $request->input('accessory_price'),
             'accessory_description' => $request->input('accessory_description'),
         ]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         return redirect()->back()->with('success','อัพเดตเสร็จสิ้น');
     }

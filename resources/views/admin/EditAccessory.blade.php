@@ -102,25 +102,57 @@
                         <label for="accessory_image" id="image">เพิ่มรูปภาพ:</label>
                         <input type="file" name="accessory_image" id="tt">
 
-
                         <br>
 
-                        <label for="action_type">กรุณาเลือก:</label>
-                        <select name="action_type" id="action_type">
+                        <div>
+                            <label for="action_type">เพิ่ม/ลบ จำนวนเครื่องประดับ:</label>
+                            <select name="action_type" id="action_type">
                             <option value=""  selected>เลือก</option>
                             <option value="add">เพิ่มจำนวน</option>
                             <option value="remove">ลบจำนวน</option>
                         </select>
+                        </div>
+                        
                         <br>
+                        @if(session('T'))
+                        <div class="alert alert-success">
+                            {{session('T')}}
+                        </div>
+                        @endif
 
-                        <label for="quantity">จำนวน:</label>
-                        <input type="number" name="quantity" id="quantity">
+                        <div>
+                            <label for="quantity">จำนวน:</label>
+                            <input type="number" name="quantity" id="quantity" disabled>
+                        </div>
+
+                        <script>
+                             document.addEventListener('DOMContentLoaded',function(){
+                                var Selete = document.getElementById('action_type'); //เลือก
+                                var quantity = document.getElementById('quantity'); //ช่องจำนวน
+                                 
+                                Selete.addEventListener('change',function(){
+                                    if(Selete.value === 'add' || Selete.value === 'remove'){
+                                        quantity.removeAttribute('disabled')
+                                    }
+                                    else{
+                                        quantity.setAttribute('disabled','disaled')
+                                    }
+
+
+                                });
+                             });
+                        </script>
+
                         <br>
 
                         <button type="submit" class="btn btn-primary "id="sm">บันทึก</button>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+
+
     @endsection
