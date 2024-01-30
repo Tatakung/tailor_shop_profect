@@ -50,12 +50,8 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/showaccessory',[AccessoryController::class,'showAccessory'])->name('admin.showAccessory');//แสดงเครื่องประดับ
     Route::get('/admin/detailaccessory/{id}',[AccessoryController::class,'detailAccessory'])->name('admin.detailAccessory');//แสดงรายละเอียดเครื่องประดับ
 
-
-
-
     Route::get('/admin/editaccessory/{id}',[AccessoryController::class,'editAccessory'])->name('admin.editAccessory');//หน้าแก้ไข
     Route::post('/admin/updateaccessory/{id}',[AccessoryController::class,'updateAccessory'])->name('admin.updateAccessory');//หน้าอัปเดต
-
 
 
 
@@ -91,6 +87,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 Route::get('/testlogin', function () {
     return view('test');
 });
+
+
 
 
 

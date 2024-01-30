@@ -153,6 +153,33 @@
             </div>
         </div>
 
-        {{-- <a href="{{route('history.accessory',['id' => $editaccessory->id])}}">ดูประวัติ</a> --}}
+
+        
+        <h2>ประวัติการแก้ไข</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>accessory_id</th>
+                        <th>วันที่แก้ไข</th>
+                        <th>รายกาปรแก้ไข</th>
+                        <th>ค่าใหม่</th>
+                        <th>ค่าเดิม</th>
+                                             
+          
+                          </tr>
+                </thead>
+          
+                @foreach ($accshowhistory as $ash)
+                @if ($ash->accessory_id == $editaccessory->id)
+                    <tr>
+                        <td>{{ $ash->accessory_id }}</td>
+                        <td>{{ $ash->created_at }}</td>
+                        <td>{{ $ash->action }}</td>
+                        <td>{{$ash->new_amount}}</td>
+                        <td>{{$ash->old_amount}}</td>
+                    </tr>
+                @endif
+            @endforeach
+                        </table>
 
         @endsection

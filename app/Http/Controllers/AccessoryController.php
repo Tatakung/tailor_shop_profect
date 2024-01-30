@@ -78,7 +78,8 @@ class AccessoryController extends Controller
     //แสดงหน้าแก้ไขเครื่องประดับ
     public function editAccessory($id){
         $editaccessory = Accessory::find($id);
-        return view('admin.EditAccessory',compact('editaccessory'));
+        $accshowhistory = Accessoryhistory::all();
+        return view('admin.EditAccessory',compact('editaccessory','accshowhistory'));
     }
 
 
@@ -185,27 +186,54 @@ class AccessoryController extends Controller
         ]);
         $AccessoryUpdate = Accessory::find($id);
     
-        //ตรวจสอบว่ามีการแก้ไขราคาไหม
-        $validateprice = $AccessoryUpdate->accessory_price != $request->input('accessory_price'); //true
+
+    //ตรวจสอบการแก้ไขราคานะ
+    if($AccessoryUpdate->accessory_price != $request->input('accessory_price')){
+        if($AccessoryUpdate->accessory_price < $request->input('accessory_price')){
+            $text = "ปรับราคาขึ้น";
+        }
+        elseif($AccessoryUpdate->accessory_price > $request->input('accessory_price')){
+            $text = "ปรับราคาลง";
+        }
+        Accessoryhistory::create([
+            'accessory_id' => $AccessoryUpdate->id,
+            'action' => $text,
+            'old_amount' => $AccessoryUpdate->accessory_price,
+            'new_amount' => $request->input('accessory_price'),
+        ]);
+    }
+
+    //ตรวจสอบการแก้ไขเพิ่ม/ลบจำนวน
     
+    if($request->input('action_type') == "add"){
+        Accessoryhistory::create([
+            'accessory_id' => $AccessoryUpdate->id,
+            'action' => "เพิ่มจำนวนเครื่องประดับ",
+            'old_amount' => $AccessoryUpdate->accessory_count,
+            'new_amount' => $request->input('quantity'),
+        ]);
+    }
+    elseif($request->input('action_type') == "remove"){
+        Accessoryhistory::create([
+            'accessory_id' => $AccessoryUpdate->id,
+            'action' => "ลบจำนวนเครื่องประดับ",
+            'old_amount' => $AccessoryUpdate->accessory_count,
+            'new_amount' => $request->input('quantity'),
+    
+        ]);
+    }
 
-               //เงือนไตรงประวัติ
-               if($AccessoryUpdate->accessory_price > $request->input('accessory_price') ){
-                $actionName = "แก้ไขราคาลง";
-            }
-            elseif($AccessoryUpdate->accessory_price < $request->input('accessory_price')){
-                $actionName = "เพิ่มราคาขึ้น";
-            }
 
 
 
 
+    
         //เช็ครูปภาพ
         if ($request->hasFile('accessory_image')) {
             $AccessoryUpdate->accessory_image = $request->file('accessory_image')->store('accessory_images','public');
         }
-    
-        //เช็คเพิ่มลบ
+
+   
         if ($request->input('action_type') == "add"){
             $AccessoryUpdate->accessory_count += $request->input('quantity');
         }
@@ -215,37 +243,18 @@ class AccessoryController extends Controller
             }
             $AccessoryUpdate->accessory_count -= $request->input('quantity');
         }
-    
-
-    
- 
-    
-        //บันทึกประวัติ
-        if($validateprice){
-            $price_history = new Accessoryhistory();
-            $price_history->accessory_id = $AccessoryUpdate->id;
-            $price_history->action = $actionName;
-            $price_history->old_amount = $AccessoryUpdate->accessory_price;
-            $price_history->new_amount = $request->input('accessory_price');
-            $price_history->save();
-        }
-    
-
-
-
 
         //บันทึกลงในฐานข้อมูล
         $AccessoryUpdate->update([
         'accessory_price' => $request->input('accessory_price'),
         'accessory_description' => $request->input('accessory_description'),
-    ]);
-
-
+    ]); 
         return redirect()->back()->with('success','อัพเดตเสร็จสิ้น');
     }
-    
 
-    
+
+ 
+
 
 
 
