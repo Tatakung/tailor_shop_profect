@@ -14,6 +14,8 @@ class AccessoryController extends Controller
     public function formaccessory(){
         $accessoryName = Accessory::distinct()->pluck('accessory_name');
         return view('admin.AddAccessory',compact('accessoryName'));
+
+        
     }
 
     //บันทึกข้อมูล
