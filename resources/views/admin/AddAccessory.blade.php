@@ -25,6 +25,15 @@
                     <option value="other">อื่นๆ</option>
                 </select>
                 
+
+                @if(session('duplicate'))
+                <div class="alert alert-success">
+                    {{ session('duplicate') }}
+                </div>
+            @endif
+
+
+
                 <div id="other123"  style="display: none;">
                     <label for="other" class="form-label">ชื่อเครื่องประดับ(อื่นๆ)</label>
                     <input type="text" class="form-control" id="other" name="other_new">

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccessoryController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DressController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
@@ -54,9 +55,12 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::post('/admin/updateaccessory/{id}',[AccessoryController::class,'updateAccessory'])->name('admin.updateAccessory');//หน้าอัปเดต
 
 
+    //ชุด
+    Route::get('/admin/dress/create',[DressController::class,'formdress'])->name('admin.formdress');//แบบฟอร์มเพิ่มชุด
+    Route::post('/admin/storedress',[DressController::class,'storeDress'])->name('admin.sotre');// บันทึกนะ
 
 
-    // Route::get('/admin/historyaccessory/{id}',[AccessoryController::class,'getHistory'])->name('history.accessory');
+
 
 
 
