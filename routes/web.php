@@ -59,6 +59,9 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dress/create',[DressController::class,'formdress'])->name('admin.formdress');//แบบฟอร์มเพิ่มชุด
     Route::post('/admin/storedress',[DressController::class,'storeDress'])->name('admin.sotre');// บันทึกนะ
 
+    Route::get('/admin/dresscodes/{dressType}', [DressController::class, 'getDressCodes']); //ไปดึงรหัสชุด
+
+
 
 
 

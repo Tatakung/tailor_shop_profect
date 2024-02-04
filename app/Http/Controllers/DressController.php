@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Dress;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\FuncCall;
 
 class DressController extends Controller
 {
     //
     public function formdress(){
-        $get_dresstype = Dress::pluck('dress_type');
+        $get_dresstype = Dress::distinct()->pluck('dress_type');
         return view('admin.AddDress',compact('get_dresstype'));
     }
 
@@ -35,10 +36,17 @@ class DressController extends Controller
         // ถ้ามี dress_type และ dress_code อยู่แล้ว
         if ($dress) {
             $dress_id = $dress->id; // ให้ใช้ id ที่มีอยู่แล้ว
-        } else {
-            // ถ้าไม่มี dress_type และ dress_code ให้สร้างใหม่
+        } else {             // ถ้าไม่มี dress_type และ dress_code ให้สร้างใหม่
+
             $newDress = new Dress();
-            $newDress->dress_type = $request->input('dress_type');
+
+            if($request->input('dress_type') == 'other_type'){
+                $newDress->dress_type = $request->input('other_type_new');
+            }
+            else{
+                $newDress->dress_type = $request->input('dress_type');
+            }
+                
             $newDress->dress_code = $request->input('dress_code');
             $newDress->dress_description = $request->input('dress_description');
     
@@ -63,5 +71,27 @@ class DressController extends Controller
         return redirect()->back()->with('success','บันทึกข้อมูลสำเร็จแล้ว');
     }
     
+    
+    public function getDressCodes($dressType){
+        $dressCode = Dress::where('dress_type', $dressType)->pluck('dress_code');
+        return response()->json($dressCode); //ส่งค่ากลับแบบ json array
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
 }
 
