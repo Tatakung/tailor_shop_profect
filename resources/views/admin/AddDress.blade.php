@@ -15,30 +15,6 @@
             
             @csrf
 
-            {{-- <div class="mb-3">
-                <label for="dress_type" class="form-label">ประเภทชุด</label>
-                <input type="text" class="form-control" id="dress_type" name="dress_type">
-            </div> --}}
-            
-            {{-- <div class="mb-3">
-                <label for="dress_type" class="form-label">เลือกชุด</label>
-                <select class="form-control" id="dress_type" name="dress_type">
-                    <option value="" selected disabled>กรุณาเลือกประเภทชุด</option>
-                    @foreach($get_dresstype as $get_dresstype)
-                        <option value="{{$get_dresstype}}">{{$get_dresstype}}</option>
-                    @endforeach
-                    <option value="other_type">อื่นๆ</option>
-                </select>
-            </div>
-            
-
-            <div id="other123"  style="display: none;">
-                <label for="other_type_new" class="form-label">ประเภทชุด(อื่นๆ)</label>
-                <input type="text" class="form-control" id="other_type_new" name="other_type_new">
-            </div> --}}
-
-
-
 
             <!-- เพิ่มส่วนของดรอปดาวเลือกประเภทชุด -->
 <div class="mb-3">
@@ -68,7 +44,7 @@
 <!-- ส่วนที่จะแสดงเมื่อเลือกรหัสชุด "อื่นๆ" -->
 <div id="other_code123" style="display: none;">
     <label for="other_code_new" class="form-label">รหัสชุด(อื่นๆ)</label>
-    <input type="text" class="form-control" id="other_code_new" name="other_code_new" readonly>
+    <input type="text" class="form-control" id="other_code_new" name="other_code_new" value=""  readonly>
 </div>
 <!-- JavaScript เพื่อดึงข้อมูล dress_code จาก API -->
 
@@ -90,7 +66,6 @@ dressType.addEventListener('change',function(){
 });
 </script>
 
-
             <script>
                 document.getElementById('dress_code').addEventListener('change',function(){
                 var dresscodeseletenormal = document.getElementById('dress_code');
@@ -103,6 +78,34 @@ dressType.addEventListener('change',function(){
                 }
             });
             </script>
+
+            
+<script>
+    document.getElementById('dress_code').addEventListener('change',function(){
+        var a = document.getElementById('dress_code');  //ดรอปดาว
+        var b = document.getElementById('other_code_new') //ช่องสำหรับกรอกข้อความอัตโนมัิต
+        if(a.value === 'other_code'){
+            var selectdresstype = document.getElementById('dress_type')
+            fetch('/admin/numbercodes/' + selectdresstype.value )
+            .then(response => response.json())
+            .then(data => {
+                b.value = data.maxCode + 1;
+            });
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 
             <script>
                 document.addEventListener('DOMContentLoaded',function(){

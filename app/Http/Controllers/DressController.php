@@ -80,17 +80,13 @@ class DressController extends Controller
 
 
 
+    public function NumberCodes($numbertypecode){
+        $increasecode = Dress::where('dress_type', $numbertypecode)->max('dress_code'); //ได้ค่าสูงสุดแล้วนะ
+        return response()->json(['maxCode' => $increasecode]); 
+    }
 
 
-
-
-
-
-
-
-
-
-
+    
 
         
 }

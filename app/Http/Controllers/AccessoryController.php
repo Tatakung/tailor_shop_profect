@@ -71,12 +71,7 @@ class AccessoryController extends Controller
 
     }
 
-
-
-
-
-
-
+    
     public function getMaxAccessoryCode($accessory_name)
     {    
         $maxAccessoryCode = Accessory::where('accessory_name', $accessory_name)->max('accessory_code_new'); //ได้ค่าสูงสุดแล้วนะ
