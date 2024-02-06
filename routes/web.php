@@ -61,7 +61,13 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/dresscodes/{dressType}', [DressController::class, 'getDressCodes']); //ไปดึงรหัสชุด
 
 
-    Route::get('/admin/numbercodes/{numbertypecode}', [DressController::class, 'NumberCodes']);
+    Route::get('/admin/numbercodes/{numbertypecode}', [DressController::class, 'NumberCodes']); 
+
+    Route::get('/admin/sizes/{dressType}/{dressCode}', [DressController::class, 'getSizeNames']); //ดึงไซส์
+
+    Route::get('/admin/image/{dressType}/{dressCode}', [DressController::class, 'getimage']);  //ดึงรูปภาพ
+
+    Route::get('/admin/getdes/{dressType}/{dressCode}', [DressController::class, 'getDescription']); //ดึงdescription
 
 
 

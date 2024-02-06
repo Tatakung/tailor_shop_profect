@@ -11,6 +11,7 @@
             {{ session('success') }}
         </div>
     @endif
+    
         <form action="{{route('admin.store')}}" method="post" enctype="multipart/form-data">
             
             @csrf

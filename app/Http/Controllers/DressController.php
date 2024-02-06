@@ -16,6 +16,9 @@ class DressController extends Controller
     }
 
 
+
+
+    
     public function storeDress(Request $request){
         $request->validate([
             'dress_code' => 'required|string',
@@ -32,22 +35,37 @@ class DressController extends Controller
         $dress = Dress::where('dress_type', $request->input('dress_type'))
                       ->where('dress_code', $request->input('dress_code'))
                       ->first();
-    
-        // ถ้ามี dress_type และ dress_code อยู่แล้ว
-        if ($dress) {
-            $dress_id = $dress->id; // ให้ใช้ id ที่มีอยู่แล้ว
-        } else {             // ถ้าไม่มี dress_type และ dress_code ให้สร้างใหม่
 
+        //ตรวจสอบว่าถ้ามันซ้ำ
+        if ($dress) {
+            $dress_id = $dress->id; 
+        } 
+        //ตรวจสอบว่าถ้ามันไม่ซ้ำ
+        else {        
             $newDress = new Dress();
 
             if($request->input('dress_type') == 'other_type'){
-                $newDress->dress_type = $request->input('other_type_new');
+                $checkothertypenew = Dress::where('dress_type',$request->input('other_type_new'))->first();  //ตรวจสอบประเภทชุดซ้ำไหม
+                if(!$checkothertypenew){
+                    $newDress->dress_type = $request->input('other_type_new'); 
+                }
+                else{
+                    return redirect()->back()->with('checkothertypenew','ซ้ำกับประเภทชุดที่มี');
+                }
+                // $newDress->dress_type = $request->input('other_type_new');
             }
             else{
                 $newDress->dress_type = $request->input('dress_type');
             }
-                
-            $newDress->dress_code = $request->input('dress_code');
+
+            // รหัสชุด
+            if($request->input('dress_code') == "other_code"){
+                $newDress->dress_code = $request->input('other_code_new');
+            }
+            else{
+                $newDress->dress_code = $request('dress_code');
+            }
+            
             $newDress->dress_description = $request->input('dress_description');
     
             if($request->hasFile('dress_image')){
@@ -56,37 +74,139 @@ class DressController extends Controller
             }
     
             $newDress->save();
-            $dress_id = $newDress->id; // ให้ใช้ id ใหม่ที่สร้างขึ้น
+            $dress_id = $newDress->id; // ให้ใช้ id ใหม่ที่สร้างขึ้น 6
         }
     
+        
+
+
+
+
         // สร้าง size ใหม่
         $size = new Size();
         $size->dress_id = $dress_id; // ใช้ dress_id ที่ได้จากข้างบน
-        $size->size_name = $request->input('size_name');
+
+
+        $validatedress = Dress::where('dress_type', $request->input('dress_type'))
+                            ->where('dress_code',$request->input('dress_code'))
+                            ->value('id');   //null  5
+                        if($validatedress != null){
+                            $validatesize = Size::where('dress_id',$validatedress)
+                                                ->pluck('size_name');
+
+                        }
+                        else{
+                            $validatesize = collect();
+                        }
+                    
+        if(!$validatesize->contains($request->input('size_name'))){ //ไซส์ที่กรอก มันอยยู่ในข้อมูลไหม
+            $size->size_name = $request->input('size_name');
+        }
+        else{
+            return redirect()->back()->with('repeatsize','ไซส์มีอยู่แล้วนะ');
+        }
+
         $size->price = $request->input('price');
         $size->deposit = $request->input('deposit');
         $size->amount = $request->input('amount');
         $size->save();
     
+
+        //อัปเดตรายละเอียดชุด + รูปภาพ ถ้ามีการแก้ไข
+        if($validatedress != null){
+            $updatenew = Dress::find($validatedress);
+
+            //รายละเอียด
+            if($updatenew->dress_description != $request->input('dress_description')){
+                $updatenew->update([
+                    'dress_description' => $request->input('dress_description'),
+                ]);
+            }
+
+            //รูปภาพ
+
+        }
+
+
+
+
+
+
         return redirect()->back()->with('success','บันทึกข้อมูลสำเร็จแล้ว');
     }
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
+    //ดึงรหัสชุด
     public function getDressCodes($dressType){
         $dressCode = Dress::where('dress_type', $dressType)->pluck('dress_code');
         return response()->json($dressCode); //ส่งค่ากลับแบบ json array
     }
 
 
-
-
+    //กำหนดค่ากรณ๊เลือกหมายเลขชุดอื่นๆ
     public function NumberCodes($numbertypecode){
-        $increasecode = Dress::where('dress_type', $numbertypecode)->max('dress_code'); //ได้ค่าสูงสุดแล้วนะ
+        $increasecode = Dress::where('dress_type', $numbertypecode)->max('dress_code'); //ได้ค่าสูงสุดแล้วนะ **ถ้าไม่มีจะถูกส่งกลับเป็ฯค่า nullนะ
         return response()->json(['maxCode' => $increasecode]); 
     }
 
+    // ดึงไซส์ในร้าน
+    public function getSizeNames($dressType,$dressCode){
+        $dressid = Dress::where('dress_type',$dressType)
+                        ->where('dress_code',$dressCode)
+                        ->value('id');
+            if($dressid == null){
+                return response()->json([]);
+            }
+            else{
+                $sizeNames = Size::where('dress_id',$dressid)
+                            ->pluck('size_name')
+                            ->toArray();
+                return response()->json($sizeNames);
+            }
+    }
 
+    // ดึงdiscription
+    public function getDescription($dressType, $dressCode){
+        $getdes = Dress::where('dress_type', $dressType)
+                        ->where('dress_code', $dressCode)
+                        ->value('dress_description');
+            return response()->json(['getdes' => $getdes]);
+    }
+        // ดึงimage
+        public function getimage($dressType, $dressCode){
+            $getimage = Dress::where('dress_type', $dressType)
+                            ->where('dress_code', $dressCode)
+                            ->value('dress_image');
+                return response()->json(['getimage' => $getimage]);
+        }
     
+    
+
+
+
+
+
+
+
 
         
 }
