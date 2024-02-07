@@ -69,7 +69,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/admin/getdes/{dressType}/{dressCode}', [DressController::class, 'getDescription']); //ดึงdescription
 
-    Route::get('/dresses', [DressController::class, 'index']);
+    Route::get('/admin/showdress', [DressController::class, 'showDress'])->name('admin.showDress');   //แสดงชุดทั้งหมดในร้าน
 
 
 

@@ -173,13 +173,8 @@ class DressController extends Controller
     }
     
 
-    //
-    public function showdress(){
-
-    }
-
-
-    public function index()
+    //แสดงชุด
+    public function showDress()
     {
         $dresses = Dress::with('sizes')->get();
         return view('admin.ShowDress', compact('dresses'));
