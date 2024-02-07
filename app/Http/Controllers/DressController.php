@@ -15,10 +15,6 @@ class DressController extends Controller
         return view('admin.AddDress',compact('get_dresstype'));
     }
 
-
-
-
-    
     public function storeDress(Request $request){
         $request->validate([
             'dress_code' => 'required|string',
@@ -77,11 +73,6 @@ class DressController extends Controller
             $dress_id = $newDress->id; // ให้ใช้ id ใหม่ที่สร้างขึ้น 6
         }
     
-        
-
-
-
-
         // สร้าง size ใหม่
         $size = new Size();
         $size->dress_id = $dress_id; // ใช้ dress_id ที่ได้จากข้างบน
@@ -89,14 +80,14 @@ class DressController extends Controller
 
         $validatedress = Dress::where('dress_type', $request->input('dress_type'))
                             ->where('dress_code',$request->input('dress_code'))
-                            ->value('id');   //null  5
+                            ->value('id');   //null  
                         if($validatedress != null){
                             $validatesize = Size::where('dress_id',$validatedress)
                                                 ->pluck('size_name');
 
                         }
                         else{
-                            $validatesize = collect();
+                            $validatesize = collect(); //กำหนดเป็ฯค่าว่าง
                         }
                     
         if(!$validatesize->contains($request->input('size_name'))){ //ไซส์ที่กรอก มันอยยู่ในข้อมูลไหม
@@ -124,36 +115,17 @@ class DressController extends Controller
             }
 
             //รูปภาพ
-
+            if($request->hasFile('dress_image')){
+                $imagepath_new = $request->file('dress_image')->store('dress_images','public');
+                $updatenew->update([
+                    'dress_image' => $imagepath_new,
+                ]);
+            }
         }
-
-
-
-
-
 
         return redirect()->back()->with('success','บันทึกข้อมูลสำเร็จแล้ว');
     }
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     
     //ดึงรหัสชุด
     public function getDressCodes($dressType){
@@ -199,6 +171,7 @@ class DressController extends Controller
                 return response()->json(['getimage' => $getimage]);
         }
     
+        
     
 
 
