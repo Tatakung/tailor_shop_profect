@@ -163,16 +163,27 @@ class DressController extends Controller
                         ->value('dress_description');
             return response()->json(['getdes' => $getdes]);
     }
-        // ดึงimage
-        public function getimage($dressType, $dressCode){
-            $getimage = Dress::where('dress_type', $dressType)
+    
+    // ดึงimage
+    public function getimage($dressType, $dressCode){
+        $getimage = Dress::where('dress_type', $dressType)
                             ->where('dress_code', $dressCode)
                             ->value('dress_image');
-                return response()->json(['getimage' => $getimage]);
-        }
+                            return response()->json(['getimage' => $getimage]);
+    }
     
-        
-    
+
+    //
+    public function showdress(){
+
+    }
+
+
+    public function index()
+    {
+        $dresses = Dress::with('sizes')->get();
+        return view('admin.ShowDress', compact('dresses'));
+    }
 
 
 

@@ -69,6 +69,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/admin/getdes/{dressType}/{dressCode}', [DressController::class, 'getDescription']); //ดึงdescription
 
+    Route::get('/dresses', [DressController::class, 'index']);
 
 
 
