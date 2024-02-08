@@ -17,6 +17,7 @@
                             <th>ไซส์</th>
                             <th>ราคา</th>
                             <th>จำนวนชุด</th>
+                            <td>ดูรายละเอียด</td>
                               </tr>
                     </thead>
                     @foreach($dresses as $dress)
@@ -27,6 +28,9 @@
                             <td>{{$size->size_name}}</td>
                             <td>{{$size->price}}</td>
                             <td>{{$size->amount}} ชุด</td> 
+                            <td>
+                                <a href="{{route('admin.detailDress',['id' => $size->id])}}">รายละเอียด</a>
+                            </td>
                         </tr>
                         @endforeach
                     @endforeach

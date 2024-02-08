@@ -179,8 +179,25 @@ class DressController extends Controller
         $dresses = Dress::with('sizes')->get();
         return view('admin.ShowDress', compact('dresses'));
     }
+    // แสดงรายละเอียดชุด
+    public function detailDress($id){
+        $getsize = Size::find($id);
+        return view('admin.DetailDress',compact('getsize'));
+    }
+    
+
+    public function editDress($id){
+        $getdata = Size::find($id);
+        return view('admin.EditDress',compact('getdata'));
+    }
 
 
+
+
+    //อัปเดตข้อมูลการแกเไขชุดนะ 
+    public function updateDress(Request $request , $id){
+
+    }
 
 
 

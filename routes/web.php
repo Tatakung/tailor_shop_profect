@@ -71,6 +71,9 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/admin/showdress', [DressController::class, 'showDress'])->name('admin.showDress');   //แสดงชุดทั้งหมดในร้าน
 
+    Route::get('/admin/detaildress/{id}', [DressController::class, 'detailDress'])->name('admin.detailDress');   // แสดงรายละเอียดชุด
+    Route::get('/admin/editdress/{id}', [DressController::class, 'editDress'])->name('admin.editDress');   // หน้าแก้ไขชุด
+    Route::post('/admin/updatedress/{id}',[AccessoryController::class,'updateDress'])->name('admin.updateDress');//หน้าอัปเดต
 
 
 
