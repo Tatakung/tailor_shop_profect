@@ -192,12 +192,84 @@ class DressController extends Controller
     }
 
 
+    //อัปเดตข้อมูลการแก้ไขชุดนะ 
+    // public function updateDress(Request $request , $id){
+    //     $request->validate([
+    //         'price' => 'required|numeric',
+    //         'deposit' => 'required|numeric',
+
+    //     ]);
+
+    //     $updatesize = Size::find($id);
+    //     $updatesize->update([
+    //         'price' => $request->input('price'),
+    //         'deposit' =>$request->input('deposit'),
+    //     ]);
+
+        
+    //     return redirect()->back()->with('successupdatesize','อัปเดตสำเร็จแล้วนะ');
+    // }
+
+    public function updateDress(Request $request, $id) {
+        // ตรวจสอบข้อมูลที่ได้รับจากฟอร์ม
+        $request->validate([
+            'price' => 'required|numeric',
+            'deposit' => 'required|numeric',
+            'description' => 'required|string',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
 
-    //อัปเดตข้อมูลการแกเไขชุดนะ 
-    public function updateDress(Request $request , $id){
+        $size = Size::find($id);  // idที่ 3 จากตารางsize   มี dress_id ที่ 2 กำกับอยู่
+        $dress = $size->dress; //ดึงข้อมูล dress ที่เกี่ยวข้องกัล size  
 
+
+
+        //ตารางdressนะ
+        if($request->hasFile('image')){
+            $imagepathupdate = $request->file('image')->store('dress_images','public');
+            $dress->dress_image = $imagepathupdate;
+        }
+        $dress->dress_description = $request->input('description');
+        $dress->save();
+        //รูปภาพ
+
+
+        //ตารางsize นะ 
+
+        $size->price = $request->input('price');
+        $size->deposit = $request->input('deposit');
+
+
+
+
+        if($request->input('action_type') == "add"){
+            $size->amount += $request->input('quantity');
+        }
+        elseif($request->input('action_type') == "remove"){
+            if($request->input('quantity') > $size->amount){
+                return redirect()->back()->with('amountover','ไม่สามารถลบเกินจำนวนที่มีได้');
+            }
+            else{
+                $size->amount -= $request->input('quantity');
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        $size->save();
+
+        return redirect()->back()->with('sizeupdate','แก้ไขสำเร็จแล้วนะ');
     }
+
 
 
 

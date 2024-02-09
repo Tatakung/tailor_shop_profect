@@ -24,4 +24,8 @@ class Accessory extends Model
     public function accessoryhistories(){
         return $this->hasMany(Accessoryhistory::class,'accessory_id');
     }
+    
+
+
+
 }

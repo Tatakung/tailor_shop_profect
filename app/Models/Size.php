@@ -21,4 +21,13 @@ class Size extends Model
     public function dress(){
         return $this->belongsTo(Dress::class, 'dress_id');
     }
+
+
+    // size 1 - M ของตาราง dressizehistory
+    public function Dresssizehistorys(){
+        return $this->hasMany(Dresssizehistory::class,'size_id');
+    }
+    
+
+
 }

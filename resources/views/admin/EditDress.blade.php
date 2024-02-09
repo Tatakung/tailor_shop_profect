@@ -101,9 +101,20 @@
             </div>
             <div class="mt-4" id="form-container">
 
+                
+                @if(session('sizeupdate'))
+                <div class="alert alert-success">
+                    {{session('sizeupdate')}}
+                </div>
+                @endif
+
+
+
+
                 <p class="accessory-details">รหัสชุด: <strong>{{ $getdata->dress->dress_code }}</strong></p>
                 <p class="accessory-details">ประเภทชุด:<strong>{{ $getdata->dress->dress_type }}</strong></p>
-
+                <p class="accessory-details">ไซส์:<strong>{{ $getdata->size_name }}</strong></p>
+                <p class="accessory-details">จำนวน:<strong>{{ $getdata->amount }} ชุด</strong></p>
 
                 <form action="{{ route('admin.updateDress', ['id' => $getdata->id])}}" method="post" enctype="multipart/form-data">
                     @csrf
@@ -113,13 +124,14 @@
                     <input type="number" name="price" value="{{ $getdata->price }}" id="price_input" required>
 
 
-                    <label for="accessory_deposit" id="price">ราคามักจำต่อชุด:</label>
-                    <input type="number" name="deposit" value="{{ $getdata->deposit }}" id="deposit_input" required>
-
 
                     <br>
-                    <label for="accessory_size" id="size">ไซส์:</label>
-                    <input type="text" name="size_name" value="{{ $getdata->size_name }}" id="size_input"  required>
+
+                    <label for="accessory_deposit" id="price">ราคามัดจำ:</label>
+                    <input type="number" name="deposit" value="{{ $getdata->deposit }}" id="deposit_input" required>
+ 
+                    
+
 <br>
 
                     <label for="accessory_price" id="description">คำอธิบาย:</label>
@@ -130,6 +142,45 @@
                     <input type="file" name="image" id="tt">
 
 
+                                        <!--เพิ่ม/ลบจำนวนชุด-->
+                    <div>
+                    <label for="amount" id="amount">เพิ่ม/ลบจำนวนชุด</label>
+                    <select name="action_type" id="action_type">
+                        <option value="" selected>เลือก</option>
+                        <option value="add">เพิ่มจำนวน</option>
+                        <option value="remove">ลบจำนวน</option>
+                    </select>
+                </div>
+
+                @if(session('amountover'))
+                <div class="alert alert-success">
+                    {{session('amountover')}}
+                </div>
+                @endif
+                
+                
+                    <label for="quantity">จำนวนที่ต้องการ</label>
+                    <input type="number" name="quantity" id="quantity" disabled>
+                    
+
+
+                    <script>
+                        selecttype = document.getElementById('action_type');  //เลือกปกติ
+                        quantityinput = document.getElementById('quantity'); //ช่องกรอกข้อมูลนะ
+                        selecttype.addEventListener('change',function(){
+                            if(selecttype.value === "add" || selecttype.value === "remove"  ){
+                                quantityinput.removeAttribute('disabled');
+                            }
+                            else{
+                                quantityinput.setAttribute('disabled','disabled');
+                            }
+
+                        });
+                    </script>
+                    
+                                
+
+            
                     <button type="submit" class="btn btn-primary "id="sm">บันทึก</button>
                 </form>
             </div>
