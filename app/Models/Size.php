@@ -24,7 +24,7 @@ class Size extends Model
 
 
     // size 1 - M ของตาราง dressizehistory
-    public function Dresssizehistorys(){
+    public function dresssizehistories(){
         return $this->hasMany(Dresssizehistory::class,'size_id');
     }
     

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Dress;
 use App\Models\Size;
+use App\Models\Dresssizehistory;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 
@@ -192,31 +193,26 @@ class DressController extends Controller
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
     //อัปเดตข้อมูลการแก้ไขชุดนะ 
-    // public function updateDress(Request $request , $id){
-    //     $request->validate([
-    //         'price' => 'required|numeric',
-    //         'deposit' => 'required|numeric',
-
-    //     ]);
-
-    //     $updatesize = Size::find($id);
-    //     $updatesize->update([
-    //         'price' => $request->input('price'),
-    //         'deposit' =>$request->input('deposit'),
-    //     ]);
-
-        
-    //     return redirect()->back()->with('successupdatesize','อัปเดตสำเร็จแล้วนะ');
-    // }
-
     public function updateDress(Request $request, $id) {
         // ตรวจสอบข้อมูลที่ได้รับจากฟอร์ม
         $request->validate([
-            'price' => 'required|numeric',
-            'deposit' => 'required|numeric',
+            'price' => 'required|numeric|min:1',
+            'deposit' => 'required|numeric|min:1',
             'description' => 'required|string',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'quantity' => 'numeric|min:1'
         ]);
 
 
@@ -237,13 +233,58 @@ class DressController extends Controller
 
         //ตารางsize นะ 
 
-        $size->price = $request->input('price');
-        $size->deposit = $request->input('deposit');
+
+        //บันทึกประวัติ(ราคา)
+        if($request->input('price') != $size->price){
+            if($request->input('price') > $size->price){
+                $text_edit_price = "ปรับราคาขึ้น";
+            }
+            elseif($request->input('price') < $size->price){
+                $text_edit_price = "ปรับราคาลง";
+            }
+            Dresssizehistory::create([
+                'size_id' => $size->id,
+                'action' => $text_edit_price,
+                'old_amount' => $size->price,
+                'new_amount' =>$request->input('price'),
+            ]);
+        }
+
+        $size->price = $request->input('price'); //ให้มันเพิ่มลงในประวัติก่อนค่อยบันทึกการอก้ไขในตาราง size 
+
+        //บันทึกประวัติ(มัดจำ)
+        if($request->input('deposit') <= $size->price){    //เช็คว่า ราคามัดจำที่แก้ไขมันมีค่าต้องน้อยกว่า ราคาเต็ม
+            if($request->input('deposit') != $size->deposit){
+                if($request->input('deposit') > $size->deposit){
+                    $text_edit_deposit = "ปรับราคามัดจำขึ้น";
+                }
+                elseif($request->input('deposit') < $size->deposit){
+                    $text_edit_deposit = "ปรับราคามัดจำลง";
+                }
+                Dresssizehistory::create([
+                    'size_id' => $size->id,
+                    'action' => $text_edit_deposit,
+                    'old_amount' => $size->deposit,
+                    'new_amount' => $request->input('deposit'),
+                ]);
+            }
+            $size->deposit = $request->input('deposit');//ให้มันเพิ่มลงในประวัติก่อนค่อยบันทึกการอก้ไขในตาราง size
+        }
+        else{
+            return redirect()->back()->with('Overdeposit','ราคามัดจำต้องไม่เกินราคาเต็มของชุด');
+        }         
 
 
 
 
         if($request->input('action_type') == "add"){
+            //บันทึกประวัติ
+            Dresssizehistory::create([
+                'size_id' => $size->id,
+                'action' => "เพิ่มจำนวนชุด",
+                'old_amount' =>$size->amount,
+                'new_amount' => $request->input('quantity'),
+            ]);
             $size->amount += $request->input('quantity');
         }
         elseif($request->input('action_type') == "remove"){
@@ -251,21 +292,17 @@ class DressController extends Controller
                 return redirect()->back()->with('amountover','ไม่สามารถลบเกินจำนวนที่มีได้');
             }
             else{
+                Dresssizehistory::create([
+                'size_id' => $size->id,
+                'action' => "ลบจำนวนชุด",
+                'old_amount' =>$size->amount,
+                'new_amount' => $request->input('quantity'),
+                ]);
                 $size->amount -= $request->input('quantity');
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-        $size->save();
+        $size->save(); //เซฟด้วยสุดท้าย
 
         return redirect()->back()->with('sizeupdate','แก้ไขสำเร็จแล้วนะ');
     }

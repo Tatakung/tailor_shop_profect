@@ -127,6 +127,13 @@
 
                     <br>
 
+                    
+                    @if(session('Overdeposit'))
+                <div class="alert alert-success">
+                    {{session('Overdeposit')}}
+                </div>
+                @endif
+
                     <label for="accessory_deposit" id="price">ราคามัดจำ:</label>
                     <input type="number" name="deposit" value="{{ $getdata->deposit }}" id="deposit_input" required>
  

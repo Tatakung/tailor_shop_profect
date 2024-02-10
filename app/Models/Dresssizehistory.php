@@ -19,8 +19,8 @@ class Dresssizehistory extends Model
     ];
 
 
-    //ตารางsize เชื่อมแบบ M - 1 กับ ตารางsize
-    public function sizes(){
+    //ตารางdresssizehistory เชื่อมแบบ M - 1 กับ ตารางsize
+    public function size(){
         return $this->belongsTo(Size::class,'size_id');
     }
 
