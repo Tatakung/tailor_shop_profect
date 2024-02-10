@@ -99,6 +99,11 @@
             </div>
 
             <div class="mb-3">
+                <label for="accessory_deposit" class="form-label">ราคามัดจำเครื่องประดับ</label>
+                <input type="number" class="form-control" id="accessory_deposit" name="accessory_deposit" required>
+            </div>
+
+            <div class="mb-3">
                 <label for="accessory_description" class="form-label">รายละเอียดเครื่องประดับ</label>
                 <textarea class="form-control" id="accessory_description" name="accessory_description"></textarea>
             </div>

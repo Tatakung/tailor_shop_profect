@@ -23,8 +23,9 @@ class AccessoryController extends Controller
         $request->validate([
             'accessory_name' => 'required|string',
             'accessory_code' => 'required|string',
-            'accessory_count' => 'required|integer',
-            'accessory_price' => 'required|numeric',
+            'accessory_count' => 'required|integer|min:0',
+            'accessory_price' => 'required|numeric|min:1',
+            'accessory_deposit' => 'required|numeric|min:1',
             'accessory_description' => 'nullable|string',
             'accessory_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -46,6 +47,7 @@ class AccessoryController extends Controller
                     'accessory_code_new' => $request->input('accessory_code'),
                     'accessory_count' => $request->input('accessory_count'),
                     'accessory_price' => $request->input('accessory_price'),
+                    'accessory_deposit' => $request->input('accessory_deposit'),
                     'accessory_description' => $request->input('accessory_description'),
                     'accessory_image' => $imagePath
                 ]);
@@ -59,6 +61,7 @@ class AccessoryController extends Controller
                         'accessory_code_new' => $request->input('accessory_code'),
                         'accessory_count' => $request->input('accessory_count'),
                         'accessory_price' => $request->input('accessory_price'),
+                        'accessory_deposit' => $request->input('accessory_deposit'),
                         'accessory_description' => $request->input('accessory_description'),
                         'accessory_image' => $imagePath
                     ]);
@@ -103,7 +106,8 @@ class AccessoryController extends Controller
 
     public function updateAccessory(Request $request, $id){
         $request->validate([
-            'accessory_price' => 'required|numeric',
+            'accessory_price' => 'required|numeric|min:1',
+            'accessory_deposit' => 'required|numeric|min:1',
             'accessory_description' => 'nullable|string',
             'accessory_image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'action_type' => 'nullable|in:add,remove',
@@ -128,11 +132,29 @@ class AccessoryController extends Controller
         ]);
     }
 
+    //ตรวจสอบการแก้ไขราคามัดจำนะ
+    if($AccessoryUpdate->accessory_deposit != $request->input('accessory_deposit')){
+        if($request->input('accessory_deposit') > $AccessoryUpdate->accessory_price){  // ราคามัดจำห้ามเกินราคาเต็มเครืาองปรัดัล
+            return redirect()->back()->with('overdeposit',"ราคามัดจำต้องไม่เกินราคาเต็มของเครื่องประดับ ");
+        }
+        elseif($request->input('accessory_deposit') <= $AccessoryUpdate->accessory_price){
+            if($AccessoryUpdate->accessory_deposit < $request->input('accessory_deposit')){
+                $text_deposit = "ปรับราคามัดจำขึ้น";
+            }
+            elseif($AccessoryUpdate->accessory_deposit > $request->input('accessory_deposit')){
+                $text_deposit = "ปรับราคามัดจำลง";
+            }
+            Accessoryhistory::create([
+                'accessory_id' => $AccessoryUpdate->id,
+                'action' => $text_deposit,
+                'old_amount' => $AccessoryUpdate->accessory_deposit,
+                'new_amount' => $request->input('accessory_deposit'),
+            ]);
+        }
+   
+    }
 
-
-
-    //ตรวจสอบการแก้ไขเพิ่ม/ลบจำนวน
-    
+    //ตรวจสอบการแก้ไขเพิ่ม/ลบจำนวน   (ประวัติ)
     if($request->input('action_type') == "add"){
         Accessoryhistory::create([
             'accessory_id' => $AccessoryUpdate->id,
@@ -153,7 +175,7 @@ class AccessoryController extends Controller
     }
     
 
-
+    //บันทึกลงในฐานนข้อมูล
     if ($request->input('action_type') == "add"){
         $AccessoryUpdate->accessory_count += $request->input('quantity');
     }
@@ -174,8 +196,11 @@ class AccessoryController extends Controller
         //บันทึกลงในฐานข้อมูล
         $AccessoryUpdate->update([
         'accessory_price' => $request->input('accessory_price'),
+        'accessory_deposit' => $request->input('accessory_deposit'),
         'accessory_description' => $request->input('accessory_description'),
-    ]); 
+    ]);
+
+    
         return redirect()->back()->with('success','อัพเดตเสร็จสิ้น');
     }
 

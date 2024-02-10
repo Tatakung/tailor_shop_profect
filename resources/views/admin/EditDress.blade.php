@@ -127,7 +127,6 @@
 
                     <br>
 
-                    
                     @if(session('Overdeposit'))
                 <div class="alert alert-success">
                     {{session('Overdeposit')}}
@@ -185,13 +184,44 @@
                         });
                     </script>
                     
-                                
-
-            
                     <button type="submit" class="btn btn-primary "id="sm">บันทึก</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
+<h2>ประวัติการแก้ไข</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>size_id</th>
+            <th>วันที่แก้ไข</th>
+            <th>รายการแก้ไข</th>
+            <th>ค่าใหม่</th>
+            <th>ค่าเดิม</th>
+                                 
+
+              </tr>
+    </thead>
+
+    @foreach ($dreshowhistory as $dsh)
+    @if($getdata->id == $dsh->size_id)
+        <tr>
+            <td>{{ $dsh->size_id }}</td>
+            <td>{{ $dsh->created_at }}</td>
+            <td>{{ $dsh->action }}</td>
+            <td>{{$dsh->new_amount}}</td>
+            <td>{{$dsh->old_amount}}</td>
+        </tr>
+    @endif
+@endforeach
+            </table>
+
+
+
+
+
+
 @endsection

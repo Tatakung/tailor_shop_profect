@@ -1,5 +1,5 @@
 
-        {{-- <style>
+        <style>
             .accessory-details {
                 margin-bottom: 20px;
                 font-size: 15px;
@@ -62,7 +62,7 @@
                 height: 25px; /* ปรับความยาวของ textarea ตามที่ต้องการ */
             }
 
-        </style> --}}
+        </style>
         
         @extends('layouts.admin')
         
@@ -94,6 +94,17 @@
                             <label for="accessory_price" id="price">ราคา:</label>
                             <input type="number" name="accessory_price" value="{{ $editaccessory->accessory_price }}"id="price_input" required>
                             <br>
+
+                            @if(session('overdeposit'))
+                            <div class="alert alert-success">
+                                {{ session('overdeposit') }}
+                            </div>
+                        @endif
+                            <label for="accessory_deposit" id="deposit">ราคามัดจำ:</label>
+                            <input type="number" name="accessory_deposit" value="{{ $editaccessory->accessory_deposit }}"id="price_input" required>
+                            <br>
+
+                            
         
                             <label for="accessory_description" id="des">รายละเอียด:</label>
                             <textarea name="accessory_description" id="accessory_description" rows="4">{{ $editaccessory->accessory_description }}</textarea>

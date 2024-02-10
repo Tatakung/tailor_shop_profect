@@ -38,8 +38,6 @@
             </div>
 
             <div>
-                {{-- <a href="{{ route('accessory.edit', ['id' => $accessory->id]) }}" class="btn btn-custom border rounded p-2 inline-block" id="b">แก้ไข</a> --}}
-                {{-- <a href="{{ route('accessory.editCount', ['id' => $accessory->id]) }}" class="btn btn-custom border rounded p-2 inline-block " id="b1" >เพิ่ม/ลบจำนวนเครื่องประดับ</a> --}}
                 
                 <a href="{{route('admin.editAccessory',['id' => $showdetail->id])}}" class="btn btn-custom border rounded p-2 inline-block" id="b" >แก้ไข</a>
 
@@ -48,6 +46,7 @@
                 <p class="accessory-details" >รายละเอียด :<strong> {{ $showdetail->accessory_description }} </strong></p>
                 <p class="accessory-details" >จำนวน: <strong>{{ $showdetail->accessory_count }} ชิ้น</strong></p>
                 <p class="accessory-details" >ราคา: <strong>{{ $showdetail->accessory_price }} บาท</strong></p>
+                <p class="accessory-details" >ราคามัดจำ: <strong>{{ $showdetail->accessory_deposit }} บาท</strong></p>
             </div>
         </div>
     </div>

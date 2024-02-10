@@ -17,6 +17,7 @@ class Accessory extends Model
         'accessory_code_new',
         'accessory_count',
         'accessory_price',
+        'accessory_deposit',
         'accessory_image',
         'accessory_description',
     ];

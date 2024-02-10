@@ -79,23 +79,23 @@ class DressController extends Controller
         $size->dress_id = $dress_id; // ใช้ dress_id ที่ได้จากข้างบน
 
 
+        //ตรวจหาไซส์ว่ามันซ้ำไหม
         $validatedress = Dress::where('dress_type', $request->input('dress_type'))
                             ->where('dress_code',$request->input('dress_code'))
                             ->value('id');   //null  
                         if($validatedress != null){
                             $validatesize = Size::where('dress_id',$validatedress)
                                                 ->pluck('size_name');
-
                         }
                         else{
                             $validatesize = collect(); //กำหนดเป็ฯค่าว่าง
                         }
-                    
+
         if(!$validatesize->contains($request->input('size_name'))){ //ไซส์ที่กรอก มันอยยู่ในข้อมูลไหม
             $size->size_name = $request->input('size_name');
         }
         else{
-            return redirect()->back()->with('repeatsize','ไซส์มีอยู่แล้วนะ');
+            return redirect()->back()->with('repeatsize','ไซส์มีอยู่แล้วในฐานข้อมูล');
         }
 
         $size->price = $request->input('price');
@@ -189,19 +189,9 @@ class DressController extends Controller
 
     public function editDress($id){
         $getdata = Size::find($id);
-        return view('admin.EditDress',compact('getdata'));
+        $dreshowhistory = Dresssizehistory::all();//ส่งค่าประวัติไปแสดง
+        return view('admin.EditDress',compact('getdata','dreshowhistory'));
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     //อัปเดตข้อมูลการแก้ไขชุดนะ 
@@ -283,7 +273,7 @@ class DressController extends Controller
                 'size_id' => $size->id,
                 'action' => "เพิ่มจำนวนชุด",
                 'old_amount' =>$size->amount,
-                'new_amount' => $request->input('quantity'),
+                'new_amount' => $request->input('quantity') + $size->amount,
             ]);
             $size->amount += $request->input('quantity');
         }
@@ -293,17 +283,15 @@ class DressController extends Controller
             }
             else{
                 Dresssizehistory::create([
-                'size_id' => $size->id,
-                'action' => "ลบจำนวนชุด",
-                'old_amount' =>$size->amount,
-                'new_amount' => $request->input('quantity'),
+                    'size_id' => $size->id,
+                    'action' => "ลบจำนวนชุด",
+                    'old_amount' =>$size->amount,
+                    'new_amount' => $size->amount - $request->input('quantity') ,
                 ]);
                 $size->amount -= $request->input('quantity');
             }
         }
-
         $size->save(); //เซฟด้วยสุดท้าย
-
         return redirect()->back()->with('sizeupdate','แก้ไขสำเร็จแล้วนะ');
     }
 
