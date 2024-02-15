@@ -82,11 +82,48 @@ class AccessoryController extends Controller
     }
 
 
-    //แสดงเครื่องประดับ
-    public function showAccessory(){
-        $accessorytotal = Accessory::all();
-        return view('admin.ShowAccessory',compact('accessorytotal'));
+    // แสดงเครื่องประดับ
+    // public function showAccessory(){
+    //     $accessorytotal = Accessory::all();
+    //     return view('admin.ShowAccessory',compact('accessorytotal'));
+    // }
+
+
+    public function showAccessory(Request $request){
+        $SelectType = Accessory::distinct()->pluck('accessory_name')->toArray();
+        $inputfilter = $request->input('typeFilter');
+
+        //ถ้ามีการกรอง
+        if($inputfilter){
+            $accessorytotal = Accessory::where('accessory_name',$inputfilter)->paginate(10);
+        }
+        else{ //ถ้าไม่มีการกรอกหรือเป็นค่า ""
+            $accessorytotal = Accessory::paginate(10);
+        }
+        return view('admin.ShowAccessory',compact('SelectType','accessorytotal','request'));
     }
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
 
     //แสดงรายละเอียดเครื่องประดับ
     public function detailAccessory($id){
@@ -115,6 +152,10 @@ class AccessoryController extends Controller
         ]);
         $AccessoryUpdate = Accessory::find($id);
     
+          //เช็ครูปภาพ
+          if ($request->hasFile('accessory_image')) {
+            $AccessoryUpdate->accessory_image = $request->file('accessory_image')->store('accessory_images','public');
+        }
 
     //ตรวจสอบการแก้ไขราคานะ
     if($AccessoryUpdate->accessory_price != $request->input('accessory_price')){
@@ -135,7 +176,7 @@ class AccessoryController extends Controller
     //ตรวจสอบการแก้ไขราคามัดจำนะ
     if($AccessoryUpdate->accessory_deposit != $request->input('accessory_deposit')){
         if($request->input('accessory_deposit') > $AccessoryUpdate->accessory_price){  // ราคามัดจำห้ามเกินราคาเต็มเครืาองปรัดัล
-            return redirect()->back()->with('overdeposit',"ราคามัดจำต้องไม่เกินราคาเต็มของเครื่องประดับ ");
+            return redirect()->back()->with('overdeposit',"ราคามัดจำต้องไม่เกินราคาเต็มของเครื่องประดับนะ");
         }
         elseif($request->input('accessory_deposit') <= $AccessoryUpdate->accessory_price){
             if($AccessoryUpdate->accessory_deposit < $request->input('accessory_deposit')){
@@ -187,10 +228,10 @@ class AccessoryController extends Controller
     }
 
 
-        //เช็ครูปภาพ
-        if ($request->hasFile('accessory_image')) {
-            $AccessoryUpdate->accessory_image = $request->file('accessory_image')->store('accessory_images','public');
-        }
+        // //เช็ครูปภาพ
+        // if ($request->hasFile('accessory_image')) {
+        //     $AccessoryUpdate->accessory_image = $request->file('accessory_image')->store('accessory_images','public');
+        // }
 
    
         //บันทึกลงในฐานข้อมูล
@@ -203,5 +244,13 @@ class AccessoryController extends Controller
     
         return redirect()->back()->with('success','อัพเดตเสร็จสิ้น');
     }
+
+
+
+
+
+
+
+
 
 }

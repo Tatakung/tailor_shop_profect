@@ -126,15 +126,19 @@ class RegisterController extends Controller
 
     //แสดงพนักงาน
     public function showEmployee(){
-        $employee = User::all();
+        $employee = User::paginate(10);
         return view('admin.ShowEmployee',compact('employee'));
     }
+
+
+
+
+
     //ดูรายละเอียดพนักงานโดยเข้าถึงโดย id
-    public function EmployeeDetail($id)
-{
-    $employeefind = User::findOrFail($id);
-    return view('admin.EmployeeDetail', compact('employeefind'));
-}
+    public function EmployeeDetail($id){
+        $employeefind = User::findOrFail($id);
+        return view('admin.EmployeeDetail', compact('employeefind'));
+    }
 
 
 

@@ -41,6 +41,24 @@
                     @endif
                     @endforeach
                 </table>
+
+
+
+                <ul class="pagination justify-content-end">
+                    <li class="page-item {{ ($employee->currentPage() == 1) ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $employee->url(1) }}" tabindex="-1" aria-disabled="true">ย้อนกลับ</a>
+                    </li>
+                    @for ($i = 1; $i <= $employee->lastPage(); $i++)
+                        <li class="page-item {{ ($employee->currentPage() == $i) ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $employee->url($i) }}">{{ $i }}</a>
+                        </li>
+                    @endfor
+                    <li class="page-item {{ ($employee->currentPage() == $employee->lastPage()) ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $employee->url($employee->currentPage() + 1) }}">ถัดไป</a>
+                    </li>
+                </ul>
+
+
         </div>
     </div>
 </div>

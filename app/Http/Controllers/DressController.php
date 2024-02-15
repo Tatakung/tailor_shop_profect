@@ -175,11 +175,29 @@ class DressController extends Controller
     
 
     //แสดงชุด
-    public function showDress()
-    {
-        $dresses = Dress::with('sizes')->get();
-        return view('admin.ShowDress', compact('dresses'));
+    // public function showDress()
+    // {
+    //     $dresses = Dress::with('sizes')->get();
+    //     return view('admin.ShowDress', compact('dresses'));
+    // }
+
+
+    public function showDress(Request $request){
+        $selectType = Dress::distinct()->pluck('dress_type')->toArray();
+        $inputfilter = $request->input('typeFilter');
+
+        if($inputfilter){
+            $dresses = Dress::where('dress_type',$inputfilter)->with('sizes')->paginate(10);
+        }
+        else{
+            $dresses = Dress::with('sizes')->paginate(10);
+        }
+        return view('admin.ShowDress',compact('selectType','dresses','request'));
     }
+
+
+
+
     // แสดงรายละเอียดชุด
     public function detailDress($id){
         $getsize = Size::find($id);

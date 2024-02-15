@@ -2,6 +2,22 @@
 @section('content')
 
 <div class="container d-flex justify-content-start">
+
+
+
+    <form id="filterForm" action="{{ route('admin.showDress') }}" method="get" class="mb-0">
+        <label for="typeFilter" class="me-2">ประเภทชุด</label>
+        <select name="typeFilter" id="typeFilter" class="form-select" onchange="this.form.submit()">
+            <option value="">ทั้งหมด</option>
+            @foreach($selectType as $type)
+                <option value="{{$type}}" @if($type === $request->input('typeFilter')) selected @endif >{{$type}}</option>
+            @endforeach
+        </select>
+    </form>
+
+
+
+
     <div class="table-responsive text-start" style="width: 100%;">
         <h2 class="text text-start py-4">ชุดทั้งหมด</h2>
 
@@ -34,8 +50,12 @@
                         </tr>
                         @endforeach
                     @endforeach
-
                 </table>
+
+                
+                                
+                
+
         </div>
     </div>
 </div>
