@@ -51,9 +51,7 @@
                         @endforeach
                     @endforeach
                 </table>
-
-                
-                                
+            
                 
 
         </div>

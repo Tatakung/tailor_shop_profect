@@ -57,7 +57,7 @@
         
                 <ul class="pagination justify-content-end">
                     <li class="page-item {{ ($accessorytotal->currentPage() == 1) ? 'disabled' : '' }}">
-                        <a class="page-link" href="{{ $accessorytotal->url(1) }}" tabindex="-1" aria-disabled="true">Previous</a>
+                        <a class="page-link" href="{{ $accessorytotal->url(1) }}" tabindex="-1" aria-disabled="true">ย้อนหลัง</a>
                     </li>
                     @for ($i = 1; $i <= $accessorytotal->lastPage(); $i++)
                         <li class="page-item {{ ($accessorytotal->currentPage() == $i) ? 'active' : '' }}">
@@ -65,7 +65,7 @@
                         </li>
                     @endfor
                     <li class="page-item {{ ($accessorytotal->currentPage() == $accessorytotal->lastPage()) ? 'disabled' : '' }}">
-                        <a class="page-link" href="{{ $accessorytotal->url($accessorytotal->currentPage() + 1) }}">Next</a>
+                        <a class="page-link" href="{{ $accessorytotal->url($accessorytotal->currentPage() + 1) }}">ถัดไป</a>
                     </li>
                 </ul>
                 

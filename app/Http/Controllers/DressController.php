@@ -187,10 +187,10 @@ class DressController extends Controller
         $inputfilter = $request->input('typeFilter');
 
         if($inputfilter){
-            $dresses = Dress::where('dress_type',$inputfilter)->with('sizes')->paginate(10);
+            $dresses = Dress::where('dress_type',$inputfilter)->with('sizes')->get();
         }
         else{
-            $dresses = Dress::with('sizes')->paginate(10);
+            $dresses = Dress::with('sizes')->get();
         }
         return view('admin.ShowDress',compact('selectType','dresses','request'));
     }
