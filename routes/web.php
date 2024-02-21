@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccessoryController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DressController;
+use App\Http\Controllers\Employee\CreateOrderController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
@@ -112,6 +113,29 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/profile/edit',[ProfileController::class,'EditProfile'])->name('profile.edit');//จัดการโปรไฟล์
     Route::post('/profile/update/{user}', [ProfileController::class, 'update'])->name('profile.update');
+
+
+    Route::get('/createorder',[CreateOrderController::class,'formcreate'])->name('formcreate');//แบบฟอร์มเช่าชุด
+    Route::get('/getdresscode/{dressType}', [CreateOrderController::class, 'getDressCodes']); //ไปดึงรหัสชุด
+    Route::get('/get/sizename/{selecttype}/{selectcode}', [CreateOrderController::class, 'getsizename']); //ไปดึงไซส์มาา
+    Route::get('/get/image/{selecttype}/{selectcode}', [CreateOrderController::class, 'getimage']); //ไปดึงรูปชุดมา
+
+    Route::get('/get/amount/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getamount']); //ดึงจำนวนชุด
+    Route::get('/get/price/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getprice']); //ดึงราคาชุด
+    Route::get('/get/deposit/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getdeposit']); //ดึงราคามัดจำชุด
+
+
+
+
+    Route::post('/order',[CreateOrderController::class,'store'])->name('order.store');
+
+
+
+
+
+
+
+
 });
 
 

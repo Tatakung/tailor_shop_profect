@@ -16,11 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('order_detail_id')->nullable(); //FKorder_detail_id
             $table->date('pickup_date')->nullable();
             $table->date('return_date')->nullable(); 
-
             $table->timestamps();
             $table->softDeletes();
-
-
             $table->foreign('order_detail_id')->references('id')->on('orderdetails')->onDelete('cascade');
 
         });
