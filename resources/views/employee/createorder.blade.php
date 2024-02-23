@@ -5,8 +5,6 @@
         <h2>เพิ่มออเดอร์เช่าชุด</h2>
         <form method="post" action="{{ route('order.store') }}">
             @csrf
-
-
             <div class="form-group">
                 <label for="customer_fname">ชื่อจริงลูกค้า</label>
                 <input type="text"id="customer_fname" name="customer_fname">
@@ -18,10 +16,10 @@
 
             <div class="form-group">
                 <label for="customer_phone">เบอร์ติดต่อ</label>
-                <input type="text"id="customer_phone" name="customer_phone" >
+                <input type="text"id="customer_phone" name="customer_phone">
 
                 <label for="id_line">ID Line</label>
-                <input type="text"id="id_line" name="id_line" >
+                <input type="text"id="id_line" name="id_line">
 
             </div>
 
@@ -45,18 +43,17 @@
             <div class="mb-3">
                 <label for="dress_size" class="form-label">ไซส์</label>
                 <select class="form-control" id="dress_size" name="dress_size">
-
                 </select>
             </div>
 
-            <!--ดึงรหัสชุด -->
+            <!--ดึงรหัสชุด(ถูกต้อง) -->
             <script>
                 var dressType = document.getElementById('dress_type'); //เลือกประเภทชุดเสด
                 dressType.addEventListener('change', function() {
                     fetch('/getdresscode/' + dressType.value)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
+                            // console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
                             var showcode = document.getElementById('dress_code'); //แสดงดรอปดาวรหัสชุด    
 
                             showcode.innerHTML = '<option value="" selected disabled>เลือกรหัสชุด</option>';
@@ -68,7 +65,7 @@
                 });
             </script>
 
-            <!--ดึงไซส์-->
+            <!--ดึงไซส์ (ถูกต้อง)-->
             <script>
                 var selecttype = document.getElementById('dress_type') //เลือกประเภทชุด
                 var selectcode = document.getElementById('dress_code') //เลือกประเภทชุด 
@@ -76,7 +73,7 @@
                     fetch('/get/sizename/' + selecttype.value + '/' + selectcode.value)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
+                            // console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
 
                             var showsizename = document.getElementById('dress_size'); //แสดงดรอปดาวไซส์นะ
                             showsizename.innerHTML = '<option value=""> เลือกไซส์ </option>';
@@ -100,7 +97,7 @@
                     fetch('/get/amount/' + selecttype.value + '/' + selectcode.value + '/' + selectsize.value)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
+                            // console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
                             var showamount = document.getElementById('amountMessage'); //แสดงจำนวนชุดในร้าน
                             // showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + parseInt(data[0]);
                             showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + data[0] + ' ชุด';
@@ -146,31 +143,53 @@
                 **หมายเหตุ -ลูกค้าจะต้องจ่ายมัดจำหรือจ่ายเต็มจำนวนเท่านั้นพนักงานจึงจะสามารถบันทึกการเช่าให้ได้
             </div>
 
+            {{-- จะเอาไว้ส่งค่า id และ dress_id นะ --}}
+            <input type="hidden" name="id_of_size" id="id_of_size" value="">
+            <input type="hidden" name="dress_ID" id="dress_ID" value="">
 
-            <!--ดึงราคาทั้้งหมด/ราคามัดจำ-->
+
             <script>
-                var selecttype = document.getElementById('dress_type') //เลือกประเภทชุด
-                var selectcode = document.getElementById('dress_code') //เลือกรหัสชุด
-                var selectsize = document.getElementById('dress_size') //เเลือกไซส์
-                var showprice = document.getElementById('price') //แสดงราคาชุด
+                var selecttype = document.getElementById('dress_type'); //เลือกประเภทชุด
+                var selectcode = document.getElementById('dress_code'); //เลือกรหัสชุด
+                var selectsize = document.getElementById('dress_size'); //เเลือกไซส์
+                var showprice = document.getElementById('price'); //แสดงราคาชุด
                 var showdeposit = document.getElementById('deposit') //แสดงราคามัดจำ
+                var hiddenidsize = document.getElementById('id_of_size');
+                var hiddendressid = document.getElementById('dress_ID');
+
                 selectsize.addEventListener('change', function() {
-                    fetch('/get/price/' + selecttype.value + '/' + selectcode.value + '/' + selectsize.value)
+                    if (selectsize.value === '') {
+                        return;
+                    }
+                    fetch('/get/pricedeposit/' + selecttype.value + '/' + selectcode.value + '/' + selectsize.value)
                         .then(response => response.json())
                         .then(data => {
                             console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
-                            showprice.value = data[0];
-                        });
-                });
-                selectsize.addEventListener('change', function() {
-                    fetch('/get/deposit/' + selecttype.value + '/' + selectcode.value + '/' + selectsize.value)
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
-                            showdeposit.value = data[0];
+                            // showprice.value = data[0];
+                            showprice.value = data.price;
+                            showdeposit.value = data.deposit;
+
+                            hiddenidsize.value = data.id;
+                            hiddendressid.value = data.dress_id;
                         });
                 });
             </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <div class="form-group">
                 <label for="damage_insurance">ประกันค่าเสียหาย</label>
@@ -253,7 +272,7 @@
             <div class="form-group">
                 <label>ประเภท:</label><br>
                 <input type="radio" name="type_order" value="1" disabled> ตัดชุด
-                <input type="radio" name="type_order" value="2" checked disabled> เช่าชุด
+                <input type="radio" name="type_order" value="2" checked readonly> เช่าชุด
                 <input type="radio" name="type_order" value="3" disabled> เช่าเครื่องประดับ
                 <input type="radio" name="type_order" value="4" disabled> เช่าตัด
             </div>
@@ -263,20 +282,48 @@
                 <input type="radio" name="status_payment" value="1" checked> จ่ายมัดจำ
                 <input type="radio" name="status_payment" value="2"> จ่ายเต็มจำนวน
             </div>
-
             <div class="form-group">
                 <label>โน๊ต/หมายเหตุ:</label><br>
                 <textarea class="form-control" id="note" name="note"></textarea>
-
             </div>
 
 
-            <!-- เพิ่มปุ่ม "เพิ่มปักดอกไม้" -->
+            <div class="form-group">
+                <label for="fitting_date">นัดลองชุด:</label>
+                <input type="date" name="fitting_date" id="fitting_date">
+            </div>
+            <div class="form-group">
+                <label for="fitting_note">บันทึก:</label><br>
+                <textarea class="form-control" id="fitting_note" name="fitting_note"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="fitting_price">ราคา:</label>
+                <input type="number" name="fitting_price" id="fitting_price">
+            </div>
+
+
+
+
+
             <button type="button" id="addDecorationButton" class="btn btn-success">+เพิ่มปักดอกไม้</button>
+
+            <button type="button" id="addimagerent" class="btn btn-success">+เพิ่มรูปภาพ</button>
+
+            <button type="button" id="addfitting" class="btn btn-success">+เพิ่มวันนัดลองชุด</button>
+
 
             <!-- ส่วนที่จะเพิ่มช่องกรอกข้อมูลปักดอกไม้ -->
             <div id="additionalDecorations">
                 <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
+            </div>
+
+            <div id="areaimage">
+                {{-- พื้นที่สำหรับแสดงสำหรับเพิ่มรูปชุดนะ --}}
+            </div>
+
+            <div id="areafitting">
+                {{-- พื้นที่สำหรับเพิ่มวันที่นัดลองชุดนะ --}}
             </div>
 
 
@@ -288,36 +335,124 @@
                 add.addEventListener('click', function() {
                     counter++;
                     var creatediv = document.createElement('div'); //สร้างdiv มาขึ้นมาใหม่
-                    creatediv.id = 'decoration' + counter;  // กำหนด id ให้มัน
-                    var inputs = 
-                    '<div class="form-group">' +
+                    creatediv.id = 'decoration' + counter; // กำหนด id ให้มัน
+                    var inputs =
+                        '<div class="form-group">' +
                         ' <label for="decoration_type ' + counter + '">ประเภทปักดอกไม้</label> ' +
-                        ' <input type="text" name="decoration_type [' + counter + '] " id="decoration_type ' + counter + ' "> ' +
-                    '</div>' +
+                        ' <input type="text" name="decoration_type_[' + counter + '] " id="decoration_type ' + counter +
+                        ' "> ' +
+                        '</div>' +
 
-                    ' <div class="form-group"> ' +
+                        ' <div class="form-group"> ' +
                         ' <label for="decoration_type_description ' + counter + ' ">รายละเอียดปักดอกไม้</label> ' +
-                        ' <input type="text" name="decoration_type_description [' + counter + '] " id="decoration_type_description ' + counter + ' ">' +
-                    '</div>' + 
-// 
-                    '<div class="form-group">' + 
+                        ' <input type="text" name="decoration_type_description_[' + counter +
+                        '] " id="decoration_type_description ' + counter + ' ">' +
+                        '</div>' +
+                        // 
+                        '<div class="form-group">' +
                         ' <label for="decoration_price ' + counter + ' ">ราคาปักดอกไม้</label> ' +
-                        ' <input type="number" name="decoration_price [' + counter + '] " id="decoration_price ' + counter + ' "> ' +
-                    '</div>' +
+                        ' <input type="number" name="decoration_price_[' + counter + '] " id="decoration_price ' + counter +
+                        ' "> ' +
+                        '</div>' +
 
-                    '<button type="button" class="btn btn-danger" onclick="removeDecoration(' + counter +' )">ลบปักดอกไม้</button> '  
-                    ;
+                        '<button type="button" class="btn btn-danger" onclick="removeDecoration(' + counter +
+                        ' )">ลบปักดอกไม้</button> ';
 
-                    creatediv.innerHTML = inputs ; // เอา ก้อนinputs ไปต่อในdiv ของ creatediv
-                    ariashow.appendChild(creatediv); //เอาก้อนcreatediv ไปแทรกข้างในdiv ที่สร้างไว้ <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
+                    creatediv.innerHTML = inputs; // เอา ก้อนinputs ไปต่อในdiv ของ creatediv
+                    ariashow.appendChild(
+                        creatediv
+                    ); //เอาก้อนcreatediv ไปแทรกข้างในdiv ที่สร้างไว้ <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
                 });
 
-                function removeDecoration(index){
+                function removeDecoration(index) {
                     var deletetodiv = document.getElementById('decoration' + index); //ลบตาม เลข div id 
                     deletetodiv.remove();
                 }
-
             </script>
+
+
+            <script>
+                var addimage = document.getElementById('addimagerent') //คลิ๊กเพิ่มรูปภาพนะ
+                var areaimage = document.getElementById('areaimage') //ะื้นที่แสดงเพิ่มณูปภาพ
+                var count = 0;
+                addimage.addEventListener('click', function() {
+                    count++;
+                    var createdivnew = document.createElement('div'); //สร้าง div
+                    createdivnew.id = 'imagerent' + count; //กำหนดid 
+
+                    input =
+                        '<div class="form-group"> ' +
+                        count + '. ' +
+                        '<label for="imagerent + ' + count + ' ">เพิ่มรูปภาพชุด(ก่อนเช่า)</label>' +
+                        ' <input type="file" class="form-control" name="imagerent_[' + count + '] " id="imagerent ' +
+                        count + ' "> ' +
+                        '</div> ' +
+
+
+                        '<button type="button" class="btn btn-danger" onclick="removeimage(' + count +
+                        ' )">ลบปักดอกไม้</button> ';
+
+                    createdivnew.innerHTML = input;
+
+                    areaimage.appendChild(createdivnew);
+                });
+
+                function removeimage(index) {
+                    var deleteid = document.getElementById('imagerent' + index);
+                    deleteid.remove();
+                }
+            </script>
+
+
+            <script>
+                var addfitting = document.getElementById('addfitting'); //เพิ่มวันที่นัดลองชุด
+                var areafitting = document.getElementById('areafitting') //พื้นที่สำหรับแสดงเพิ่มวันที่นัดชุด
+                var count = 0;
+
+                addfitting.addEventListener('click', function() {
+                    count++;
+                    var creatediv = document.createElement('div')
+                    creatediv.id = "fitting" + count;
+                    input =
+
+                        '<div class="form-group">' +
+                        '<label for="fitting_date ' + count + ' " >นัดลองชุด:</label>' +
+                        '<input type="date" name="fitting_date [' + count + '] " id="fitting_date ' + count + ' ">' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                        '<label for="fitting_note ' + count + ' ">บันทึก:</label><br>' +
+                        '<textarea class="form-control" name="fitting_note [' + count + '] " id="fitting_note ' + count +
+                        ' "></textarea>' +
+                        '</div>' +
+
+                        '<div class="form-group">' +
+                        '<label for="fitting_price ' + count + ' " >ราคา:</label>' +
+                        '<input type="number" name="fitting_price [' + count + '] " id="fitting_price ' + count + ' ">' +
+                        '</div>' +
+
+                        '<button type="button" class="btn btn-danger" onclick="removefitting(' + count +
+                        ' )">ลบปักดอกไม้</button> ';
+                    creatediv.innerHTML = input;
+
+                    areafitting.appendChild(creatediv);
+
+                });
+                function removefitting(index){
+                    var deleteid = document.getElementById('fitting' + index);
+                    deleteid.remove();
+                }
+            </script>
+
+
+
+
+
+
+
+
+
+
+
 
             <br>
 

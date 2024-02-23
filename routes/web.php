@@ -121,8 +121,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/get/image/{selecttype}/{selectcode}', [CreateOrderController::class, 'getimage']); //ไปดึงรูปชุดมา
 
     Route::get('/get/amount/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getamount']); //ดึงจำนวนชุด
-    Route::get('/get/price/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getprice']); //ดึงราคาชุด
-    Route::get('/get/deposit/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getdeposit']); //ดึงราคามัดจำชุด
+    Route::get('/get/pricedeposit/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getprice']);
+
 
 
 

@@ -38,8 +38,9 @@ class Orderdetail extends Model
     ];
 
     //ตารางorderdetail เป็น M - 1 ของตาราง order
-    public function order(){
-        return $this->belongsTo(Order::class,'order_id');
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
     }
 
     //ตาราง orderdetail เป็น 1 - M ของตาราง decoration
@@ -49,37 +50,41 @@ class Orderdetail extends Model
     }
 
 
-        //ตาราง orderdetail เป็น 1 - M ของตาราง cost
-        public function costs()
-        {
-            return $this->hasMany(Cost::class, 'order_detail_id');
-        }
-    
-        //ตาราง orderdetail เป็น 1 - M ของตาราง date
-        public function dates()
-        {
-            return $this->hasMany(Date::class, 'order_detail_id');
-        }
-        
-        
-        //ตาราง orderdetail เป็น 1 - M ของตาราง payment
-        public function paymentstatuses(){
-            return $this->hasMany(Paymentstatus::class, 'order_detail_id');
-        }
+    //ตาราง orderdetail เป็น 1 - M ของตาราง cost
+    public function costs()
+    {
+        return $this->hasMany(Cost::class, 'order_detail_id');
+    }
 
-        //ตาราง orderdetail เป็น 1 - M ของตาราง orderdetailstatuses
-        public function orderdetailstatuses(){
-            return $this->hasMany(Orderdetailstatus::class, 'order_detail_id');
-        }
-
-        //ตาราง orderdetail เป็น 1 - M ของตาราง imagerent
-        public function imagerent(){
-            return $this->hasMany(imagerent::class, 'order_detail_id');
-        }
-        
-
-        
+    //ตาราง orderdetail เป็น 1 - M ของตาราง date
+    public function dates()
+    {
+        return $this->hasMany(Date::class, 'order_detail_id');
+    }
 
 
+    //ตาราง orderdetail เป็น 1 - M ของตาราง payment
+    public function paymentstatuses()
+    {
+        return $this->hasMany(Paymentstatus::class, 'order_detail_id');
+    }
 
+    //ตาราง orderdetail เป็น 1 - M ของตาราง orderdetailstatuses
+    public function orderdetailstatuses()
+    {
+        return $this->hasMany(Orderdetailstatus::class, 'order_detail_id');
+    }
+
+    //ตาราง orderdetail เป็น 1 - M ของตาราง imagerent
+    public function imagerent()
+    {
+        return $this->hasMany(imagerent::class, 'order_detail_id');
+    }
+
+
+    //ตาราง orderdetail เป็น 1 - M ของตาราง fitting
+    public function fitting()
+    {
+        return $this->hasMany(Fitting::class, 'order_detail_id');
+    }
 }
