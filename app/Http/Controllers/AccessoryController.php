@@ -104,26 +104,6 @@ class AccessoryController extends Controller
     }
 
 
-    
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
 
     //แสดงรายละเอียดเครื่องประดับ
     public function detailAccessory($id){

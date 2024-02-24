@@ -87,26 +87,13 @@
             </script>
 
 
-            <!--ดึงจำนวนชุด-->
-            <script>
-                var selecttype = document.getElementById('dress_type'); //เลือกประเภทชุด
-                var selectcode = document.getElementById('dress_code'); //เลือกรหัสชุด
-                var selectsize = document.getElementById('dress_size'); //เลือกไซส์
-
-                selectsize.addEventListener('change', function() {
-                    fetch('/get/amount/' + selecttype.value + '/' + selectcode.value + '/' + selectsize.value)
-                        .then(response => response.json())
-                        .then(data => {
-                            // console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
-                            var showamount = document.getElementById('amountMessage'); //แสดงจำนวนชุดในร้าน
-                            // showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + parseInt(data[0]);
-                            showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + data[0] + ' ชุด';
-                        });
-                });
-            </script>
 
             <p id="amountMessage" style="color: rgb(0, 76, 255)">จำนวนชุดที่มีในร้าน: (กรุณาเลือกชุด)</p>
-
+            @if(session('Overamount'))
+            <div class="alert alert-success">
+                {{ session('Overamount') }}
+            </div>
+            @endif
 
             <div class="form-group">
                 <label for="amount">จำนวนชุดที่ลูกค้าต้องการเช่า</label>
@@ -151,44 +138,40 @@
             <script>
                 var selecttype = document.getElementById('dress_type'); //เลือกประเภทชุด
                 var selectcode = document.getElementById('dress_code'); //เลือกรหัสชุด
-                var selectsize = document.getElementById('dress_size'); //เเลือกไซส์
+                var Size = document.getElementById('dress_size'); //เเลือกไซส์
                 var showprice = document.getElementById('price'); //แสดงราคาชุด
                 var showdeposit = document.getElementById('deposit') //แสดงราคามัดจำ
                 var hiddenidsize = document.getElementById('id_of_size');
                 var hiddendressid = document.getElementById('dress_ID');
+                var showamount = document.getElementById('amountMessage'); //แสดงจำนวนชุดในร้าน
 
-                selectsize.addEventListener('change', function() {
-                    if (selectsize.value === '') {
+                Size.addEventListener('change', function() {
+                    if (Size.value === '') {
                         return;
                     }
-                    fetch('/get/pricedeposit/' + selecttype.value + '/' + selectcode.value + '/' + selectsize.value)
+                    console.log('ประเภทชุด:', selecttype.value); // Debug
+                    console.log('รหัสชุด', selectcode.value);
+                    console.log('ไซส์', Size.value)
+                    fetch('/get/pricedeposit/' + selecttype.value + '/' + selectcode.value + '/' + Size.value)
                         .then(response => response.json())
                         .then(data => {
                             console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
                             // showprice.value = data[0];
+                            // showprice.value = data.price;
+                            // showdeposit.value = data.deposit;
+
                             showprice.value = data.price;
                             showdeposit.value = data.deposit;
-
+                            showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + data.amount + ' ชุด';
                             hiddenidsize.value = data.id;
                             hiddendressid.value = data.dress_id;
+
+
+
+
                         });
                 });
             </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             <div class="form-group">
@@ -217,6 +200,9 @@
                     // นำรูปแบบวันที่ไปแสดงใน input
                     document.getElementById('transactionDate').value = formattedDate;
                 </script>
+
+
+
 
 
 
@@ -321,21 +307,21 @@
                     creatediv.id = 'decoration' + counter; // กำหนด id ให้มัน
                     var inputs =
                         '<div class="form-group">' +
-                            counter + ' . ' + 
+                        counter + ' . ' +
                         ' <label for="decoration_type ' + counter + '">ประเภทปักดอกไม้</label> ' +
                         ' <input type="text" name="decoration_type_[' + counter + '] " id="decoration_type ' + counter +
                         ' "> ' +
                         '</div>' +
 
                         ' <div class="form-group"> ' +
-                            counter + ' . ' +
+                        counter + ' . ' +
                         ' <label for="decoration_type_description ' + counter + ' ">รายละเอียดปักดอกไม้</label> ' +
                         ' <input type="text" name="decoration_type_description_[' + counter +
                         '] " id="decoration_type_description ' + counter + ' ">' +
                         '</div>' +
                         // 
                         '<div class="form-group">' +
-                            counter + ' . ' + 
+                        counter + ' . ' +
                         ' <label for="decoration_price ' + counter + ' ">ราคาปักดอกไม้</label> ' +
                         ' <input type="number" name="decoration_price_[' + counter + '] " id="decoration_price ' + counter +
                         ' "> ' +
@@ -362,19 +348,19 @@
 
             <script>
                 var addimage = document.getElementById('addimagerent');
-                
+
                 var areaimage = document.getElementById('areaimage');
-                
+
                 var count = 0;
 
-                addimage.addEventListener('click',function(){
+                addimage.addEventListener('click', function() {
                     count++;
                     var creatediv = document.createElement('div');
-                    creatediv.id = 'imagerent' + count ; 
+                    creatediv.id = 'imagerent' + count;
 
 
                     var label = document.createElement('label');
-                    label.htmlFor = 'imagerent' + count ; 
+                    label.htmlFor = 'imagerent' + count;
                     label.innerHTML = 'เพิ่มจำนวนรูปชุด'
 
                     var input = document.createElement('input');
@@ -386,7 +372,7 @@
                     var button = document.createElement('button');
                     button.type = 'button';
                     button.className = 'btn btn-danger';
-                    button.onclick = function(){
+                    button.onclick = function() {
                         removeimage(count);
                     }
                     button.innerHTML = "ลบออก";
@@ -400,12 +386,11 @@
 
 
                 });
-                function removeimage(index){
-                    var deleteID = document.getElementById('imagerent' + index ) ;
-                    deleteID.remove();  
+
+                function removeimage(index) {
+                    var deleteID = document.getElementById('imagerent' + index);
+                    deleteID.remove();
                 }
-                
-            
             </script>
 
 
@@ -430,7 +415,7 @@
                     input =
 
                         '<div class="form-group">' +
-                            count + ' . ' + 
+                        count + ' . ' +
                         '<label for="fitting_date ' + count + ' " >วันนัดลองชุด:</label>' +
                         '<input type="date" name="fitting_date_[' + count + '] " id="fitting_date ' + count + ' ">' +
                         '</div>' +
@@ -454,7 +439,8 @@
                     areafitting.appendChild(creatediv);
 
                 });
-                function removefitting(index){
+
+                function removefitting(index) {
                     var deleteid = document.getElementById('fitting' + index);
                     deleteid.remove();
                 }

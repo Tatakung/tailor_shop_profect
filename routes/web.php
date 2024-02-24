@@ -119,8 +119,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/getdresscode/{dressType}', [CreateOrderController::class, 'getDressCodes']); //ไปดึงรหัสชุด
     Route::get('/get/sizename/{selecttype}/{selectcode}', [CreateOrderController::class, 'getsizename']); //ไปดึงไซส์มาา
     Route::get('/get/image/{selecttype}/{selectcode}', [CreateOrderController::class, 'getimage']); //ไปดึงรูปชุดมา
-
-    Route::get('/get/amount/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getamount']); //ดึงจำนวนชุด
     Route::get('/get/pricedeposit/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getprice']);
 
 

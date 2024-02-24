@@ -16,6 +16,7 @@ use App\Models\Paymentstatus;
 use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CreateOrderController extends Controller
 {
@@ -55,69 +56,18 @@ class CreateOrderController extends Controller
         return response()->json(['getimage' => $getimage]);
     }
 
-    //ดึงจำนวนชุดหลังจากที่มีการเลือกไซส์
-    public function getamount($selecttype, $selectcode, $selectsize)
-    {
+
+    public function getprice($selecttype, $selectcode, $selectsize){
+        $selectsize = trim($selectsize);
         $dressID = Dress::where('dress_type', $selecttype)
-            ->where('dress_code', $selectcode)
-            ->value('id');
-        $sizeID = Size::where('dress_id', $dressID)
-            ->value('id');
-        $getamount = Size::where('id', $sizeID)
-            ->pluck('amount');
-        return response()->json($getamount);
+                ->where('dress_code',$selectcode)
+                ->pluck('id');
+        $get = Size::where('dress_id',$dressID)
+                    ->where('size_name',$selectsize)
+                    ->select('id','dress_id','price','deposit','amount')
+                    ->first();
+        return response()->json(['price' => $get->price , 'deposit' => $get->deposit , 'dress_id' => $get->dress_id , 'id' => $get->id , 'amount' => $get->amount]);
     }
-
-    //ดึงราคา/มัดจำ
-    // public function getprice($selecttype, $selectcode, $selectsize)
-    // {
-    //     $dressID = Dress::where('dress_type', $selecttype)
-    //         ->where('dress_code', $selectcode)
-    //         ->pluck('id');
-    //     $sizeID = Size::where('dress_id', $dressID)
-    //         ->where('size_name', $selectsize)
-    //         ->pluck('id');
-    //     $getprice = Size::where('id', $sizeID)
-    //         ->select('price', 'id', 'dress_id', 'deposit')
-    //         ->first();
-    //     return response()->json($dressID);
-    // }
-
-
-    //ดึงราคา/มัดจำ
-    public function getprice($selecttype, $selectcode, $selectsize)
-    {
-        $dressID = Dress::where('dress_type', $selecttype)
-            ->where('dress_code', $selectcode)
-            ->value('id');   //16
-        $sizeID = Size::where('dress_id', $dressID)
-            ->pluck('id');
-
-        $getprice = Size::where('id', $dressID)
-            ->select('price', 'id', 'dress_id', 'deposit')
-            ->first();
-        return response()->json(['price' => $getprice->price, 'id' => $getprice->id, 'dress_id' => $getprice->dress_id, 'deposit' => $getprice->deposit]);
-    }
-
-
-    // public function getprice($selecttype, $selectcode, $selectsize)
-    // {
-    //     $dressID = Dress::where('dress_type', $selecttype)
-    //         ->where('dress_code', $selectcode)
-    //         ->value('id');   //16
-    //     $sizeID = Size::where('dress_id', $dressID)
-    //         ->where('size_name',$selectsize)
-    //         ->pluck('id');
-
-    //     $getprice = Size::where('id', $sizeID)
-    //         ->select('price', 'id', 'dress_id', 'deposit')
-    //         ->first();
-    //     return response()->json(['price' => $getprice->price, 'id' => $getprice->id, 'dress_id' => $getprice->dress_id, 'deposit' => $getprice->deposit]);
-    // }
-
-
-
-
 
 
 
@@ -153,12 +103,24 @@ class CreateOrderController extends Controller
         //รายละเอียดออเดอร์
         $orderdetail = new Orderdetail;
         $orderdetail->dress_id = $request->input('dress_ID');
-        $orderdetail->size_id = $request->input('id_of_size');
+        $orderdetail->size_id = $request->input('id_of_size'); //id 30
         $orderdetail->order_id = $order->id;
         $orderdetail->employee_id = Auth::user()->id;
         $orderdetail->late_charge = $request->input('late_charge');
         $orderdetail->type_dress = $request->input('dress_type');
         $orderdetail->type_order = $request->input('type_order');
+
+
+        $reduce = Size::find($request->input('id_of_size')); //30
+        if($request->input('amount') <= $reduce->amount){
+            $reduce->amount = $reduce->amount - $request->input('amount');
+            $reduce->save();
+        }
+        else{
+            return redirect()->back()->with('Overamount',"ไม่สามารถเช่าชุดเกินจำนวนที่มี");
+            
+        }
+
         $orderdetail->amount = $request->input('amount');
         $orderdetail->price = $request->input('price');
         $orderdetail->deposit = $request->input('deposit');
@@ -172,6 +134,21 @@ class CreateOrderController extends Controller
         // $orderdetail->total_decoration_price = $request->input('total_decoration_price');
         // $orderdetail->total_fitting_price = $request->input('total_fitting_price');
         $orderdetail->save();
+
+
+        // $reduce = Size::find($orderdetail->id);
+        
+        // if($request->input('amount') < $reduce->amount){
+        //     // $reduce->amount -= $request->input('amount');
+        //     $reduce->amount = $reduce->amount - $request->input('amount');
+        // }
+
+
+
+
+
+
+
 
 
         //วันที่
