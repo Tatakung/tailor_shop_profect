@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <h2>เพิ่มออเดอร์เช่าชุด</h2>
-        <form method="post" action="{{ route('order.store') }}">
+        <form method="post" action="{{ route('order.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label for="customer_fname">ชื่อจริงลูกค้า</label>
@@ -288,23 +288,6 @@
             </div>
 
 
-            <div class="form-group">
-                <label for="fitting_date">นัดลองชุด:</label>
-                <input type="date" name="fitting_date" id="fitting_date">
-            </div>
-            <div class="form-group">
-                <label for="fitting_note">บันทึก:</label><br>
-                <textarea class="form-control" id="fitting_note" name="fitting_note"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="fitting_price">ราคา:</label>
-                <input type="number" name="fitting_price" id="fitting_price">
-            </div>
-
-
-
-
 
             <button type="button" id="addDecorationButton" class="btn btn-success">+เพิ่มปักดอกไม้</button>
 
@@ -338,18 +321,21 @@
                     creatediv.id = 'decoration' + counter; // กำหนด id ให้มัน
                     var inputs =
                         '<div class="form-group">' +
+                            counter + ' . ' + 
                         ' <label for="decoration_type ' + counter + '">ประเภทปักดอกไม้</label> ' +
                         ' <input type="text" name="decoration_type_[' + counter + '] " id="decoration_type ' + counter +
                         ' "> ' +
                         '</div>' +
 
                         ' <div class="form-group"> ' +
+                            counter + ' . ' +
                         ' <label for="decoration_type_description ' + counter + ' ">รายละเอียดปักดอกไม้</label> ' +
                         ' <input type="text" name="decoration_type_description_[' + counter +
                         '] " id="decoration_type_description ' + counter + ' ">' +
                         '</div>' +
                         // 
                         '<div class="form-group">' +
+                            counter + ' . ' + 
                         ' <label for="decoration_price ' + counter + ' ">ราคาปักดอกไม้</label> ' +
                         ' <input type="number" name="decoration_price_[' + counter + '] " id="decoration_price ' + counter +
                         ' "> ' +
@@ -371,37 +357,65 @@
             </script>
 
 
+
+
+
             <script>
-                var addimage = document.getElementById('addimagerent') //คลิ๊กเพิ่มรูปภาพนะ
-                var areaimage = document.getElementById('areaimage') //ะื้นที่แสดงเพิ่มณูปภาพ
+                var addimage = document.getElementById('addimagerent');
+                
+                var areaimage = document.getElementById('areaimage');
+                
                 var count = 0;
-                addimage.addEventListener('click', function() {
+
+                addimage.addEventListener('click',function(){
                     count++;
-                    var createdivnew = document.createElement('div'); //สร้าง div
-                    createdivnew.id = 'imagerent' + count; //กำหนดid 
-
-                    input =
-                        '<div class="form-group"> ' +
-                        count + '. ' +
-                        '<label for="imagerent + ' + count + ' ">เพิ่มรูปภาพชุด(ก่อนเช่า)</label>' +
-                        ' <input type="file" class="form-control" name="imagerent_[' + count + '] " id="imagerent ' +
-                        count + ' "> ' +
-                        '</div> ' +
+                    var creatediv = document.createElement('div');
+                    creatediv.id = 'imagerent' + count ; 
 
 
-                        '<button type="button" class="btn btn-danger" onclick="removeimage(' + count +
-                        ' )">ลบปักดอกไม้</button> ';
+                    var label = document.createElement('label');
+                    label.htmlFor = 'imagerent' + count ; 
+                    label.innerHTML = 'เพิ่มจำนวนรูปชุด'
 
-                    createdivnew.innerHTML = input;
+                    var input = document.createElement('input');
+                    input.type = 'file';
+                    input.className = 'form-control';
+                    input.name = 'imagerent_[' + count + ']';
+                    input.id = 'imagerent' + count;
 
-                    areaimage.appendChild(createdivnew);
+                    var button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'btn btn-danger';
+                    button.onclick = function(){
+                        removeimage(count);
+                    }
+                    button.innerHTML = "ลบออก";
+
+
+                    creatediv.appendChild(label);
+                    creatediv.appendChild(input);
+                    creatediv.appendChild(button);
+
+                    areaimage.appendChild(creatediv);
+
+
                 });
-
-                function removeimage(index) {
-                    var deleteid = document.getElementById('imagerent' + index);
-                    deleteid.remove();
+                function removeimage(index){
+                    var deleteID = document.getElementById('imagerent' + index ) ;
+                    deleteID.remove();  
                 }
+                
+            
             </script>
+
+
+
+
+
+
+
+
+
 
 
             <script>
@@ -416,18 +430,21 @@
                     input =
 
                         '<div class="form-group">' +
-                        '<label for="fitting_date ' + count + ' " >นัดลองชุด:</label>' +
-                        '<input type="date" name="fitting_date [' + count + '] " id="fitting_date ' + count + ' ">' +
+                            count + ' . ' + 
+                        '<label for="fitting_date ' + count + ' " >วันนัดลองชุด:</label>' +
+                        '<input type="date" name="fitting_date_[' + count + '] " id="fitting_date ' + count + ' ">' +
                         '</div>' +
+
+
                         '<div class="form-group">' +
                         '<label for="fitting_note ' + count + ' ">บันทึก:</label><br>' +
-                        '<textarea class="form-control" name="fitting_note [' + count + '] " id="fitting_note ' + count +
+                        '<textarea class="form-control" name="fitting_note_[' + count + '] " id="fitting_note ' + count +
                         ' "></textarea>' +
                         '</div>' +
 
                         '<div class="form-group">' +
                         '<label for="fitting_price ' + count + ' " >ราคา:</label>' +
-                        '<input type="number" name="fitting_price [' + count + '] " id="fitting_price ' + count + ' ">' +
+                        '<input type="number" name="fitting_price_[' + count + '] " id="fitting_price ' + count + ' ">' +
                         '</div>' +
 
                         '<button type="button" class="btn btn-danger" onclick="removefitting(' + count +

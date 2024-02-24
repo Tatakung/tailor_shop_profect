@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Date;
 use App\Models\Decoration;
 use App\Models\Dress;
+use App\Models\Fitting;
 use App\Models\imagerent;
 use App\Models\Order;
 use App\Models\Orderdetail;
@@ -210,33 +211,42 @@ class CreateOrderController extends Controller
             }
         }
 
+
+
         if ($request->hasFile('imagerent_')) {
-            $imgrent = $request->input('imagerent_');
-            dd($imgrent); // เพิ่ม dd() เพื่อดูค่า $imgrent
-            foreach ($imgrent as $index => $img) {
-                $imagerent = new imagerent;
-                $imagerent->order_detail_id = $orderdetail->id;
-                $imagerent->image = $img->store('imagerent_images', 'public');
-                $imagerent->save();
+            $images = $request->file('imagerent_');
+            foreach ($images as $index => $image) {
+                // ตรวจสอบว่าไฟล์ถูกส่งมา
+                    $additionalImage = new imagerent;
+                    $additionalImage->order_detail_id = $orderdetail->id;
+                    $additionalImage->image = $image->store('imagerent_images', 'public');
+                    $additionalImage->save();
             }
         }
+        
 
 
-        // ตรวจสอบว่ามีรูปภาพ (เพิ่มเติม) ส่งมา
-        // dd($request->hasFile('imagerent_')) ; 
-        // if ($request->hasFile('imagerent_')) {
-
-        //     // ดึงข้อมูลรูปภาพ (เพิ่มเติม)
-        //     $images = $request->file('imagerent_');
-
-        //     // วนลูปเพื่อบันทึกข้อมูลรูปภาพแต่ละรายการ
-        //     foreach ($images as $index => $image) {
-        //         $additionalImage = new imagerent;
-        //         $additionalImage->order_detail_id = $orderdetail->id; // กำหนด ID ของรายละเอียดการสั่งซื้อ
-        //         $additionalImage->image = $image->store('imagerent_images', 'public'); // บันทึกไฟล์รูปภาพและเก็บชื่อไฟล์
-        //         $additionalImage->save(); // บันทึกข้อมูลลงฐานข้อมูล
-        //     }
-        // }
+        if($request->has('fitting_date_')){
+            $fittingdate = $request->input('fitting_date_');
+            $fittingNote = $request->input('fitting_note_');
+            $fittingPrice = $request->input('fitting_price_');
+            foreach($fittingdate as $index => $fittingdate){
+                $request->validate([
+                    'imagerent_' . $index => 'file|mimes:jpeg,png,jpg|max:2048',
+                ],[
+                    'imagerent_' .$index . '.file' => "รูปภาพต้องเป็ฯไฟล์",
+                    'imagerent_' .$index . 'mimes' => "รูปภาพต้องเป็นไฟล์ประเภท jpeg, png, jpg'",
+                    'imagerent_' .$index . 'max' => "ขนาดไฟล์รูปภาพต้องไม่เกิน 2 MB",
+                ]);
+                $fitting = new Fitting; 
+                $fitting->order_detail_id = $orderdetail->id;
+                $fitting->fitting_date = $fittingdate;
+                $fitting->fitting_note = $fittingNote[$index];
+                $fitting->fitting_price = $fittingPrice[$index];
+                $fitting->fitting_status = "ยังไม่ลองชุด";
+                $fitting->save();
+            }
+        }
 
 
 
