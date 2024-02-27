@@ -14,8 +14,10 @@ use App\Models\Orderdetail;
 use App\Models\Orderdetailstatus;
 use App\Models\Paymentstatus;
 use App\Models\Size;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CreateOrderController extends Controller
@@ -43,6 +45,7 @@ class CreateOrderController extends Controller
             ->where('dress_code', $selectcode)
             ->pluck('id');
         $sizename = Size::where('dress_id', $dressID)
+            ->where('amount', '>=', 1)
             ->pluck('size_name');
         return response()->json($sizename);
     }
@@ -57,16 +60,17 @@ class CreateOrderController extends Controller
     }
 
 
-    public function getprice($selecttype, $selectcode, $selectsize){
+    public function getprice($selecttype, $selectcode, $selectsize)
+    {
         $selectsize = trim($selectsize);
         $dressID = Dress::where('dress_type', $selecttype)
-                ->where('dress_code',$selectcode)
-                ->pluck('id');
-        $get = Size::where('dress_id',$dressID)
-                    ->where('size_name',$selectsize)
-                    ->select('id','dress_id','price','deposit','amount')
-                    ->first();
-        return response()->json(['price' => $get->price , 'deposit' => $get->deposit , 'dress_id' => $get->dress_id , 'id' => $get->id , 'amount' => $get->amount]);
+            ->where('dress_code', $selectcode)
+            ->pluck('id');
+        $get = Size::where('dress_id', $dressID)
+            ->where('size_name', $selectsize)
+            ->select('id', 'dress_id', 'price', 'deposit', 'amount')
+            ->first();
+        return response()->json(['price' => $get->price, 'deposit' => $get->deposit, 'dress_id' => $get->dress_id, 'id' => $get->id, 'amount' => $get->amount]);
     }
 
 
@@ -81,157 +85,214 @@ class CreateOrderController extends Controller
             'deposit' => 'required|numeric',
             'price' => 'required|numeric',
         ]);
-        $customer = Customer::updateOrCreate(
-            [
-                'customer_fname' => $request->input('customer_fname'),
-                'customer_lname' => $request->input('customer_lname'),
-            ],
-            [
-                'customer_phone' => $request->input('customer_phone'),
-                'id_line' => $request->input('id_line'),
-            ]
-        );
 
-        //ออเดอรใหญ่/บิลล
-        $order = new Order;
-        $order->user_id = Auth::user()->id;
-        $order->customer_id = $customer->id;
-        $order->total_price = $request->input('price');
-        $order->total_deposit = $request->input('deposit');
-        $order->save();
+        try {
+            // เริ่มการทำงานของ transaction
+            DB::beginTransaction();
 
-        //รายละเอียดออเดอร์
-        $orderdetail = new Orderdetail;
-        $orderdetail->dress_id = $request->input('dress_ID');
-        $orderdetail->size_id = $request->input('id_of_size'); //id 30
-        $orderdetail->order_id = $order->id;
-        $orderdetail->employee_id = Auth::user()->id;
-        $orderdetail->late_charge = $request->input('late_charge');
-        $orderdetail->type_dress = $request->input('dress_type');
-        $orderdetail->type_order = $request->input('type_order');
+            $customer = Customer::updateOrCreate(
+                [
+                    'customer_fname' => $request->input('customer_fname'),
+                    'customer_lname' => $request->input('customer_lname'),
+                ],
+                [
+                    'customer_phone' => $request->input('customer_phone'),
+                    'id_line' => $request->input('id_line'),
+                ]
+            );
 
+            //ออเดอรใหญ่/บิลล
+            $order = new Order;
+            $order->user_id = Auth::user()->id;
+            $order->customer_id = $customer->id;
+            $order->total_price = $request->input('price');
+            $order->total_deposit = $request->input('deposit');
+            $order->save();
 
-        $reduce = Size::find($request->input('id_of_size')); //30
-        if($request->input('amount') <= $reduce->amount){
-            $reduce->amount = $reduce->amount - $request->input('amount');
-            $reduce->save();
-        }
-        else{
-            return redirect()->back()->with('Overamount',"ไม่สามารถเช่าชุดเกินจำนวนที่มี");
-            
-        }
+            //รายละเอียดออเดอร์
+            $orderdetail = new Orderdetail;
+            $orderdetail->dress_id = $request->input('dress_ID');
+            $orderdetail->size_id = $request->input('id_of_size'); //id 30
+            $orderdetail->order_id = $order->id;
+            $orderdetail->employee_id = Auth::user()->id;
+            $orderdetail->late_charge = $request->input('late_charge');
+            $orderdetail->type_dress = $request->input('dress_type');
+            $orderdetail->type_order = $request->input('type_order');
 
-        $orderdetail->amount = $request->input('amount');
-        $orderdetail->price = $request->input('price');
-        $orderdetail->deposit = $request->input('deposit');
-        $orderdetail->note = $request->input('note');
-        $orderdetail->damage_insurance = $request->input('damage_insurance');
-        $orderdetail->total_damage_insurance = 0;
-        $orderdetail->status_detail = "จองชุด"; //สถานะเริ่มแรก
-        $orderdetail->status_payment = $request->input('status_payment');
-        $orderdetail->late_fee = 0;
-        $orderdetail->total_cost = 0;
-        // $orderdetail->total_decoration_price = $request->input('total_decoration_price');
-        // $orderdetail->total_fitting_price = $request->input('total_fitting_price');
-        $orderdetail->save();
-
-
-        // $reduce = Size::find($orderdetail->id);
-        
-        // if($request->input('amount') < $reduce->amount){
-        //     // $reduce->amount -= $request->input('amount');
-        //     $reduce->amount = $reduce->amount - $request->input('amount');
-        // }
-
-
-
-
-
-
-
-
-
-        //วันที่
-        $date = new Date;
-        $date->order_detail_id = $orderdetail->id;
-        $date->pickup_date = $request->input('pickup_date');
-        $date->return_date = $request->input('return_date');
-        $date->save();
-
-        //สถานะการชำระเงิน
-        $paymentstatus = new Paymentstatus;
-        $paymentstatus->order_detail_id = $orderdetail->id;
-        $paymentstatus->payment_status = $request->input('status_payment');
-        $paymentstatus->save();
-
-        //สถานะของออเดอร์ดีเทล
-        $orderdetailstatus = new Orderdetailstatus;
-        $orderdetailstatus->order_detail_id = $orderdetail->id;
-        $orderdetailstatus->status = "จองชุด";  //สถานะเริ่มแรก
-        $orderdetailstatus->save();
-
-
-
-        //เครื่องประดับ
-        // //ตรวจสอบว่า ถ้ามีค่าที่ส่งมา
-        if ($request->has('decoration_type_') && $request->has('decoration_type_description_') && $request->has('decoration_price_')) {
-            $dec_type = $request->input('decoration_type_');
-            $dec_description = $request->input('decoration_type_description_');
-            $dec_price = $request->input('decoration_price_');
-            foreach ($dec_type as $index => $dec_type) {
-                $decoration = new Decoration;
-                $decoration->order_detail_id = $orderdetail->id;
-                $decoration->decoration_type = $dec_type;
-                $decoration->decoration_type_description = $dec_description[$index];
-                $decoration->decoration_price = $dec_price[$index];
-                $decoration->save();
+            // ลดจำนวนสินค้าในตาราง size
+            $reduce = Size::find($request->input('id_of_size'));
+            if ($request->input('amount') <= $reduce->amount) {
+                $reduce->amount = $reduce->amount - $request->input('amount');
+                $reduce->save();
+            } else {
+                DB::rollBack(); // ถ้ามีปัญหา ทำการยกเลิกธุรกรรม
+                return redirect()->back()->with('Overamount', "ไม่สามารถเช่าชุดเกินจำนวนที่มี");
             }
-        }
+            $orderdetail->amount = $request->input('amount');
+            $orderdetail->price = $request->input('price');
+            $orderdetail->deposit = $request->input('deposit');
+            $orderdetail->note = $request->input('note');
+            $orderdetail->damage_insurance = $request->input('damage_insurance');
+            $orderdetail->total_damage_insurance = 0;
+            $orderdetail->status_detail = "จองชุด"; //สถานะเริ่มแรก
+            $orderdetail->status_payment = $request->input('status_payment');
+            $orderdetail->late_fee = 0;
+            $orderdetail->total_cost = 0;
+            // $orderdetail->total_decoration_price = $request->input('total_decoration_price');
+            // $orderdetail->total_fitting_price = $request->input('total_fitting_price');
+            $orderdetail->save();
+
+
+            //วันที่
+            $date = new Date;
+            $date->order_detail_id = $orderdetail->id;
+            $date->pickup_date = $request->input('pickup_date');
+            $date->return_date = $request->input('return_date');
+            $date->save();
+
+            //สถานะการชำระเงิน
+            $paymentstatus = new Paymentstatus;
+            $paymentstatus->order_detail_id = $orderdetail->id;
+            $paymentstatus->payment_status = $request->input('status_payment');
+            $paymentstatus->save();
+
+            //สถานะของออเดอร์ดีเทล
+            $orderdetailstatus = new Orderdetailstatus;
+            $orderdetailstatus->order_detail_id = $orderdetail->id;
+            $orderdetailstatus->status = "จองชุด";  //สถานะเริ่มแรก
+            $orderdetailstatus->save();
 
 
 
-        if ($request->hasFile('imagerent_')) {
-            $images = $request->file('imagerent_');
-            foreach ($images as $index => $image) {
-                // ตรวจสอบว่าไฟล์ถูกส่งมา
+            //เครื่องประดับ
+            // //ตรวจสอบว่า ถ้ามีค่าที่ส่งมา
+            if ($request->has('decoration_type_') && $request->has('decoration_type_description_') && $request->has('decoration_price_')) {
+                $dec_type = $request->input('decoration_type_');
+                $dec_description = $request->input('decoration_type_description_');
+                $dec_price = $request->input('decoration_price_');
+                foreach ($dec_type as $index => $dec_type) {
+                    $decoration = new Decoration;
+                    $decoration->order_detail_id = $orderdetail->id;
+                    $decoration->decoration_type = $dec_type;
+                    $decoration->decoration_type_description = $dec_description[$index];
+                    $decoration->decoration_price = $dec_price[$index];
+                    $decoration->save();
+                }
+            }
+
+
+            //รูปภาพ
+            if ($request->hasFile('imagerent_')) {
+                $images = $request->file('imagerent_');
+                foreach ($images as $index => $image) {
+                    // ตรวจสอบว่าไฟล์ถูกส่งมา
                     $additionalImage = new imagerent;
                     $additionalImage->order_detail_id = $orderdetail->id;
                     $additionalImage->image = $image->store('imagerent_images', 'public');
                     $additionalImage->save();
+                }
             }
-        }
-        
 
 
-        if($request->has('fitting_date_')){
-            $fittingdate = $request->input('fitting_date_');
-            $fittingNote = $request->input('fitting_note_');
-            $fittingPrice = $request->input('fitting_price_');
-            foreach($fittingdate as $index => $fittingdate){
-                $request->validate([
-                    'imagerent_' . $index => 'file|mimes:jpeg,png,jpg|max:2048',
-                ],[
-                    'imagerent_' .$index . '.file' => "รูปภาพต้องเป็ฯไฟล์",
-                    'imagerent_' .$index . 'mimes' => "รูปภาพต้องเป็นไฟล์ประเภท jpeg, png, jpg'",
-                    'imagerent_' .$index . 'max' => "ขนาดไฟล์รูปภาพต้องไม่เกิน 2 MB",
-                ]);
-                $fitting = new Fitting; 
-                $fitting->order_detail_id = $orderdetail->id;
-                $fitting->fitting_date = $fittingdate;
-                $fitting->fitting_note = $fittingNote[$index];
-                $fitting->fitting_price = $fittingPrice[$index];
-                $fitting->fitting_status = "ยังไม่ลองชุด";
-                $fitting->save();
+            //นัดลองชุด
+            if ($request->has('fitting_date_')) {
+                $fittingdate = $request->input('fitting_date_');
+                $fittingNote = $request->input('fitting_note_');
+                $fittingPrice = $request->input('fitting_price_');
+                foreach ($fittingdate as $index => $fittingdate) {
+                    $request->validate([
+                        'imagerent_' . $index => 'file|mimes:jpeg,png,jpg|max:2048',
+                    ], [
+                        'imagerent_' . $index . '.file' => "รูปภาพต้องเป็ฯไฟล์",
+                        'imagerent_' . $index . 'mimes' => "รูปภาพต้องเป็นไฟล์ประเภท jpeg, png, jpg'",
+                        'imagerent_' . $index . 'max' => "ขนาดไฟล์รูปภาพต้องไม่เกิน 2 MB",
+                    ]);
+                    $fitting = new Fitting;
+                    $fitting->order_detail_id = $orderdetail->id;
+                    $fitting->fitting_date = $fittingdate;
+                    $fitting->fitting_note = $fittingNote[$index];
+                    $fitting->fitting_price = $fittingPrice[$index];
+                    $fitting->fitting_status = "ยังไม่ลองชุด";
+                    $fitting->save();
+                }
             }
+
+            DB::commit();
+            return redirect()->back()->with('successpasstry', "บันทึกข้อมูลสำเร็จ");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('errortotal', "เกิดข้อผิดพลาดในขณะที่ประมวลผลคำสั่งซื้อ");
         }
-
-
-
-
-
 
         return redirect()->back()->with('success', 'บันทึกข้อมูลลูกค้าและคำสั่งสำเร็จ');
     }
+
+
+
+    public function showTable()
+    {
+
+        //ตารางหลัก (customers) มีความสัมพันธ์กับตารางลูก (orders) และตารางลูก (orders) 
+        //ก็มีความสัมพันธ์กับตารางลูกอีกตารางหนึ่ง (orderdetails) โดยที่มันต่อเนื่องกัน.
+
+        $data = Customer::with(['orders:id,customer_id,created_at', 'orders.orderdetails:id,type_dress,price,amount,order_id', 'orders.orderdetails.dates:id,order_detail_id,return_date'])
+            ->select('id', 'customer_fname', 'customer_lname')
+            ->orderBy('created_at', 'asc') // เรียงลำดับตาม created_at จากน้อยไปมาก
+            ->get();
+
+        return view('employee.showrent', compact('data'));
+    }
+
+
+    public function rentdetail($id)
+    {
+        $rentdetail = Orderdetail::find($id);
+
+        $employee = User::find($rentdetail->employee_id);
+        $size = Size::find($rentdetail->size_id);
+        $dress = Dress::find($rentdetail->dress_id);
+
+        $dates = Date::where('order_detail_id', $id)
+            ->select('id', 'pickup_date', 'return_date')
+            ->get();
+
+        $finttings = Fitting::where('order_detail_id', $id)
+            ->select('fitting_date', 'fitting_note', 'fitting_status', 'fitting_price')
+            ->get();
+
+        $orderdetailstatuses = Orderdetailstatus::where('order_detail_id', $id)
+            ->select('order_detail_id', 'status', 'created_at')
+            ->get();
+
+        $decorations = Decoration::where('order_detail_id', $id)
+            ->select('decoration_type', 'decoration_type_description', 'decoration_price', 'created_at')
+            ->get();
+
+        $imagerents = imagerent::where('order_detail_id', $id)
+            ->select('image')
+            ->get();
+        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents'));
+    }
+
+
+    public function addfitting(Request $request, $orderdetailid)
+    {
+        $request->validate([
+            'fitting_note' => 'nullable|string',
+            'fittingprice' => 'required|numeric'
+        ]);
+        $fitting = new Fitting;
+        $fitting->order_detail_id = $orderdetailid;
+        $fitting->fitting_date = $request->input('fittingdate');
+        $fitting->fitting_note = $request->input('fittingnote');
+        $fitting->fitting_price = $request->input('fittingprice');
+        $fitting->fitting_status = "ยังไม่ลองชุด";
+        $fitting->save();
+        return redirect()->back()->with('success', 'บันทึกข้อมูลลูกค้าและคำสั่งสำเร็จ');
+    }
+
+
+
 
 
 

@@ -121,14 +121,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/get/image/{selecttype}/{selectcode}', [CreateOrderController::class, 'getimage']); //ไปดึงรูปชุดมา
     Route::get('/get/pricedeposit/{selecttype}/{selectcode}/{selectsize}', [CreateOrderController::class, 'getprice']);
 
+    Route::post('/order',[CreateOrderController::class,'store'])->name('order.store'); //เพิ่มเช่าชุด
+
+    Route::get('/showrent',[CreateOrderController::class,'showTable'])->name('showrent'); //เพิ่มเช่าชุด
+    Route::get('/rentdetail/{id}',[CreateOrderController::class,'rentdetail'])->name('rentdetail'); //เพิ่มเช่าชุด
 
 
 
-
-    Route::post('/order',[CreateOrderController::class,'store'])->name('order.store');
-
-
-
+    Route::post('/addfitting/{orderdetailid}',[CreateOrderController::class,'addfitting'])->name('addfitting'); //เพิ่มfitting
 
 
 

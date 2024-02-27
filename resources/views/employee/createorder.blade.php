@@ -1,4 +1,4 @@
-@extends('layouts.admin') <!-- หรือเลือก layout ตามที่คุณได้กำหนด -->
+@extends('layouts.employee') <!-- หรือเลือก layout ตามที่คุณได้กำหนด -->
 
 @section('content')
     <div class="container">
@@ -166,9 +166,6 @@
                             hiddenidsize.value = data.id;
                             hiddendressid.value = data.dress_id;
 
-
-
-
                         });
                 });
             </script>
@@ -273,8 +270,6 @@
                 <textarea class="form-control" id="note" name="note"></textarea>
             </div>
 
-
-
             <button type="button" id="addDecorationButton" class="btn btn-success">+เพิ่มปักดอกไม้</button>
 
             <button type="button" id="addimagerent" class="btn btn-success">+เพิ่มรูปภาพ</button>
@@ -341,9 +336,6 @@
                     deletetodiv.remove();
                 }
             </script>
-
-
-
 
 
             <script>
