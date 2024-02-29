@@ -1,5 +1,4 @@
-@extends('layouts.employee') <!-- หรือเลือก layout ตามที่คุณได้กำหนด -->
-
+@extends('layouts.employee')
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -36,7 +35,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="users-details">สถานะออเดอร์: {{ $rentdetail->status_detail }}</p>
-                        <p class="users-details">สถานะการจ่ายเงิน: {{ $rentdetail->status_payment }}</p>
+                        <p class="users-details">สถานะการจ่ายเงิน:
+                            @if ($rentdetail->status_payment == 1)
+                                จ่ายมัดจำแล้ว
+                            @elseif($rentdetail->status_payment == 2)
+                                จ่ายเต็มจำนวนแล้ว
+                            @else
+                                สถานะการจ่ายเงินไม่ถูกต้อง
+                            @endif
+                        </p>
                         <p class="users-details">Late Fee: {{ $rentdetail->late_fee }}</p>
                     </div>
                 </div>
@@ -53,17 +60,45 @@
             <div class="col-md-6 bg-light border border-gray-500">
                 {{-- <h1>กรอบขวา</h1> --}}
                 <h3>นัดลองชุด</h3>
-                @foreach ($finttings as $fitting)
-                    <p>นัดลองชุด : {{ $fitting->fitting_date }}  สถานะ : {{ $fitting->fitting_status }}
-                        โน๊ต:{{ $fitting->fitting_note }} ราคา: {{ $fitting->fitting_price }}บาท
-                    </p>
-                @endforeach
-                <button type="button" class="btn btn-success" id="addfitting">+เพิ่มวันนัดลองชุด</button>
-                <button type="button" class="btn btn-success" id="adddecoration">+ปัก</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#exampleModal">เพิ่มวันนัดลองชุด </button>
 
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>วันที่นัด</th>
+                            <th>สถานะ</th>
+                            <th>โน๊ต</th>
+                            <th>ราคา</th>
+                            <th>action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($finttings as $fitting)
+                            <tr>
+                                <td>{{ $fitting->fitting_date }}</td>
+                                <td>{{ $fitting->fitting_status }}</td>
+                                <td>{{ $fitting->fitting_note }}</td>
+                                <td>{{ $fitting->fitting_price }}</td>
+                                <td>
+                                    <a href="{{ route('editfitting', ['id' => $fitting->id]) }}">
+                                        <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                            height="20"></a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+
+    {{-- <label for="cost_type">ประเภทค่าใช้จ่าย</label>
+    <input type="text" name="cost_type" id="cost_type">
+    <label for="cost_value">ราคา</label>
+    <input type="number" name="cost_value" id="cost_value"> --}}
+
 
     <div class="row">
         <div class="col-md-6 bg-light border border-gray-500">
@@ -76,47 +111,87 @@
         <div class="col-md-6 bg-light border border-gray-500">
             {{-- <h1>กรอบขวา</h1> --}}
             <h3>เพิ่มเติมกรณีปักดอกไม้เพิ่ม</h3>
-            @foreach ($decorations as $decoration)
-                <p> {{ $decoration->created_at }} เพิ่ม: {{ $decoration->decoration_type }} รายละเอียด :
-                    {{ $decoration->decoration_type_description }} ราคา : {{ $decoration->decoration_price }}</p>
-            @endforeach
-            {{-- <button type="button" class="btn btn-success" id="adddecoration">+ปักดอกไม้เพิ่ม</button> --}}
+            <button type="button" class="btn btn-primary" data-toggle="modal"
+                data-target="#adddecoration">+ปักเพิ่ม</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>วันที่เพิ่มรายการ</th>
+                        <th>ประเภท</th>
+                        <th>รายละเอียด</th>
+                        <th>ราคา</th>
+                        <th>action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($decorations as $decoration)
+                        <tr>
+                            <td>{{ $decoration->created_at }}</td>
+                            <td>{{ $decoration->decoration_type }}</td>
+                            <td>{{ $decoration->decoration_type_description }}</td>
+                            <td>{{ $decoration->decoration_price }}</td>
+                            <td>
+                                <a href="{{ route('editdecoration', ['id' => $decoration->id]) }}">
+                                    <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                        height="20"></a>
+
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
-
-
 
     <div class="row">
         <div class="col-md-6 bg-light border border-gray-500">
-            {{-- <h1>กรอบซ้าย</h1> --}}
             <h3>รูปภาพชุดก่อนเช่า</h3>
-            @foreach ($imagerents as $imagerent)
+            {{-- @foreach ($imagerents as $imagerent)
                 <img src="{{ asset('storage/' . $imagerent->image) }}" alt="123" style="width:90px; height: 90px;">
-            @endforeach
+            @endforeach --}}
         </div>
         <div class="col-md-6 bg-light border border-gray-500">
-            {{-- <h1>กรอบขวา</h1> --}}
-            <h3>เพิ่มเติม</h3>
+            <h3>ค่าใช้จ่าย</h3>
+            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addcost"
+                id="clickaddcost">บันทึกค่าใช้จ่าย</button>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>วันที่เพิ่ม</th>
+                        <th>ประเภทค่าใช้จ่าย</th>
+                        <th>ต้นทุน</th>
+                        <th>action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($costs as $cost)
+                    <tr>
+                        <td>{{$cost->created_at}}</td>
+                        <td>{{$cost->cost_type}}</td>
+                        <td>{{$cost->cost_value}}</td>
+                        <td>
+                            <a href="{{route('editcost', ['id' => $cost->id])}}">
+                                <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                    height="20"></a>
+                        </td>
+                </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 
-
-
-
-    {{-- กล่องยืนยัน (Confirmation Modal) --}}
     <form action="{{ route('addfitting', ['orderdetailid' => $rentdetail->id]) }}" method="POST">
         @csrf
-        <div class="modal fade" id="confirmModal">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" id="exampleModal" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-
-                    {{-- ส่วนหัว --}}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">เพิ่มวันนัดลองชุด</h5>
+                        <h5 class="modal-title">เพิ่มวันนัดลองชุด</h5>
                     </div>
-
-                    {{-- ส่วนเนื้อหานะ --}}
-                    <div class="modal-body" id="areafitting">
+                    <div class="modal-body">
                         <div class="form-group">
                             <label for="fittingdate">วันนัดลองชุด:</label>
                             <input type="date" name="fittingdate" id="fittingdate">
@@ -133,67 +208,176 @@
                             <input type="number" name="fittingprice" id="fittingprice">
                         </div>
 
-                        {{-- ส่วนท้าย --}}
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">ยืนยัน</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+
+    <form action="{{ route('adddecoration', ['orderdetailid' => $rentdetail->id]) }}" method="POST">
+        @csrf
+        <div class="modal fade" id="adddecoration" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5>ปักเพิ่มเติม</h5>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="decoration_type">ประเภทปัก:</label>
+                            <input type="text" name="decoration_type" id="decoration_type">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decoration_type_description">รายละเอียด</label><br>
+                            <input type="text" name="decoration_type_description" id="decoration_type_description">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decoration_price">ราคา:</label>
+                            <input type="number" name="decoration_price" id="decoration_price">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-danger">ยืนยัน</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {{-- modalเพิ่มค่าใช้จ่าย --}}
+    <form action="{{ route('addcost') }}" method="POST">
+        @csrf
+        <div class="modal fade" id="addcost" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        บันทึกค่าใช้จ่าย
+                    </div>
+
+                    <div class="modal-body">
+                        <div id="ariacost">
+
+                            {{-- </div> --}}
+                            {{-- แสดงช่องinputสำหรับเพิ่มค่าใช้จ่าย --}}
+                            <button type="button" class="btn btn-secondary" id="add_for_cost">+เพิ่มค่าใช้จ่าย</button>
+
+                            <div class="form-group">
+                                <label for="cost_type1">ประเภทค่าใช้จ่าย</label>
+                                <input type="text" name="cost_type_[1]" id="cost_type1">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cost_value1">ราคา</label>
+                                <input type="number" name="cost_value_[1]" id="cost_value1">
+                            </div>
+
+                            <input type="hidden" name="id_of_detail" id="id_of_detail" value="{{ $rentdetail->id }}">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-secondary">บันทึก</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        var addcost = document.getElementById('add_for_cost') //เพิ่มบันทึกค่าใช้จ่าย
+        var ariashow = document.getElementById('ariacost') // พื้นที่แสดงช่องinput
+        var count = 1;
+
+        addcost.addEventListener('click', function() {
+            count++;
+
+            var creatediv = document.createElement('div'); //สร้างdiv 
+            creatediv.id = 'cost' + count;
+
+            input =
+
+                '<div class="form-group">' +
+                ' <label for="cost_type' + count + '">ประเภทค่าใช้จ่าย</label>' +
+                ' <input type="text" name="cost_type_[' + count + ']" id="cost_type' + count + '">' +
+                '</div>' +
+
+                '<div class="form-group">' +
+                '<label for="cost_value' + count + '">ราคา</label>' +
+                '<input type="number" name="cost_value_[' + count + ']" id="cost_value' + count + '">' +
+                '</div>' +
+
+
+                '<button type="button" class="btn btn-danger" onclick="removefitting(' + count + ')">ลบ</button>';
+
+            creatediv.innerHTML = input;
+            ariashow.appendChild(creatediv);
+        });
+
+        function removefitting(index) {
+            var deleteID = document.getElementById('cost' + index)
+            deleteID.remove();
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {{-- <form action="" method="POST">
+        @csrf
+        <div class="modal fade" id="confirmModaltwo">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">ปักเพิ่ม</h5>
+                    </div>
+
+                    <div class="modal-body" id="areafitting">
+                        <div class="form-group">
+                            <label for="decoration_type">ประเภทปัก:</label>
+                            <input type="string" name="decoration_type" id="decoration_type">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decoration_description">รายละเอียด</label><br>
+                            <textarea class="form-control" name="decoration_description" id="decoration_description"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decoration_price">ราคา:</label>
+                            <input type="number" name="decoration_price" id="decoration_price">
+                        </div>
+                        <div class="modal-footer">                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+
                             <button type="submit" class="btn btn-danger">ยืนยัน</button>
                         </div>
                     </div>
                 </div>
             </div>
-    </form>
-
-
-
-
-
-
-    <div class="modal fade" id="confirmModal2">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-
-                {{-- ส่วนหัว --}}
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel2">+ปักดอกไม้เพิ่ม</h5>
-                </div>
-
-                {{-- ส่วนเนื้อหานะ --}}
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="decorationtype">ประเภทดอกไม้:</label>
-                        <select name="decorationtype" id="decorationtype">
-                            <option value="">-- เลือกประเภทดอกไม้ --</option>
-                            <option value="ดอกกุหลาบ">ดอกกุหลาบ</option>
-                            <option value="ดอกกล้วยไม้">ดอกกล้วยไม้</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="decorationprice">ราคา:</label>
-                        <input type="number" name="decorationprice" id="decorationprice">
-                    </div>
-                </div>
-
-                {{-- ส่วนท้าย --}}
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                    <button id="confirmBtn2" type="button" class="btn btn-danger">ยืนยัน</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    <script>
-        // คลิกปุ่มและแสดงกล่องยืนยัน
-        document.getElementById('addfitting').addEventListener('click', function() {
-            $('#confirmModal').modal('show');
-        });
-
-
-        document.getElementById('adddecoration').addEventListener('click', function() {
-            $('#confirmModal2').modal('show');
-        });
-    </script>
+    </form> --}}
 @endsection
