@@ -23,7 +23,7 @@
         @enderror
 
         <button type="submit" class="btn btn-secondary">อัพเดต</button>
-        {{-- <a href="{{route('rentdetail', ['id' => $editcost->order_detail_id])}}" class="btn btn-danger">ยกเลิก</a> --}}
+        <a href="{{route('rentdetail', ['id' => $editcost->order_detail_id])}}" class="btn btn-danger">ยกเลิก</a>
     </form>
 
 

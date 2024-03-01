@@ -126,10 +126,15 @@ Route::middleware(['web', 'auth'])->group(function () {
     //แก้ไข fitting
     Route::get('/editfitting/{id}', [CreateOrderController::class, 'editfitting'])->name('editfitting'); //หน้าแก้ไข fitting 
     Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
+    Route::get('/deletefitting/{id}', [CreateOrderController::class, 'deletefitting'])->name('deletefitting'); //ลบ fitting 
+
+
+
 
     //แก้ไข Decoration 
     Route::get('/editdecoration/{id}', [CreateOrderController::class, 'editdecoration'])->name('editdecoration'); //หน้าแก้ไข decoration
     Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); // อัพเดต decoration
+    Route::get('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); // ลบ decoration
 
 
 
@@ -142,17 +147,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     // Route::get('/dress/softdelete/{id}', [DressmanageController::class, 'softdeleteDress'])->name('dress.softdelete'); //ลบชุดแบบsoftdelete
 
 
-
-
-
-
-
-
-
-
-
     Route::post('/adddecoration/{orderdetailid}', [CreateOrderController::class, 'adddecoration'])->name('adddecoration'); //เพิ่มdecoration
 
+
+    Route::post('/addimage', [CreateOrderController::class, 'addimage'])->name('addimage'); //เพิ่มรูปภาพ
+    Route::get('/manageimage/{id}', [CreateOrderController::class, 'manageimage'])->name('manageimage'); //จัดการรูปภาพ
 
 
 

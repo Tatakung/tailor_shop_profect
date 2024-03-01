@@ -21,6 +21,36 @@
     <input type="number" name="decoration_price" id="decoration_price" value="{{$decoration->decoration_price}}">
     <br>
     <button type="submit" class="btn btn-danger">อัพเดต</button>
+    <a href="{{route('rentdetail' , ['id'=>$decoration->order_detail_id ])}}" class="btn btn-danger">ยกเลิก</a>
 </form>
+
+    <button class="btn btn-danger" data-toggle="modal" data-target="#showmodal">ลบ</button>
+
+    <div class="modal fade" id="showmodal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    แน่ใจว่าจะจริงจริงหรอ ?
+                </div>
+
+                <div class="modal-body">
+                    ถึงจะลบ แต่ก็ไม่สามารถลบเขาออกจากหัวใจได้หรอก 555555 ว้ายยยย
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button class="btn btn-danger" id="confirm">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>                               
+        document.getElementById('confirm').addEventListener('click',function(){
+            window.location.href = "{{route('deletedecoration', ['id' => $decoration->id])}}" ; 
+        });
+    </script>
+
 
 @endsection

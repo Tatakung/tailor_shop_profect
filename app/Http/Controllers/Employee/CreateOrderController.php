@@ -277,7 +277,7 @@ class CreateOrderController extends Controller
             ->select('id', 'cost_type', 'cost_value', 'created_at')
             ->get();
 
-        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents','costs'));
+        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs'));
     }
 
 
@@ -388,19 +388,21 @@ class CreateOrderController extends Controller
         return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จแล้วนะ");
     }
     //หน้าแก้ไข cost 
-    public function editcost($id){
+    public function editcost($id)
+    {
         $editcost = Cost::find($id);
-        return view('employee.editcost',compact('editcost'));
+        return view('employee.editcost', compact('editcost'));
     }
 
     //อัพเดต cost 
-    public function updatecost(Request $request ,$id){
+    public function updatecost(Request $request, $id)
+    {
         $updatecost = Cost::find($id);
         $request->validate([
             'cost_type' => 'required|string',
             'cost_value' => 'required|numeric',
-        ],[
-            'required' =>'กรุณากรอก :attribute' , 
+        ], [
+            'required' => 'กรุณากรอก :attribute',
             'string' => 'กรุณากรอก :attribute  เป็นข้อวคาม',
             'numeric' => 'กรุณากรอก :attribute เป็นตัวเลข',
         ]);
@@ -408,19 +410,65 @@ class CreateOrderController extends Controller
         $updatecost->cost_type = $request->input('cost_type');
         $updatecost->cost_value = $request->input('cost_value');
         $updatecost->save();
-        return redirect()->route('rentdetail',['id'=> $updatecost->order_detail_id])->with('success','อัพเดตสำเร็จ');
+        return redirect()->route('rentdetail', ['id' => $updatecost->order_detail_id])->with('success', 'อัพเดตสำเร็จ');
     }
 
 
-
-    public function deletecost($id){
+    //ลบcost
+    public function deletecost($id)
+    {
         $delete = Cost::find($id);
         $delete->delete();
-        return redirect()->route('rentdetail' , ['id' =>$delete->order_detail_id  ])->with('success',"ลบสำเร็จแล้ว");
+        return redirect()->route('rentdetail', ['id' => $delete->order_detail_id])->with('success', "ลบสำเร็จแล้ว");
+    }
+    //ลบ decoration 
+
+    public function deletedecoration($id)
+    {
+        $delete = Decoration::find($id);
+        $delete->delete();
+        return redirect()->route('rentdetail', ['id' => $delete->order_detail_id])->with('success', "ลบสำเสร็จ");
     }
 
+    //ลบ fitting 
 
+    public function deletefitting($id)
+    {
+        $delete = Fitting::find($id);
+        if ($delete->fitting_status == "ยังไม่ลองชุด") {
+            $delete->delete();
+        } else {
+            return redirect()->back()->with('notdelete', "ไม่สามารถลบได้เนื่องจาก เขามาลองชุดแล้วจร้า");
+        }
+        return redirect()->route('rentdetail', ['id' => $delete->order_detail_id])->with('success', "ลบเสร็๗แล้วจร้า");
+    }
 
+    public function addimage(Request $request)
+    {
+        $request->validate([
+            'addimage' => 'file|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('addimage')) {
+            $addimage = new imagerent;
+            $addimage->order_detail_id = $request->input('orderdetail_id');
+            $addimage->image = $request->file('addimage')->store('imagerent_images', 'public');
+            $addimage->save();
+        } else {
+            return redirect()->back()->with('noaddimage', 'อัพโหลดไม่ได้');
+        }
+
+        return redirect()->back()->with('success','บันทึกสำเร็จ');
+    }
+
+    //จัดการรูปภาพ
+
+    public function manageimage($id){
+        $manageimage = imagerent::where('order_detail_id',$id)
+                        ->select('image','created_at')
+                        ->get();
+        return view('employee.editimage',compact('manageimage'));
+    }
 
 
 

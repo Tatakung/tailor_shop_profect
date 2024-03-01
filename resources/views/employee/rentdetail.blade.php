@@ -145,11 +145,45 @@
 
     <div class="row">
         <div class="col-md-6 bg-light border border-gray-500">
-            <h3>รูปภาพชุดก่อนเช่า</h3>
-            {{-- @foreach ($imagerents as $imagerent)
+            <h3>รูปภาพชุดก่อนเช่า</h3>  
+            <p><a href="{{route('manageimage',['id' =>$rentdetail->id ])}}">จัดการรูปภาพ</a></p>
+            @foreach ($imagerents as $imagerent)
                 <img src="{{ asset('storage/' . $imagerent->image) }}" alt="123" style="width:90px; height: 90px;">
-            @endforeach --}}
+            @endforeach
+            <button class="btn btn-secondary" style="width:90px; height: 90px;" data-toggle="modal"
+                data-target="#showaddimahe">เพิ่มรูปภาพ</button>
         </div>
+
+
+        {{-- เพิ่มรูปภาพ  --}}
+        <form action="{{route('addimage')}}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal fade" id="showaddimahe" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            เพิ่มรูปภาพ
+                        </div>
+                        <div class="modal-body">
+                            <label for="addimage">เพิ่มรูปภาพ</label>
+                            <input class="form-control" type="file" id="addimage" name="addimage">
+                            <input type="hidden" name="orderdetail_id" id="orderdetail_id" value="{{$rentdetail->id}}">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+
+
+
+
         <div class="col-md-6 bg-light border border-gray-500">
             <h3>ค่าใช้จ่าย</h3>
             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addcost"
@@ -166,17 +200,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($costs as $cost)
-                    <tr>
-                        <td>{{$cost->created_at}}</td>
-                        <td>{{$cost->cost_type}}</td>
-                        <td>{{$cost->cost_value}}</td>
-                        <td>
-                            <a href="{{route('editcost', ['id' => $cost->id])}}">
-                                <img src="{{ asset('images/edit.png') }}" alt="" width="20"
-                                    height="20"></a>
-                        </td>
-                </tr>
+                    @foreach ($costs as $cost)
+                        <tr>
+                            <td>{{ $cost->created_at }}</td>
+                            <td>{{ $cost->cost_type }}</td>
+                            <td>{{ $cost->cost_value }}</td>
+                            <td>
+                                <a href="{{ route('editcost', ['id' => $cost->id]) }}">
+                                    <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                        height="20"></a>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -332,52 +366,4 @@
             deleteID.remove();
         }
     </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    {{-- <form action="" method="POST">
-        @csrf
-        <div class="modal fade" id="confirmModaltwo">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">ปักเพิ่ม</h5>
-                    </div>
-
-                    <div class="modal-body" id="areafitting">
-                        <div class="form-group">
-                            <label for="decoration_type">ประเภทปัก:</label>
-                            <input type="string" name="decoration_type" id="decoration_type">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="decoration_description">รายละเอียด</label><br>
-                            <textarea class="form-control" name="decoration_description" id="decoration_description"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="decoration_price">ราคา:</label>
-                            <input type="number" name="decoration_price" id="decoration_price">
-                        </div>
-                        <div class="modal-footer">                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-
-                            <button type="submit" class="btn btn-danger">ยืนยัน</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </form> --}}
 @endsection
