@@ -125,15 +125,12 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     //แก้ไข fitting
     Route::get('/editfitting/{id}', [CreateOrderController::class, 'editfitting'])->name('editfitting'); //หน้าแก้ไข fitting 
-    Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
+    // Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
     Route::get('/deletefitting/{id}', [CreateOrderController::class, 'deletefitting'])->name('deletefitting'); //ลบ fitting 
 
 
 
 
-    //แก้ไข Decoration 
-    // Route::get('/editdecoration/{id}', [CreateOrderController::class, 'editdecoration'])->name('editdecoration'); //หน้าแก้ไข decoration
-    // Route::get('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); // ลบ decoration
 
 
 
@@ -158,13 +155,16 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-
+    //cost
     Route::post('/updatecost/{id}', [CreateOrderController::class, 'updatecost'])->name('updatecost'); //อัพเดตcost
     Route::delete('/deletecost/{id}', [CreateOrderController::class, 'deletecost'])->name('deletecost');  //ลบcost
 
-
+    //decoration
     Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); //อัพเดตdecpration4
     Route::delete('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); //ลบdecpration4
+
+    //fitting
+    Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
 
     
 

@@ -66,6 +66,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>id</th>
                             <th>วันที่นัด</th>
                             <th>สถานะ</th>
                             <th>โน๊ต</th>
@@ -76,15 +77,55 @@
                     <tbody>
                         @foreach ($finttings as $fitting)
                             <tr>
+                                <td>{{ $fitting->id }}</td>
                                 <td>{{ $fitting->fitting_date }}</td>
                                 <td>{{ $fitting->fitting_status }}</td>
                                 <td>{{ $fitting->fitting_note }}</td>
                                 <td>{{ $fitting->fitting_price }}</td>
                                 <td>
-                                    <a href="{{ route('editfitting', ['id' => $fitting->id]) }}">
-                                        <img src="{{ asset('images/edit.png') }}" alt="" width="20"
-                                            height="20"></a>
+                                    <button class="btn btn-secondary" data-toggle="modal"
+                                        data-target="#showeditmodalfitting{{ $fitting->id }}">แก้ไข</button>
                                 </td>
+
+                                <div class="modal fade" id="showeditmodalfitting{{ $fitting->id }}" role="dialog"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                จะแก้ไขวันนัดลองชุดหรอ?
+                                            </div>
+                                            <form action="{{ route('updatefitting', ['id' => $fitting->id]) }}"
+                                                method="POST">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <label for="fitting_note">โน๊ตบันทึก</label>
+                                                    <textarea name="fitting_note" id="fitting_note" cols="10" rows="2">{{ $fitting->fitting_note }}</textarea>
+
+                                                    <label for="fitting_price">ราคา</label>
+                                                    <input type="number" name="fitting_price" id="fitting_price"
+                                                        value="{{ $fitting->fitting_price }}">
+
+                                                    <label for="fitting_status">สถานะ</label>
+                                                    <select name="fitting_status" id="fitting_status">
+                                                        <option value="ยังไม่ลองชุด"> ยังไม่ลองชุด</option>
+                                                        <option value="มาลองชุดแล้ว">มาลองชุดแล้ว</option>
+                                                    
+
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-secondary">อัพเดต</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -142,28 +183,35 @@
                                 </button>
 
                                 {{-- ปุ่มลบ --}}
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#showconfirmdeletedecoration{{$decoration->id}}">ลบ</button>
-                                <div class="modal fade" id="showconfirmdeletedecoration{{$decoration->id}}" role="dialog" aria-hidden="true">
+                                <button type="button" data-toggle="modal"
+                                    data-target="#showconfirmdeletedecoration{{ $decoration->id }}">
+                                    <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
+                                        height="20">
+                                </button>
+                                <div class="modal fade" id="showconfirmdeletedecoration{{ $decoration->id }}"
+                                    role="dialog" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 จะลบจริงๆหรอ
                                             </div>
-                                            <form action="{{route('deletedecoration',['id' => $decoration->id ])}}" method="POST">
+                                            <form action="{{ route('deletedecoration', ['id' => $decoration->id]) }}"
+                                                method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                            <div class="modal-body">
-                                                ยืนยันใช่ไหมว่าจะลบอะ
-                                                {{$decoration->id}} <br>
-                                                {{$decoration->decoration_type}} <br>
-                                                {{$decoration->decoration_price}} <br>
-                                                {{$decoration->decoration_type_description}} <br>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                                            </div>
-                                        </form>
+                                                <div class="modal-body">
+                                                    ยืนยันใช่ไหมว่าจะลบอะ
+                                                    {{ $decoration->id }} <br>
+                                                    {{ $decoration->decoration_type }} <br>
+                                                    {{ $decoration->decoration_price }} <br>
+                                                    {{ $decoration->decoration_type_description }} <br>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -197,15 +245,15 @@
                                                     <button class="btn btn-secondary" type="submit">อัพเดต</button>
                                                 </div>
                                             </form>
-    
+
                                         </div>
                                     </div>
                                 </div>
 
                             </td>
 
-                        
-                            
+
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -286,22 +334,25 @@
                                 </button>
 
                                 {{-- ปุ่มลบ --}}
-                                <form action="{{ route('deletecost', ['id' => $cost->id]) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" data-toggle="modal"
-                                        data-target="#showconfirmdeletecost{{ $cost->id }}">
-                                        <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
-                                            height="20">
-                                    </button>
+                                <button type="button" data-toggle="modal"
+                                    data-target="#showconfirmdeletecost{{ $cost->id }}">
+                                    <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
+                                        height="20">
+                                </button>
 
-                                    <div class="modal fade" id="showconfirmdeletecost{{ $cost->id }}" role="dialog"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    ยืนยันการลบ
-                                                </div>
+
+
+
+                                <div class="modal fade" id="showconfirmdeletecost{{ $cost->id }}" role="dialog"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                ยืนยันการลบ
+                                            </div>
+                                            <form action="{{ route('deletecost', ['id' => $cost->id]) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
                                                 <div class="modal-body">
                                                     แน่ใจว่าจะจบ
                                                     {{ $cost->cost_type }}
@@ -313,10 +364,10 @@
                                                         data-dismiss="modal">ยกเลิก</button>
                                                     <button type="submit" class="btn btn-secondary">ยืนยัน</button>
                                                 </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
 
 
 

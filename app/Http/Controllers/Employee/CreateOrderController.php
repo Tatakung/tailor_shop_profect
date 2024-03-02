@@ -315,35 +315,30 @@ class CreateOrderController extends Controller
     }
 
 
-    //แก้ไข fitting
-    public function editfitting(Request $request, $id)
-    {
-        $fit = Fitting::find($id);
-        return view('employee.editfitting', compact('fit'));
-    }
+
     //อัพเดต fitting 
-    public function updatefitting(Request $request, $id)
-    {
+    // public function updatefitting(Request $request, $id)
+    // {
 
-        $request->validate([
-            'fitting_price' => 'required|numberic',
-            'fitting_note' => 'nullable|string',
-            'fitting_status' => 'required|string',
-        ]);
+    //     $request->validate([
+    //         'fitting_price' => 'required|numberic',
+    //         'fitting_note' => 'nullable|string',
+    //         'fitting_status' => 'required|string',
+    //     ]);
 
-        $updatefit = Fitting::find($id);
-        $updatefit->fitting_price = $request->input('fitting_price');
-        $updatefit->fitting_note = $request->input('fitting_note');
+    //     $updatefit = Fitting::find($id);
+    //     $updatefit->fitting_price = $request->input('fitting_price');
+    //     $updatefit->fitting_note = $request->input('fitting_note');
 
-        if ($request->input('fitting_status') == "มาลองชุดแล้ว") {
-            $updatefit->fitting_real_date = date('Y-m-d');
-            $updatefit->fitting_status = $request->input('fitting_status');
-        } else {
-            $updatefit->fitting_status = $request->input('fitting_status');
-        }
-        $updatefit->save();
-        return redirect()->route('rentdetail', ['id' => $updatefit->order_detail_id])->with('success', 'อัพเดตข้อมูลสำเร็จ');
-    }
+    //     if ($request->input('fitting_status') == "มาลองชุดแล้ว") {
+    //         $updatefit->fitting_real_date = date('Y-m-d');
+    //         $updatefit->fitting_status = $request->input('fitting_status');
+    //     } else {
+    //         $updatefit->fitting_status = $request->input('fitting_status');
+    //     }
+    //     $updatefit->save();
+    //     return redirect()->route('rentdetail', ['id' => $updatefit->order_detail_id])->with('success', 'อัพเดตข้อมูลสำเร็จ');
+    // }
 
     //แก้ไขdecoration
     // public function editdecoration(Request $request, $id)
@@ -478,5 +473,29 @@ class CreateOrderController extends Controller
         $deletedecoration->delete();
         return redirect()->route('rentdetail', ['id' => $deletedecoration->order_detail_id])->with('success', "แก้ไขข้อมูลสำเร็จแล้ว");
     }
+
+    //แก้ไจ fitting
+    public function updatefitting(Request $request, $id)
+    {
+        $request->validate([
+            'fitting_price' => 'required|numeric',
+            'fitting_note' => 'nullable|string',
+            'fitting_status' => 'required|string',
+        ]);
+
+        $updatefit = Fitting::find($id);
+        $updatefit->fitting_price = $request->input('fitting_price');
+        $updatefit->fitting_note = $request->input('fitting_note');
+
+        if ($request->input('fitting_status') == "มาลองชุดแล้ว") {
+            $updatefit->fitting_real_date = date('Y-m-d');
+            $updatefit->fitting_status = $request->input('fitting_status');
+        } else {
+            $updatefit->fitting_status = $request->input('fitting_status');
+        }
+        $updatefit->save();
+        return redirect()->route('rentdetail', ['id' => $updatefit->order_detail_id])->with('success', 'อัพเดตข้อมูลสำเร็จ');
+    }
+
 
 }
