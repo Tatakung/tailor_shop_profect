@@ -274,7 +274,7 @@ class CreateOrderController extends Controller
             ->get();
 
         $costs = Cost::where('order_detail_id', $id)
-            ->select('id', 'cost_type', 'cost_value', 'created_at')
+            ->select('id', 'cost_type', 'cost_value', 'created_at', 'order_detail_id')
             ->get();
 
         return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs'));
@@ -346,26 +346,12 @@ class CreateOrderController extends Controller
     }
 
     //แก้ไขdecoration
-    public function editdecoration(Request $request, $id)
-    {
-        $decoration = Decoration::find($id);
-        return view('employee.editdecoration', compact('decoration'));
-    }
-    //อัพเดต decoration
-    public function updatedecoration(Request $request, $id)
-    {
-        $request->validate([
-            'decoration_type' => 'required|string',
-            'decoration_type_description' => 'required|string',
-            'decoration_price' => 'required|numeric',
-        ]);
-        $updatedecoration = Decoration::find($id);
-        $updatedecoration->decoration_type = $request->input('decoration_type');
-        $updatedecoration->decoration_type_description = $request->input('decoration_type_description');
-        $updatedecoration->decoration_price = $request->input('decoration_price');
-        $updatedecoration->save();
-        return redirect()->route('rentdetail', ['id' => $updatedecoration->order_detail_id])->with('success', "แก้ไขข้อมูลสำเร็จแล้ว");
-    }
+    // public function editdecoration(Request $request, $id)
+    // {
+    //     $decoration = Decoration::find($id);
+    //     return view('employee.editdecoration', compact('decoration'));
+    // }
+
 
 
 
@@ -388,39 +374,16 @@ class CreateOrderController extends Controller
         return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จแล้วนะ");
     }
     //หน้าแก้ไข cost 
-    public function editcost($id)
-    {
-        $editcost = Cost::find($id);
-        return view('employee.editcost', compact('editcost'));
-    }
-
-    //อัพเดต cost 
-    public function updatecost(Request $request, $id)
-    {
-        $updatecost = Cost::find($id);
-        $request->validate([
-            'cost_type' => 'required|string',
-            'cost_value' => 'required|numeric',
-        ], [
-            'required' => 'กรุณากรอก :attribute',
-            'string' => 'กรุณากรอก :attribute  เป็นข้อวคาม',
-            'numeric' => 'กรุณากรอก :attribute เป็นตัวเลข',
-        ]);
-
-        $updatecost->cost_type = $request->input('cost_type');
-        $updatecost->cost_value = $request->input('cost_value');
-        $updatecost->save();
-        return redirect()->route('rentdetail', ['id' => $updatecost->order_detail_id])->with('success', 'อัพเดตสำเร็จ');
-    }
+    // public function editcost($id)
+    // {
+    //     $editcost = Cost::find($id);
+    //     return view('employee.editcost', compact('editcost'));
+    // }
 
 
-    //ลบcost
-    public function deletecost($id)
-    {
-        $delete = Cost::find($id);
-        $delete->delete();
-        return redirect()->route('rentdetail', ['id' => $delete->order_detail_id])->with('success', "ลบสำเร็จแล้ว");
-    }
+
+
+
     //ลบ decoration 
 
     public function deletedecoration($id)
@@ -458,16 +421,73 @@ class CreateOrderController extends Controller
             return redirect()->back()->with('noaddimage', 'อัพโหลดไม่ได้');
         }
 
-        return redirect()->back()->with('success','บันทึกสำเร็จ');
+        return redirect()->back()->with('success', 'บันทึกสำเร็จ');
     }
 
     //จัดการรูปภาพ
 
-    public function manageimage($id){
-        $manageimage = imagerent::where('order_detail_id',$id)
-                        ->select('image','created_at')
-                        ->get();
-        return view('employee.editimage',compact('manageimage'));
+    public function manageimage($id)
+    {
+        $manageimage = imagerent::where('order_detail_id', $id)
+            ->select('id', 'image', 'created_at')
+            ->get();
+        return view('employee.editimage', compact('manageimage'));
+    }
+
+    //ลบimagerent
+    public function deleteimage($id)
+    {
+        $deleteimage = imagerent::find($id);
+        $deleteimage->delete();
+        return redirect()->back()->with('success', 'ลบสำเร็จ');
+    }
+
+
+
+    //อัพเดต cost 
+    public function updatecost(Request $request, $id)
+    {
+
+        $updatecost = Cost::find($id);
+        $request->validate([
+            'cost_type' => 'required|string',
+            'cost_value' => 'required|numeric',
+        ], [
+            'required' => 'กรุณากรอก :attribute',
+            'string' => 'กรุณากรอก :attribute  เป็นข้อวคาม',
+            'numeric' => 'กรุณากรอก :attribute เป็นตัวเลข',
+        ]);
+
+        $updatecost->cost_type = $request->input('cost_type');
+        $updatecost->cost_value = $request->input('cost_value');
+        $updatecost->save();
+        return redirect()->route('rentdetail', ['id' => $updatecost->order_detail_id])->with('success', 'อัพเดตสำเร็จ');
+    }
+
+    //ลบcost
+    public function deletecost($id)
+    {
+        $delete = Cost::find($id);
+        $delete->delete();
+        return redirect()->route('rentdetail', ['id' => $delete->order_detail_id])->with('success', "ลบสำเร็จแล้ว");
+    }
+
+
+
+    //อัพเดต decoration
+    public function updatedecoration(Request $request, $id)
+    {
+        $request->validate([
+            'decoration_type' => 'required|string',
+            'decoration_type_description' => 'required|string',
+            'decoration_price' => 'required|numeric',
+        ]);
+        $updatedecoration = Decoration::find($id);
+        $updatedecoration->decoration_type = $request->input('decoration_type');
+        $updatedecoration->decoration_type_description = $request->input('decoration_type_description');
+        $updatedecoration->decoration_price = $request->input('decoration_price');
+        $updatedecoration->save();
+        return redirect()->route('rentdetail', ['id' => $updatedecoration->order_detail_id])->with('success', "แก้ไขข้อมูลสำเร็จแล้ว");
     }
 
 
@@ -477,7 +497,39 @@ class CreateOrderController extends Controller
 
 
 
+    // public function costedit($id){
+    //     $orderdetail = Orderdetail::find($id);
+    //     $editcost = Cost::find();
+    //     return view('employee.t', compact('editcost'));
+    // }
 
+    // public function editcost1($id)
+    // {
+    //     $editcost = Cost::find($id);
+    //     return view('employee.editcost', compact('editcost'));
+    // }
+
+
+
+    // public function editcost1($id)
+    // {
+    //     $editcost = Cost::find($id);
+    // return view('employee.editcost', compact('editcost'));
+    // }
+
+
+
+
+    // $orderdetail = $request->input('order_detail_id');
+
+
+    // return redirect()->route('rentdetail', ['id' => $orderdetail])->with('editcost', $editcost);
+    // return redirect()->route('rentdetail', ['id' => $orderdetail])->with([
+    //     'editcost' => $editcost,
+    //   ]);
+
+
+    // return redirect()->route('rentdetail', ['id' => $orderdetail])->with('editcost', $editcost);
 
 
 

@@ -116,6 +116,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>ไอดี</th>
                         <th>วันที่เพิ่มรายการ</th>
                         <th>ประเภท</th>
                         <th>รายละเอียด</th>
@@ -126,16 +127,58 @@
                 <tbody>
                     @foreach ($decorations as $decoration)
                         <tr>
+                            <td>{{ $decoration->id }}</td>
                             <td>{{ $decoration->created_at }}</td>
                             <td>{{ $decoration->decoration_type }}</td>
                             <td>{{ $decoration->decoration_type_description }}</td>
                             <td>{{ $decoration->decoration_price }}</td>
                             <td>
-                                <a href="{{ route('editdecoration', ['id' => $decoration->id]) }}">
-                                    <img src="{{ asset('images/edit.png') }}" alt="" width="20"
-                                        height="20"></a>
-
+                                <form action="{{route('updatedecoration', ['id' => $decoration->id])}}" method="POST">
+                                    @csrf
+                                    <button type="button" data-toggle="modal"
+                                        data-target="#showeditmodaldecoration{{ $decoration->id }}">
+                                        <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                        height="20">
+                                    </button>
                             </td>
+
+                            <div class="modal fade" id="showeditmodaldecoration{{ $decoration->id }}" role="dialog"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            แก้ไขdecoration
+                                        </div>
+                                        <div class="modal-body">
+                                            <label for="decoration_type">ประเภท</label>
+                                            <input type="text" name="decoration_type" id="decoration_type" value="{{$decoration->decoration_type}}">
+                                            <br>
+                                            <label for="decoration_price">ราคา</label>
+                                            <input type="number" name="decoration_price" id="decoration_price" value="{{$decoration->decoration_price}}">
+                                            <br>
+                                            <label for="decoration_type_description">รายละเอียด</label>
+                                            <textarea name="decoration_type_description" id="decoration_type_description" cols="10" rows="2">{{$decoration->decoration_type_description}}</textarea>
+
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger"
+                                                data-dismiss="modal">ยกเลิก</button>
+                                            <button class="btn btn-secondary" type="submit">อัพเดต</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </form>
+
+
+
+
+
+
+
+
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -145,8 +188,8 @@
 
     <div class="row">
         <div class="col-md-6 bg-light border border-gray-500">
-            <h3>รูปภาพชุดก่อนเช่า</h3>  
-            <p><a href="{{route('manageimage',['id' =>$rentdetail->id ])}}">จัดการรูปภาพ</a></p>
+            <h3>รูปภาพชุดก่อนเช่า</h3>
+            <p><a href="{{ route('manageimage', ['id' => $rentdetail->id]) }}">จัดการรูปภาพ</a></p>
             @foreach ($imagerents as $imagerent)
                 <img src="{{ asset('storage/' . $imagerent->image) }}" alt="123" style="width:90px; height: 90px;">
             @endforeach
@@ -156,7 +199,7 @@
 
 
         {{-- เพิ่มรูปภาพ  --}}
-        <form action="{{route('addimage')}}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('addimage') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal fade" id="showaddimahe" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
@@ -167,7 +210,7 @@
                         <div class="modal-body">
                             <label for="addimage">เพิ่มรูปภาพ</label>
                             <input class="form-control" type="file" id="addimage" name="addimage">
-                            <input type="hidden" name="orderdetail_id" id="orderdetail_id" value="{{$rentdetail->id}}">
+                            <input type="hidden" name="orderdetail_id" id="orderdetail_id" value="{{ $rentdetail->id }}">
                         </div>
 
                         <div class="modal-footer">
@@ -192,6 +235,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>ไอดี</th>
                         <th>วันที่เพิ่ม</th>
                         <th>ประเภทค่าใช้จ่าย</th>
                         <th>ต้นทุน</th>
@@ -202,13 +246,91 @@
                 <tbody>
                     @foreach ($costs as $cost)
                         <tr>
+                            <td>{{ $cost->id }}</td>
                             <td>{{ $cost->created_at }}</td>
                             <td>{{ $cost->cost_type }}</td>
                             <td>{{ $cost->cost_value }}</td>
                             <td>
-                                <a href="{{ route('editcost', ['id' => $cost->id]) }}">
+                                {{-- ปุ่มแก้ไข --}}
+                                <button type="button" data-toggle="modal" data-target="#costedit{{ $cost->id }}">
                                     <img src="{{ asset('images/edit.png') }}" alt="" width="20"
-                                        height="20"></a>
+                                        height="20">
+                                </button>
+
+                                {{-- ปุ่มลบ --}}
+                                <form action="{{ route('deletecost', ['id' => $cost->id]) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" data-toggle="modal"
+                                        data-target="#showconfirmdeletecost{{ $cost->id }}">
+                                        <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
+                                            height="20">
+                                    </button>
+
+                                    <div class="modal fade" id="showconfirmdeletecost{{ $cost->id }}" role="dialog"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    ยืนยันการลบ
+                                                </div>
+                                                <div class="modal-body">
+                                                    แน่ใจว่าจะจบ
+                                                    {{ $cost->cost_type }}
+                                                    <br>
+                                                    {{ $cost->cost_value }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+
+
+
+
+
+
+
+
+                                <div class="modal fade" id="costedit{{ $cost->id }}" role="dialog"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                แก้ไขค่าใช้จ่ายหรอ
+                                            </div>
+                                            <form action="{{ route('updatecost', ['id' => $cost->id]) }}" method="POST">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    ไอดี : {{ $cost->id }}
+                                                    <br>
+                                                    วันที่เพิ่มรายการ: {{ $cost->created_at }}
+                                                    <br>
+                                                    {{-- ประเภทค่าใช้จ่าย :{{ $cost->cost_type }} --}}
+                                                    <label for="cost_type">แก้ไขประเภทค่าใช้จ่าย</label>
+                                                    <input type="text" name="cost_type" id="cost_type"
+                                                        value="{{ $cost->cost_type }}">
+                                                    <br>
+                                                    {{-- ราคาต้นทุน :{{ $cost->cost_value }} --}}
+                                                    <label for="cost_value">แก้ไขราคา</label>
+                                                    <input type="number" name="cost_value" id="cost_value"
+                                                        value="{{ $cost->cost_value }}">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-secondary">อัพเดต</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -216,6 +338,32 @@
             </table>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <form action="{{ route('addfitting', ['orderdetailid' => $rentdetail->id]) }}" method="POST">
         @csrf

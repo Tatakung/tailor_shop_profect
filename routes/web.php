@@ -133,16 +133,17 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     //แก้ไข Decoration 
     Route::get('/editdecoration/{id}', [CreateOrderController::class, 'editdecoration'])->name('editdecoration'); //หน้าแก้ไข decoration
-    Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); // อัพเดต decoration
+    // Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); // อัพเดต decoration
     Route::get('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); // ลบ decoration
 
 
 
 
     Route::post('/addcost', [CreateOrderController::class, 'addcost'])->name('addcost'); // เพิ่ม cost
-    Route::get('/editcost/{id}', [CreateOrderController::class, 'editcost'])->name('editcost'); // หน้าแก้ไข cost 
-    Route::post('/updatecost/{id}', [CreateOrderController::class, 'updatecost'])->name('updatecost'); //อะพเดตcost
+    // Route::get('/editcost/{id}', [CreateOrderController::class, 'editcost'])->name('editcost'); // หน้าแก้ไข cost 
+    // Route::post('/updatecost/{id}', [CreateOrderController::class, 'updatecost'])->name('updatecost'); //อะพเดตcost
 
+    
     Route::get('/deletecost/{id}', [CreateOrderController::class, 'deletecost'])->name('deletecost'); //ลบ cost
     // Route::get('/dress/softdelete/{id}', [DressmanageController::class, 'softdeleteDress'])->name('dress.softdelete'); //ลบชุดแบบsoftdelete
 
@@ -152,7 +153,20 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/addimage', [CreateOrderController::class, 'addimage'])->name('addimage'); //เพิ่มรูปภาพ
     Route::get('/manageimage/{id}', [CreateOrderController::class, 'manageimage'])->name('manageimage'); //จัดการรูปภาพ
+    // Route::post('/deleteimage/{id}', [CreateOrderController::class, 'deleteimage'])->name('deleteimage');  //ลบรูปภาพ
 
+    Route::delete('/deleteimage/{id}', [CreateOrderController::class, 'deleteimage'])->name('deleteimage');  //ลบรูปภาพ
+
+
+
+
+    Route::post('/updatecost/{id}', [CreateOrderController::class, 'updatecost'])->name('updatecost'); //อัพเดตcost
+    Route::delete('/deletecost/{id}', [CreateOrderController::class, 'deletecost'])->name('deletecost');  //ลบcost
+
+
+    Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); //อัพเดตdecpration4
+
+    
 
 
 
