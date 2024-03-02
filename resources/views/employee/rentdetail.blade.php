@@ -133,52 +133,79 @@
                             <td>{{ $decoration->decoration_type_description }}</td>
                             <td>{{ $decoration->decoration_price }}</td>
                             <td>
-                                <form action="{{route('updatedecoration', ['id' => $decoration->id])}}" method="POST">
-                                    @csrf
-                                    <button type="button" data-toggle="modal"
-                                        data-target="#showeditmodaldecoration{{ $decoration->id }}">
-                                        <img src="{{ asset('images/edit.png') }}" alt="" width="20"
-                                        height="20">
-                                    </button>
-                            </td>
-
-                            <div class="modal fade" id="showeditmodaldecoration{{ $decoration->id }}" role="dialog"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            แก้ไขdecoration
-                                        </div>
-                                        <div class="modal-body">
-                                            <label for="decoration_type">ประเภท</label>
-                                            <input type="text" name="decoration_type" id="decoration_type" value="{{$decoration->decoration_type}}">
-                                            <br>
-                                            <label for="decoration_price">ราคา</label>
-                                            <input type="number" name="decoration_price" id="decoration_price" value="{{$decoration->decoration_price}}">
-                                            <br>
-                                            <label for="decoration_type_description">รายละเอียด</label>
-                                            <textarea name="decoration_type_description" id="decoration_type_description" cols="10" rows="2">{{$decoration->decoration_type_description}}</textarea>
 
 
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger"
-                                                data-dismiss="modal">ยกเลิก</button>
-                                            <button class="btn btn-secondary" type="submit">อัพเดต</button>
+                                {{-- ปุ่มแก้ไขdecoration --}}
+                                <button type="button" data-toggle="modal"
+                                    data-target="#showeditmodaldecoration{{ $decoration->id }}">
+                                    <img src="{{ asset('images/edit.png') }}" alt="" width="20" height="20">
+                                </button>
+
+                                {{-- ปุ่มลบ --}}
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#showconfirmdeletedecoration{{$decoration->id}}">ลบ</button>
+                                <div class="modal fade" id="showconfirmdeletedecoration{{$decoration->id}}" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                จะลบจริงๆหรอ
+                                            </div>
+                                            <form action="{{route('deletedecoration',['id' => $decoration->id ])}}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                            <div class="modal-body">
+                                                ยืนยันใช่ไหมว่าจะลบอะ
+                                                {{$decoration->id}} <br>
+                                                {{$decoration->decoration_type}} <br>
+                                                {{$decoration->decoration_price}} <br>
+                                                {{$decoration->decoration_type_description}} <br>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                            </div>
+                                        </form>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            </form>
 
+                                {{-- modalแก้ไขของ decoration --}}
+                                <div class="modal fade" id="showeditmodaldecoration{{ $decoration->id }}" role="dialog"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                แก้ไขdecoration
+                                            </div>
+                                            <form action="{{ route('updatedecoration', ['id' => $decoration->id]) }}"
+                                                method="POST">
+                                                @csrf
+                                                <div class="modal-body">
+                                                    <label for="decoration_type">ประเภท</label>
+                                                    <input type="text" name="decoration_type" id="decoration_type"
+                                                        value="{{ $decoration->decoration_type }}">
+                                                    <br>
+                                                    <label for="decoration_price">ราคา</label>
+                                                    <input type="number" name="decoration_price" id="decoration_price"
+                                                        value="{{ $decoration->decoration_price }}">
+                                                    <br>
+                                                    <label for="decoration_type_description">รายละเอียด</label>
+                                                    <textarea name="decoration_type_description" id="decoration_type_description" cols="10" rows="2">{{ $decoration->decoration_type_description }}</textarea>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-dismiss="modal">ยกเลิก</button>
+                                                    <button class="btn btn-secondary" type="submit">อัพเดต</button>
+                                                </div>
+                                            </form>
+    
+                                        </div>
+                                    </div>
+                                </div>
 
+                            </td>
 
-
-
-
-
-
-
+                        
+                            
                         </tr>
                     @endforeach
                 </tbody>
@@ -210,7 +237,8 @@
                         <div class="modal-body">
                             <label for="addimage">เพิ่มรูปภาพ</label>
                             <input class="form-control" type="file" id="addimage" name="addimage">
-                            <input type="hidden" name="orderdetail_id" id="orderdetail_id" value="{{ $rentdetail->id }}">
+                            <input type="hidden" name="orderdetail_id" id="orderdetail_id"
+                                value="{{ $rentdetail->id }}">
                         </div>
 
                         <div class="modal-footer">
@@ -289,9 +317,6 @@
                                         </div>
                                     </div>
                                 </form>
-
-
-
 
 
 

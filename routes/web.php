@@ -132,9 +132,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     //แก้ไข Decoration 
-    Route::get('/editdecoration/{id}', [CreateOrderController::class, 'editdecoration'])->name('editdecoration'); //หน้าแก้ไข decoration
-    // Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); // อัพเดต decoration
-    Route::get('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); // ลบ decoration
+    // Route::get('/editdecoration/{id}', [CreateOrderController::class, 'editdecoration'])->name('editdecoration'); //หน้าแก้ไข decoration
+    // Route::get('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); // ลบ decoration
 
 
 
@@ -165,6 +164,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::post('/updatedecoration/{id}', [CreateOrderController::class, 'updatedecoration'])->name('updatedecoration'); //อัพเดตdecpration4
+    Route::delete('/deletedecoration/{id}', [CreateOrderController::class, 'deletedecoration'])->name('deletedecoration'); //ลบdecpration4
 
     
 
