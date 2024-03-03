@@ -89,10 +89,10 @@
 
 
             <p id="amountMessage" style="color: rgb(0, 76, 255)">จำนวนชุดที่มีในร้าน: (กรุณาเลือกชุด)</p>
-            @if(session('Overamount'))
-            <div class="alert alert-success">
-                {{ session('Overamount') }}
-            </div>
+            @if (session('Overamount'))
+                <div class="alert alert-success">
+                    {{ session('Overamount') }}
+                </div>
             @endif
 
             <div class="form-group">
@@ -204,11 +204,11 @@
 
 
 
-                <label for="real_pickup_date">วันที่นัดรับชุด:</label>
+                <label for="pickup_date">วันที่นัดรับชุด:</label>
                 <input type="date" name="pickup_date" id="pickup_date" required min="<?= date('Y-m-d') ?>"
                     max="<?= date('Y-m-d', strtotime('+30 days')) ?>">
 
-                <label for="real_return_date">วันที่นัดคืนชุด:</label>
+                <label for="return_date">วันที่นัดคืนชุด:</label>
                 <input type="date" name="return_date" id="return_date" required min="<?= date('Y-m-d') ?>">
             </div>
 
@@ -228,11 +228,11 @@
                     var pickupDate = new Date(pickupDateInput.value);
                     var returnDate = new Date(returnDateInput.value);
 
-                    // ตรวจสอบว่าวันที่นัดคืนชุดน้อยกว่าหรือเท่ากับวันที่นัดรับชุดหรือไม่
                     if (returnDate < pickupDate) {
-                        alert('กรุณาเลือกวันที่นัดคืนชุดให้มากกว่าวันที่นัดรับชุด');
-                        returnDateInput.value = ''; // ล้างค่าใน input วันที่นัดคืนชุด
-                        return; // ไม่ทำขั้นตอนถัดไป
+                        pickupDateInput.value = ''; // Reset pickup date
+                        returnDateInput.value = ''; // Reset return date
+                        lateChargeInput.value = '';
+                        return;
                     }
 
                     var timeDiff = returnDate.getTime() - pickupDate.getTime();
@@ -250,6 +250,22 @@
                 returnDateInput.addEventListener('change', updateLateCharge);
                 pickupDateInput.addEventListener('change', updateLateCharge);
             </script>
+
+            <script>
+                document.getElementById('pickup_date').addEventListener('input', function() {
+                    var pickupDate = new Date(this.value);
+                    var returnDateInput = document.getElementById('return_date');
+                    returnDateInput.min = pickupDate.toISOString().split('T')[0];
+                });
+            </script>
+
+
+
+
+
+
+
+
 
 
             <div class="form-group">

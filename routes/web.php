@@ -123,10 +123,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/addfitting/{orderdetailid}', [CreateOrderController::class, 'addfitting'])->name('addfitting'); //เพิ่มfitting
 
-    //แก้ไข fitting
-    Route::get('/editfitting/{id}', [CreateOrderController::class, 'editfitting'])->name('editfitting'); //หน้าแก้ไข fitting 
-    // Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
-    Route::get('/deletefitting/{id}', [CreateOrderController::class, 'deletefitting'])->name('deletefitting'); //ลบ fitting 
 
 
 
@@ -136,20 +132,12 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::post('/addcost', [CreateOrderController::class, 'addcost'])->name('addcost'); // เพิ่ม cost
-    // Route::get('/editcost/{id}', [CreateOrderController::class, 'editcost'])->name('editcost'); // หน้าแก้ไข cost 
-    // Route::post('/updatecost/{id}', [CreateOrderController::class, 'updatecost'])->name('updatecost'); //อะพเดตcost
-
-    
-    Route::get('/deletecost/{id}', [CreateOrderController::class, 'deletecost'])->name('deletecost'); //ลบ cost
-    // Route::get('/dress/softdelete/{id}', [DressmanageController::class, 'softdeleteDress'])->name('dress.softdelete'); //ลบชุดแบบsoftdelete
 
 
     Route::post('/adddecoration/{orderdetailid}', [CreateOrderController::class, 'adddecoration'])->name('adddecoration'); //เพิ่มdecoration
 
-
     Route::post('/addimage', [CreateOrderController::class, 'addimage'])->name('addimage'); //เพิ่มรูปภาพ
     Route::get('/manageimage/{id}', [CreateOrderController::class, 'manageimage'])->name('manageimage'); //จัดการรูปภาพ
-    // Route::post('/deleteimage/{id}', [CreateOrderController::class, 'deleteimage'])->name('deleteimage');  //ลบรูปภาพ
 
     Route::delete('/deleteimage/{id}', [CreateOrderController::class, 'deleteimage'])->name('deleteimage');  //ลบรูปภาพ
 
@@ -165,9 +153,12 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     //fitting
     Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
+    Route::delete('/deletefitting/{id}', [CreateOrderController::class, 'deletefitting'])->name('deletefitting'); //ลบ fitting 
 
     
 
+    //เพิ่มวันที่แก้ไขชุด
+    Route::post('/adddate', [CreateOrderController::class, 'adddate'])->name('adddate'); //เพิ่มวันที่
 
 
 });

@@ -7,10 +7,12 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="users-details">Dress ID: {{ $rentdetail->dress_id }}</p>
-                        @foreach ($dates as $date)
-                            <p>วันที่นัดรับชุด : {{ $date->pickup_date }}</p>
-                            <p>วันที่นัดคืนชุด : {{ $date->return_date }} </p>
-                        @endforeach
+                            @php
+                                $date = $dates->sortByDesc('id')->first();
+                            @endphp
+                                <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ล่าสุด</p>
+                                <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p>
+
 
                         <p> ประเภทชุด :{{ $dress->dress_type }}</p>
                         <p>แบบชุดที่ {{ $dress->dress_code }}</p>
@@ -56,6 +58,111 @@
                 @foreach ($dates as $date)
                     <p>วันที่นัดรับชุด : {{ $date->pickup_date }} || วันที่นัดคืนชุด : {{ $date->return_date }}</p>
                 @endforeach
+                {{-- ปุ่มแก้ไขวันที่ --}}
+                <button type="button" class="btn btn-secondary" data-toggle="modal"
+                    data-target="#showeditdate">แก้ไขวันที่</button>
+
+                {{-- modal แสดง ตอนที่กดแก้ไขวันที่นัดรับชุดและนัดคืนชุด --}}
+                <div class="modal fade" id="showeditdate" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                แก้ไขวันที่ (นัดรับชุด) / (นัดคืนชุด)
+                            </div>
+                            <form action="{{ route('adddate') }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <label for="pickup_date">วันที่นัดรับชุด</label>
+                                    <input type="date" name="pickup_date" id="pickup_date" min="<?= date('Y-m-d') ?>"
+                                        max="<?= date('Y-m-d', strtotime('+30 days')) ?>"
+                                        value="{{ $date->latest()->first()->pickup_date }}">
+
+                                    <label for="return_date">วันที่นัดคืนชุด</label>
+                                    <input type="date" name="return_date" id="return_date"
+                                        value="{{ $date->latest()->first()->return_date }}">
+
+                                    <input type="hidden" name="order_id_id" id="order_id_id"
+                                        value="{{ $rentdetail->id }}">
+
+                                    <br>
+                                    <label for="late_charge">Late Charge หรือ ค่าบริการขยายเวลาเช่าชุด :</label> <br>
+                                    <input type="text" id="late_charge" name="late_charge" readonly>
+                                    **หมายเหตุ กรณีเช่าชุด วันที่นัดรับชุด - วันที่นัดคืนชุด ทางร้านอนุญาตให้เช่าชุดสูงสุด 5
+                                    วัน
+                                    หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุด 100 / วัน
+
+                                    <script>
+                                        var pickupDateInput = document.getElementById('pickup_date'); //นัดรับชุด
+                                        var returnDateInput = document.getElementById('return_date'); //นัดคืนชุด
+                                        var lateChargeInput = document.getElementById('late_charge'); //late_charge
+
+                                        function updateLateCharge() {
+                                            var pickupDate = new Date(pickupDateInput.value);
+                                            var returnDate = new Date(returnDateInput.value);
+
+                                            if (returnDate < pickupDate) {
+                                                pickupDateInput.value = '{{ $date->latest()->first()->pickup_date }}'; // Reset pickup date
+                                                returnDateInput.value = ''; // Reset return date
+                                                lateChargeInput.value = '';
+                                                return;
+                                            }
+
+                                            var timeDiff = returnDate.getTime() - pickupDate.getTime();
+                                            var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                                            if (daysDiff > 5) {
+                                                var lateCharge = (daysDiff - 5) * 100;
+                                            } else {
+                                                var lateCharge = 0;
+                                            }
+
+                                            lateChargeInput.value = lateCharge;
+                                        }
+
+                                        returnDateInput.addEventListener('change', updateLateCharge);
+                                        pickupDateInput.addEventListener('change', updateLateCharge);
+                                    </script>
+
+                                    <script>
+                                        document.getElementById('pickup_date').addEventListener('input', function() {
+                                            var pickupDate = new Date(this.value);
+                                            var returnDateInput = document.getElementById('return_date');
+                                            returnDateInput.min = pickupDate.toISOString().split('T')[0];
+                                        });
+                                    </script>
+
+
+                                    {{-- <script>
+                                    document.getElementById('pickup_date').addEventListener('input', function() {
+                                        var pickupDate = new Date(this.value);
+                                        var returnDateInput = document.getElementById('return_date');
+                                        returnDateInput.min = pickupDate.toISOString().split('T')[0];
+                                    });
+                                    </script> --}}
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                    <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
             <div class="col-md-6 bg-light border border-gray-500">
                 {{-- <h1>กรอบขวา</h1> --}}
@@ -70,7 +177,7 @@
                             <th>วันที่นัด</th>
                             <th>สถานะ</th>
                             <th>โน๊ต</th>
-                            <th>ราคา</th>
+                            <th>ราคา(บาท)</th>
                             <th>action</th>
                         </tr>
                     </thead>
@@ -83,10 +190,25 @@
                                 <td>{{ $fitting->fitting_note }}</td>
                                 <td>{{ $fitting->fitting_price }}</td>
                                 <td>
-                                    <button class="btn btn-secondary" data-toggle="modal"
-                                        data-target="#showeditmodalfitting{{ $fitting->id }}">แก้ไข</button>
+                                    {{-- ปุ่มแก้ไข --}}
+                                    <button data-toggle="modal" data-target="#showeditmodalfitting{{ $fitting->id }}">
+                                        <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                            height="20">
+                                    </button>
+                                    {{-- ปุ่มลบ --}}
+                                    <button type="button" data-toggle="modal"
+                                        data-target="#showmodaldeletefitting{{ $fitting->id }}">
+                                        <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
+                                            height="20">
+                                    </button>
+                                    @if (session('notdelete'))
+                                        <div class="alert alert-success">
+                                            {{ session('notdelete') }}
+                                        </div>
+                                    @endif
                                 </td>
 
+                                {{-- modalแก้ไข fitting --}}
                                 <div class="modal fade" id="showeditmodalfitting{{ $fitting->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -109,7 +231,7 @@
                                                     <select name="fitting_status" id="fitting_status">
                                                         <option value="ยังไม่ลองชุด"> ยังไม่ลองชุด</option>
                                                         <option value="มาลองชุดแล้ว">มาลองชุดแล้ว</option>
-                                                    
+
 
                                                     </select>
                                                 </div>
@@ -122,7 +244,33 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                {{-- modalลบ fitting --}}
+                                <div class="modal fade" id="showmodaldeletefitting{{ $fitting->id }}" role="dialog"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                จะลบนัดชุดจริงหรอ
+                                            </div>
+                                            <form action="{{ route('deletefitting', ['id' => $fitting->id]) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <div class="modal-body">
+                                                    วันที่นัด :{{ $fitting->fitting_date }} <br>
+                                                    สถานะ :{{ $fitting->fitting_status }} <br>
+                                                    ราคา :{{ $fitting->fitting_price }} บาท <br>
+                                                    โน๊ต : {{ $fitting->fitting_note }} <br>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
 
 
 
@@ -133,12 +281,6 @@
             </div>
         </div>
     </div>
-
-
-    {{-- <label for="cost_type">ประเภทค่าใช้จ่าย</label>
-    <input type="text" name="cost_type" id="cost_type">
-    <label for="cost_value">ราคา</label>
-    <input type="number" name="cost_value" id="cost_value"> --}}
 
 
     <div class="row">
@@ -179,7 +321,8 @@
                                 {{-- ปุ่มแก้ไขdecoration --}}
                                 <button type="button" data-toggle="modal"
                                     data-target="#showeditmodaldecoration{{ $decoration->id }}">
-                                    <img src="{{ asset('images/edit.png') }}" alt="" width="20" height="20">
+                                    <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                        height="20">
                                 </button>
 
                                 {{-- ปุ่มลบ --}}
@@ -300,9 +443,6 @@
 
 
 
-
-
-
         <div class="col-md-6 bg-light border border-gray-500">
             <h3>ค่าใช้จ่าย</h3>
             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addcost"
@@ -341,8 +481,6 @@
                                 </button>
 
 
-
-
                                 <div class="modal fade" id="showconfirmdeletecost{{ $cost->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -368,11 +506,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-
-
-
 
 
                                 <div class="modal fade" id="costedit{{ $cost->id }}" role="dialog"
@@ -416,31 +549,6 @@
     </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <form action="{{ route('addfitting', ['orderdetailid' => $rentdetail->id]) }}" method="POST">
         @csrf
         <div class="modal fade" id="exampleModal" role="dialog" aria-hidden="true">
@@ -475,8 +583,6 @@
             </div>
         </div>
     </form>
-
-
 
     <form action="{{ route('adddecoration', ['orderdetailid' => $rentdetail->id]) }}" method="POST">
         @csrf

@@ -229,13 +229,11 @@ class CreateOrderController extends Controller
     }
 
 
-
     public function showTable()
     {
 
         //ตารางหลัก (customers) มีความสัมพันธ์กับตารางลูก (orders) และตารางลูก (orders) 
         //ก็มีความสัมพันธ์กับตารางลูกอีกตารางหนึ่ง (orderdetails) โดยที่มันต่อเนื่องกัน.
-
         $data = Customer::with(['orders:id,customer_id,created_at', 'orders.orderdetails:id,type_dress,price,amount,order_id', 'orders.orderdetails.dates:id,order_detail_id,return_date'])
             ->select('id', 'customer_fname', 'customer_lname')
             ->orderBy('created_at', 'asc') // เรียงลำดับตาม created_at จากน้อยไปมาก
@@ -314,42 +312,6 @@ class CreateOrderController extends Controller
         return redirect()->back()->with('success', 'บันทึกข้อมูลลูกค้าและคำสั่งสำเร็จ');
     }
 
-
-
-    //อัพเดต fitting 
-    // public function updatefitting(Request $request, $id)
-    // {
-
-    //     $request->validate([
-    //         'fitting_price' => 'required|numberic',
-    //         'fitting_note' => 'nullable|string',
-    //         'fitting_status' => 'required|string',
-    //     ]);
-
-    //     $updatefit = Fitting::find($id);
-    //     $updatefit->fitting_price = $request->input('fitting_price');
-    //     $updatefit->fitting_note = $request->input('fitting_note');
-
-    //     if ($request->input('fitting_status') == "มาลองชุดแล้ว") {
-    //         $updatefit->fitting_real_date = date('Y-m-d');
-    //         $updatefit->fitting_status = $request->input('fitting_status');
-    //     } else {
-    //         $updatefit->fitting_status = $request->input('fitting_status');
-    //     }
-    //     $updatefit->save();
-    //     return redirect()->route('rentdetail', ['id' => $updatefit->order_detail_id])->with('success', 'อัพเดตข้อมูลสำเร็จ');
-    // }
-
-    //แก้ไขdecoration
-    // public function editdecoration(Request $request, $id)
-    // {
-    //     $decoration = Decoration::find($id);
-    //     return view('employee.editdecoration', compact('decoration'));
-    // }
-
-
-
-
     //เพิ่ม cost
     public function addcost(Request $request)
     {
@@ -367,20 +329,6 @@ class CreateOrderController extends Controller
             $addcost->save();
         }
         return redirect()->back()->with('success', "เพิ่มค่าใช้จ่ายสำเร็จแล้วนะ");
-    }
-
-
-    //ลบ fitting 
-
-    public function deletefitting($id)
-    {
-        $delete = Fitting::find($id);
-        if ($delete->fitting_status == "ยังไม่ลองชุด") {
-            $delete->delete();
-        } else {
-            return redirect()->back()->with('notdelete', "ไม่สามารถลบได้เนื่องจาก เขามาลองชุดแล้วจร้า");
-        }
-        return redirect()->route('rentdetail', ['id' => $delete->order_detail_id])->with('success', "ลบเสร็๗แล้วจร้า");
     }
 
     public function addimage(Request $request)
@@ -497,5 +445,29 @@ class CreateOrderController extends Controller
         return redirect()->route('rentdetail', ['id' => $updatefit->order_detail_id])->with('success', 'อัพเดตข้อมูลสำเร็จ');
     }
 
+    public function deletefitting($id){
+        $delete = Fitting::find($id);
+
+        if($delete->fitting_status == "ยังไม่ลองชุด"){
+            $delete->delete();
+            return redirect()->back()->with('success',"ลบแล้ว");
+        }
+        else{
+            return redirect()->back()->with('notdelete',"ไม่สามารถลบได้เนื่องจาก เขามาลองชุดแล้วจร้า");
+        }
+    }
+
+    public function adddate(Request $request){
+        $adddate = new Date ; 
+        $adddate->order_detail_id = $request->input('order_id_id');
+        $adddate->pickup_date = $request->input('pickup_date');
+        $adddate->return_date = $request->input('return_date');
+        $adddate->save();
+        return redirect()->back()->with('success','แก้ไขสำเร็จแล้ว');
+    }
+
+
+
 
 }
+
