@@ -7,11 +7,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="users-details">Dress ID: {{ $rentdetail->dress_id }}</p>
-                            @php
-                                $date = $dates->sortByDesc('id')->first();
-                            @endphp
-                                <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ล่าสุด</p>
-                                <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p>
+                        @php
+                            $date = $dates->sortByDesc('id')->first();
+                        @endphp
+                        <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ล่าสุด</p>
+                        <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p>
 
 
                         <p> ประเภทชุด :{{ $dress->dress_type }}</p>
@@ -56,7 +56,7 @@
                 {{-- <h1>กรอบซ้าย</h1> --}}
                 <h3>วันที่</h3>
                 @foreach ($dates as $date)
-                    <p>วันที่นัดรับชุด : {{ $date->pickup_date }} || วันที่นัดคืนชุด : {{ $date->return_date }}</p>
+                    <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ||||| วันที่นัดคืนชุด : {{ $date->return_date }}</p>
                 @endforeach
                 {{-- ปุ่มแก้ไขวันที่ --}}
                 <button type="button" class="btn btn-secondary" data-toggle="modal"
@@ -73,13 +73,13 @@
                                 @csrf
                                 <div class="modal-body">
                                     <label for="pickup_date">วันที่นัดรับชุด</label>
-                                    <input type="date" name="pickup_date" id="pickup_date" min="<?= date('Y-m-d') ?>"
+                                    <input type="date" name="pickup_date" id="pickup_date"
                                         max="<?= date('Y-m-d', strtotime('+30 days')) ?>"
-                                        value="{{ $date->latest()->first()->pickup_date }}">
+                                        value="{{ $dates->sortByDesc('id')->first()->pickup_date }}">
 
                                     <label for="return_date">วันที่นัดคืนชุด</label>
                                     <input type="date" name="return_date" id="return_date"
-                                        value="{{ $date->latest()->first()->return_date }}">
+                                        value="{{ $dates->sortByDesc('id')->first()->return_date }}">
 
                                     <input type="hidden" name="order_id_id" id="order_id_id"
                                         value="{{ $rentdetail->id }}">
@@ -91,17 +91,21 @@
                                     วัน
                                     หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุด 100 / วัน
 
+
                                     <script>
                                         var pickupDateInput = document.getElementById('pickup_date'); //นัดรับชุด
                                         var returnDateInput = document.getElementById('return_date'); //นัดคืนชุด
                                         var lateChargeInput = document.getElementById('late_charge'); //late_charge
+
+                                        var originalPickupDateValue = pickupDateInput.value; // เก็บค่า value เดิม
 
                                         function updateLateCharge() {
                                             var pickupDate = new Date(pickupDateInput.value);
                                             var returnDate = new Date(returnDateInput.value);
 
                                             if (returnDate < pickupDate) {
-                                                pickupDateInput.value = '{{ $date->latest()->first()->pickup_date }}'; // Reset pickup date
+                                                pickupDateInput.value = originalPickupDateValue; // รีเซ็ตค่าเป็นค่าเดิม
+                                                pickupDateInput.value = '{{ $dates->sortByDesc('id')->first()->pickup_date }}'; // Reset pickup date
                                                 returnDateInput.value = ''; // Reset return date
                                                 lateChargeInput.value = '';
                                                 return;
@@ -128,17 +132,10 @@
                                             var pickupDate = new Date(this.value);
                                             var returnDateInput = document.getElementById('return_date');
                                             returnDateInput.min = pickupDate.toISOString().split('T')[0];
+                                            updateLateCharge(); // เรียกใหม่เมื่อมีการเปลี่ยนแปลงในวันที่นัดรับชุด
                                         });
                                     </script>
 
-
-                                    {{-- <script>
-                                    document.getElementById('pickup_date').addEventListener('input', function() {
-                                        var pickupDate = new Date(this.value);
-                                        var returnDateInput = document.getElementById('return_date');
-                                        returnDateInput.min = pickupDate.toISOString().split('T')[0];
-                                    });
-                                    </script> --}}
 
                                 </div>
                                 <div class="modal-footer">
@@ -288,9 +285,37 @@
             {{-- <h1>กรอบซ้าย</h1> --}}
             <h3>สถานะของออเดอร์123</h3>
             @foreach ($orderdetailstatuses as $detailstatus)
-                <p>วันที่ : {{ $detailstatus->created_at }} สถานะ : {{ $detailstatus->status }}</p>
+                <p>วันที่ทำรายการ : {{ $detailstatus->created_at }} สถานะ : {{ $detailstatus->status }}</p>
             @endforeach
+            <button type="button" class="btn btn-secondary" data-toggle="modal"
+                data-target="#showupdatestatus">อัพเดตสถานะ</button>
+
+            {{-- modalอัพเดตสถานะ --}}
+            <div class="modal fade" id="showupdatestatus" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+
+                        <form action="{{route('updateorderstatus',['id' =>$rentdetail->id])}}" method="POST">
+                            @csrf
+                            <div class="modal-header">
+                                คุณจะอัพเดตสถานะหรอ
+                            </div>
+                            <div class="modal-body">
+                                จองชุด--->กำลังเช่า--->คืนชุดแล้ว
+                                <input type="hidden" name="order_detail_id" id="order_detail_id" value="{{ $rentdetail->id }}">
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                <button type="submit" class="btn btn-secondary">อัพเดต</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+
         <div class="col-md-6 bg-light border border-gray-500">
             {{-- <h1>กรอบขวา</h1> --}}
             <h3>เพิ่มเติมกรณีปักดอกไม้เพิ่ม</h3>

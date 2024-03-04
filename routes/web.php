@@ -161,6 +161,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/adddate', [CreateOrderController::class, 'adddate'])->name('adddate'); //เพิ่มวันที่
 
 
+    //อัปเดตสถานะ
+    Route::post('/updateorderstatus', [CreateOrderController::class, 'updateorderstatus'])->name('updateorderstatus'); //อัปเดตสถานะของ orderdetail
+
+
 });
 
 

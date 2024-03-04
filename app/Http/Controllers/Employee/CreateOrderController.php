@@ -251,6 +251,7 @@ class CreateOrderController extends Controller
         $size = Size::find($rentdetail->size_id);
         $dress = Dress::find($rentdetail->dress_id);
 
+
         $dates = Date::where('order_detail_id', $id)
             ->select('id', 'pickup_date', 'return_date')
             ->get();
@@ -464,6 +465,34 @@ class CreateOrderController extends Controller
         $adddate->return_date = $request->input('return_date');
         $adddate->save();
         return redirect()->back()->with('success','แก้ไขสำเร็จแล้ว');
+    }
+
+    public function updateorderstatus(Request $request){
+        //ดึงสถนะของออเดอร์ดีเทล
+        $valuestatus  = Orderdetailstatus::where('order_detail_id',$request->input('order_detail_id'))
+        ->latest('created_at')
+        ->value('status');
+
+        //ดึงสถานะของจ่ายเงิน
+        $valuepayment = Paymentstatus::where('order_detail_id ',$request->input('order_detail_id'))
+                                ->latest('created_at');
+                                ->value('payment_status');
+
+
+        $
+        $addstatus = new Orderdetailstatus;
+        if($valuestatus === "จองชุด"){
+            $addstatus->order_detail_id = $request->input('order_detail_id');
+            $addstatus->status = "กำลังเช่า" ; 
+
+
+        }
+        if($valuestatus === "กำลังเช่า"){
+            $addstatus->order_detail_id = $request->input('order_detail_id');
+            $addstatus->status = "คืนชุดแล้ว" ; 
+        }
+        $addstatus->save();
+        return redirect()->back()->with('success',"อัพเดตสถานะสำเร็จแล้ว");
     }
 
 
