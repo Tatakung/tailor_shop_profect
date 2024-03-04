@@ -414,10 +414,10 @@ class CreateOrderController extends Controller
         $updatedecoration->decoration_price = $request->input('decoration_price');
         $updatedecoration->save();
         return redirect()->route('rentdetail', ['id' => $updatedecoration->order_detail_id])->with('success', "แก้ไขข้อมูลสำเร็จแล้ว");
-
     }
     // ลบdecoration
-    public function deletedecoration($id){
+    public function deletedecoration($id)
+    {
         $deletedecoration = Decoration::find($id);
         $deletedecoration->delete();
         return redirect()->route('rentdetail', ['id' => $deletedecoration->order_detail_id])->with('success', "แก้ไขข้อมูลสำเร็จแล้ว");
@@ -446,57 +446,61 @@ class CreateOrderController extends Controller
         return redirect()->route('rentdetail', ['id' => $updatefit->order_detail_id])->with('success', 'อัพเดตข้อมูลสำเร็จ');
     }
 
-    public function deletefitting($id){
+    public function deletefitting($id)
+    {
         $delete = Fitting::find($id);
 
-        if($delete->fitting_status == "ยังไม่ลองชุด"){
+        if ($delete->fitting_status == "ยังไม่ลองชุด") {
             $delete->delete();
-            return redirect()->back()->with('success',"ลบแล้ว");
-        }
-        else{
-            return redirect()->back()->with('notdelete',"ไม่สามารถลบได้เนื่องจาก เขามาลองชุดแล้วจร้า");
+            return redirect()->back()->with('success', "ลบแล้ว");
+        } else {
+            return redirect()->back()->with('notdelete', "ไม่สามารถลบได้เนื่องจาก เขามาลองชุดแล้วจร้า");
         }
     }
 
-    public function adddate(Request $request){
-        $adddate = new Date ; 
+    public function adddate(Request $request)
+    {
+        $adddate = new Date;
         $adddate->order_detail_id = $request->input('order_id_id');
         $adddate->pickup_date = $request->input('pickup_date');
         $adddate->return_date = $request->input('return_date');
         $adddate->save();
-        return redirect()->back()->with('success','แก้ไขสำเร็จแล้ว');
+        return redirect()->back()->with('success', 'แก้ไขสำเร็จแล้ว');
     }
 
-    public function updateorderstatus(Request $request){
+    public function updateorderstatus(Request $request)
+    {
         //ดึงสถนะของออเดอร์ดีเทล
-        $valuestatus  = Orderdetailstatus::where('order_detail_id',$request->input('order_detail_id'))
-        ->latest('created_at')
-        ->value('status');
+        $valuestatus  = Orderdetailstatus::where('order_detail_id', $request->input('order_detail_id'))
+            ->latest('created_at')
+            ->value('status');
 
         //ดึงสถานะของจ่ายเงิน
-        $valuepayment = Paymentstatus::where('order_detail_id ',$request->input('order_detail_id'))
-                                ->latest('created_at');
-                                ->value('payment_status');
+        $valuepayment = Paymentstatus::where('order_detail_id', $request->input('order_detail_id'))
+            ->latest('created_at')
+            ->value('payment_status');
 
 
 
         $addstatus = new Orderdetailstatus;
-        if($valuestatus === "จองชุด"){
+        if ($valuestatus === "จองชุด") {
             $addstatus->order_detail_id = $request->input('order_detail_id');
-            $addstatus->status = "กำลังเช่า" ; 
-
-
+            $addstatus->status = "กำลังเช่า";
+            
+            if($valuepayment === "1"){
+                $addpayment = new Paymentstatus;
+                $addpayment->order_detail_id = $request->input('order_detail_id');
+                $addpayment->payment_status = "2" ;
+                $addpayment->save();
+            }
         }
-        if($valuestatus === "กำลังเช่า"){
+        if ($valuestatus === "กำลังเช่า") {
             $addstatus->order_detail_id = $request->input('order_detail_id');
-            $addstatus->status = "คืนชุดแล้ว" ; 
+            $addstatus->status = "คืนชุดแล้ว";
         }
         $addstatus->save();
-        return redirect()->back()->with('success',"อัพเดตสถานะสำเร็จแล้ว");
+
+
+        return redirect()->back()->with('success', "อัพเดตสถานะสำเร็จแล้ว");
     }
-
-
-
-
 }
-
