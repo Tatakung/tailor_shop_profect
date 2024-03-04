@@ -479,7 +479,7 @@ class CreateOrderController extends Controller
                                 ->value('payment_status');
 
 
-        $
+
         $addstatus = new Orderdetailstatus;
         if($valuestatus === "จองชุด"){
             $addstatus->order_detail_id = $request->input('order_detail_id');
