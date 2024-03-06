@@ -107,6 +107,9 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::post('/savesize', [DressController::class, 'savesize'])->name('admin.savesize'); //บันทึกไซส์
 
+    Route::post('/updatedress', [DressController::class, 'updatefordress'])->name('admin.updatedress'); //บันทึกค่าที่แก้ไขในตาราง dress      
+
+    Route::post('/updatepricegroup', [DressController::class, 'updatepricegroup'])->name('admin.updatepricegroup'); //บันทึกค่าที่แก้ไขในตาราง size     
 
 
 

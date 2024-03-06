@@ -8,6 +8,24 @@
         <img src="{{ asset('storage/' . $dress->dress_image) }}" alt="" width="120" height="90">
     </div>
 
+    @if (session('fail'))
+        <div class="alert alert-danger">
+            {{ session('fail') }}
+        </div>
+    @endif
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('faildeleteamount'))
+        <div class="alert alert-danger">
+            {{ session('faildeleteamount') }}
+        </div>
+    @endif
+
+
+
 
     {{-- modalของแก้ไขตาราง dress --}}
     <div class="modal fade" id="showeditdresstable" role="dialog" aria-hidden="true">
@@ -16,22 +34,22 @@
                 <div class="modal-header">
                     แก้ไขชุด
                 </div>
-                <div class="modal-body">
-                    <label for="description">แก้ไขลายละเอียด</label>
-                    <input type="text" name="description" id="description" value="{{ $dress->dress_description }}">
-                    <br>
-                    <label for="">แก้ไขรูปภาพ</label>
-                    <input type="file" name="" id="">
+                <form action="{{ route('admin.updatedress') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <label for="description">แก้ไขลายละเอียด</label>
+                        <input type="text" name="description" id="description" value="{{ $dress->dress_description }}">
+                        <br>
+                        <label for="update_image">แก้ไขรูปภาพ</label>
+                        <input type="file" name="update_image" id="update_image">
+                        <input type="hidden" name="dress_id" id="dress_id" value="{{ $dress->id }}">
+                    </div>
 
-
-                    <input type="hidden" name="" id="" value="{{ $dress->id }}">
-
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                    <button type="submit" class="btn btn-secondary">บันทึก</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-secondary">บันทึก</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -56,24 +74,24 @@
                 <div class="modal-header">
                     เพิ่ม ไซส์
                 </div>
-                <form action="{{route('admin.savesize')}}" method="POST">
+                <form action="{{ route('admin.savesize') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         {{ $dress->id }}
                         <br>
                         <label for="add_size_name">ชื่อไซส์</label>
-                        <input type="text" name="add_size_name" id="add_size_name">
+                        <input type="text" name="add_size_name" id="add_size_name" required>
                         <br>
                         <label for="add_price">ราคา</label>
-                        <input type="number" name="add_price" id="add_price">
+                        <input type="number" name="add_price" id="add_price" required>
                         <br>
                         <label for="add_deposit">ราคามัดจำ</label>
-                        <input type="number" name="add_deposit" id="add_deposit">
+                        <input type="number" name="add_deposit" id="add_deposit" required>
                         <br>
                         <label for="add_amount">จำนวนชุด</label>
-                        <input type="number" name="add_amount" id="add_amount">
+                        <input type="number" name="add_amount" id="add_amount" required>
 
-                        <input type="hidden" name="dress_id" id="dress_id" value="{{$dress->id}}">
+                        <input type="hidden" name="dress_id" id="dress_id" value="{{ $dress->id }}">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
@@ -130,38 +148,46 @@
                                     <div class="modal-header">
                                         จะแก้ไข
                                     </div>
-                                    <div class="modal-body">
-                                        <label for="update_price">แก้ไขราคา</label>
-                                        <input type="number" name="update_price" id="update_price"
-                                            value="{{ $size->price }}">
-                                        <br>
-
-                                        <label for="update_deposit">แก้ไขราคามัดจำ</label>
-                                        <input type="number" name="update_deposit" id="update_deposit"
-                                            value="{{ $size->deposit }}">
-
-                                        <br>
-
-                                        <label for="amount" id="amount">เพิ่ม/ลบจำนวนชุด</label>
-                                        <select name="action_type" id="action_type">
-                                            <option value="" selected>เลือก</option>
-                                            <option value="add">เพิ่มจำนวน</option>
-                                            <option value="remove">ลบจำนวน</option>
-                                        </select>
-
-                                        <label for="quantity">จำนวนที่ต้องการ</label>
-                                        <input type="number" name="quantity" id="quantity" disabled>
 
 
 
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger"
-                                                data-dismiss="modal">ยกเลิก</button>
-                                            <button type="submit" class="btn btn-secondary">บันทึก</button>
-                                        </div>
-                                    </div>
+                                    <form action="{{ route('admin.updatepricegroup') }}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <label for="update_price">แก้ไขราคาชุด</label>
+                                            <input type="number" name="update_price" id="update_price"
+                                                value="{{ $size->price }}">
+                                            <br>
+
+                                            <label for="update_deposit">แก้ไขราคามัดจำ</label>
+                                            <input type="number" name="update_deposit" id="update_deposit"
+                                                value="{{ $size->deposit }}">
+
+                                            <br>
+
+                                            <label for="amount" id="amount">เพิ่ม/ลบจำนวนชุด</label>
+                                            <select name="action_type" id="action_type">
+                                                <option value="" selected>เลือก</option>
+                                                <option value="add">เพิ่มจำนวน</option>
+                                                <option value="remove">ลบจำนวน</option>
+                                            </select>
+
+                                            <label for="quantity">จำนวนที่ต้องการ</label>
+                                            <input type="number" name="quantity" id="quantity" disabled>
+
+                                            <input type="hidden" name="size_id" id="size_id"
+                                                value="{{ $size->id }}">
+
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger"
+                                                    data-dismiss="modal">ยกเลิก</button>
+                                                <button type="submit" class="btn btn-secondary">บันทึก</button>
+                                            </div>
+                                    </form>
                                 </div>
                             </div>
+                        </div>
 
                     </td>
                 </tr>

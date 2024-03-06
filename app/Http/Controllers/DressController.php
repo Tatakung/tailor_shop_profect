@@ -252,11 +252,89 @@ class DressController extends Controller
     //บันทึกเพิ่มไซส์ 
     public function savesize(Request $request){
         $request->validate([
-
+            'add_size_name' => 'required|string',
+            'add_price' => 'required|numeric',
+            'add_deposit' => 'required|numeric',
+            'add_amount' => 'required|numeric',
         ]);
+
+        $again = Size::where('dress_id',$request->input('dress_id'))
+                            ->pluck('size_name') ; 
+        
+
+        $savesize = new Size ; 
+        $savesize->dress_id  = $request->input('dress_id');
+
+        if( $again->contains($request->input('add_size_name')) ){
+            return redirect()->back()->with('fail',"ไซส์ที่เพิ่มมันมีอยู่แล้ว");
+        }
+        else{
+            $savesize->size_name = $request->input('add_size_name');
+        }
+        $savesize->price = $request->input('add_price');
+        $savesize->deposit = $request->input('add_deposit') ; 
+        $savesize->amount = $request->input('add_amount') ;
+        $savesize->save();
+        return redirect()->back()->with('success',"เพิ่มไซส์สำเร็จ");
     }
 
+    //บันทึกข้อมูลอัพเดตในตาราง dress
+    public function updatefordress(Request $request){
+        $request->validate([
+            'description' => 'nullable|string',
+            'update_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]) ; 
+        $update = Dress::find($request->input('dress_id')) ; 
+        $update->dress_description = $request->input('description') ; 
 
+        if($request->hasFile('update_image')){
+            $update->dress_image = $request->file('update_image')->store('dress_images','public');
+        }
+        $update->save() ; 
+        return redirect()->back()->with('success',"อัพเดตข้อมูลสำเร็จ") ; 
+    }
+
+    //อัปเดตพวก ราคา ราคามัดจำ จำนวนเครื่องประดับ
+    public function updatepricegroup(Request $request){
+        $request->validate([
+
+        ]) ; 
+        $update = Size::find($request->input('size_id')) ; 
+
+        $update->price = $request->input('update_price') ; 
+
+        //แก้ไขราคามัดจำ
+        if($request->input('update_deposit') > $update->price ){
+            return redirect()->back()->with('fail',"ไม่สามารถแก้ไขราคามัดจำที่มากกว่าราคาเช่าต่อชุดได้")  ; 
+        }
+        else{
+            $update->deposit = $request->input('update_deposit') ; 
+        }
+
+
+        
+        //แก้ไขจำนวน
+        if($request->input('action_type') == "add" ){
+            $update->amount = $request->input('quantity') + $update->amount ; 
+        }
+        elseif($request->input('action_type') == "remove"){
+            if($request->input('quantity') <= $update->amount){
+                $update->amount = $update->amount -  $request->input('quantity') ; 
+            }
+            else{
+                return redirect()->back()->with('faildeleteamount', 'ไม่สามารถลบจำนวนเครื่องปรับที่มากกว่าจำนวนที่มีในร้านได้');
+            }
+        }
+        
+        $update->save() ; 
+        
+        return redirect()->back()->with('success','แก้ไขสำเร็จ') ; 
+
+        
+
+
+
+    }
 
 
 
