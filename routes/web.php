@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DressController;
 use App\Http\Controllers\Employee\CreateOrderController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewdressController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -70,24 +71,61 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 
     //ชุด
-    Route::get('/admin/dress/create', [DressController::class, 'formdress'])->name('admin.formdress'); //แบบฟอร์มเพิ่มชุด
-    Route::post('/admin/storedress', [DressController::class, 'storeDress'])->name('admin.sotre'); // บันทึกนะ
-    Route::get('/admin/dresscodes/{dressType}', [DressController::class, 'getDressCodes']); //ไปดึงรหัสชุด
+    // Route::get('/admin/dress/create', [DressController::class, 'formdress'])->name('admin.formdress'); //แบบฟอร์มเพิ่มชุด
+    // Route::post('/admin/storedress', [DressController::class, 'storeDress'])->name('admin.sotre'); // บันทึกนะ
+    // Route::get('/admin/dresscodes/{dressType}', [DressController::class, 'getDressCodes']); //ไปดึงรหัสชุด
 
 
-    Route::get('/admin/numbercodes/{numbertypecode}', [DressController::class, 'NumberCodes']);
+    // Route::get('/admin/numbercodes/{numbertypecode}', [DressController::class, 'NumberCodes']);
 
-    Route::get('/admin/sizes/{dressType}/{dressCode}', [DressController::class, 'getSizeNames']); //ดึงไซส์
+    // Route::get('/admin/sizes/{dressType}/{dressCode}', [DressController::class, 'getSizeNames']); //ดึงไซส์
 
-    Route::get('/admin/image/{dressType}/{dressCode}', [DressController::class, 'getimage']);  //ดึงรูปภาพ
+    // Route::get('/admin/image/{dressType}/{dressCode}', [DressController::class, 'getimage']);  //ดึงรูปภาพ
 
-    Route::get('/admin/getdes/{dressType}/{dressCode}', [DressController::class, 'getDescription']); //ดึงdescription
+    // Route::get('/admin/getdes/{dressType}/{dressCode}', [DressController::class, 'getDescription']); //ดึงdescription
+    
+    //คอมเม้นโค้ดส่วนเดิมไว้
+
 
     Route::get('/admin/showdress', [DressController::class, 'showDress'])->name('admin.showDress');   //แสดงชุดทั้งหมดในร้าน
 
     Route::get('/admin/detaildress/{id}', [DressController::class, 'detailDress'])->name('admin.detailDress');   // แสดงรายละเอียดชุด
     Route::get('/admin/editdress/{id}', [DressController::class, 'editDress'])->name('admin.editDress');   // หน้าแก้ไขชุด
     Route::post('/admin/updatedress/{id}', [DressController::class, 'updateDress'])->name('admin.updateDress'); //หน้าอัปเดต
+
+
+
+
+
+    //ทำใหม่นะ ?  ชุดนะ 
+    Route::get('/new/adddress', [DressController::class, 'getdresstype'])->name('admin.getdresstype'); //แบบฟอร์ฒเพิ่มชุด
+    Route::get('/getmaxcode/{dresstype}', [DressController::class, 'getmaxcode'])->name('new.getmaxcode'); //ดึงค่ามากที่สุด + 1 
+    Route::post('/saveadddress', [DressController::class, 'saveadddress'])->name('new.saveadddress'); //บันทึก
+
+    Route::get('/admin/showdresstotal', [DressController::class, 'show'])->name('admin.showdresstotal'); //แสดงข้อมูลชุด
+    Route::get('/admin/showdressdetail/{id}', [DressController::class, 'showdetail'])->name('admin.showdressdetail'); //รายละเอยีดชุด
+
+    Route::post('/savesize', [DressController::class, 'savesize'])->name('admin.savesize'); //บันทึกไซส์
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -171,3 +209,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 Route::get('/testlogin', function () {
     return view('test');
 });
+
+
+

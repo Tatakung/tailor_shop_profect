@@ -14,6 +14,7 @@
                         <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p>
 
 
+                        ทดสอบค่าที่ส่งมา -> : {{ $valuestatus }}
                         <p> ประเภทชุด :{{ $dress->dress_type }}</p>
                         <p>แบบชุดที่ {{ $dress->dress_code }}</p>
                         <p>ไซส์ :{{ $size->size_name }}</p>
@@ -59,8 +60,10 @@
                     <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ||||| วันที่นัดคืนชุด : {{ $date->return_date }}</p>
                 @endforeach
                 {{-- ปุ่มแก้ไขวันที่ --}}
-                <button type="button" class="btn btn-secondary" data-toggle="modal"
-                    data-target="#showeditdate">แก้ไขวันที่</button>
+                <div style="display: block">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal"
+                    data-target="#showeditdate" id="showeditdateid">แก้ไขวันที่</button>
+                </div>
 
                 {{-- modal แสดง ตอนที่กดแก้ไขวันที่นัดรับชุดและนัดคืนชุด --}}
                 <div class="modal fade" id="showeditdate" role="dialog" aria-hidden="true">
@@ -164,8 +167,9 @@
             <div class="col-md-6 bg-light border border-gray-500">
                 {{-- <h1>กรอบขวา</h1> --}}
                 <h3>นัดลองชุด</h3>
-                <button type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#exampleModal">เพิ่มวันนัดลองชุด </button>
+                <div style="display: block;">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal" id="showfittingid">เพิ่มวันนัดลองชุด</button>
+                </div>
 
                 <table class="table">
                     <thead>
@@ -287,22 +291,62 @@
             @foreach ($orderdetailstatuses as $detailstatus)
                 <p>วันที่ทำรายการ : {{ $detailstatus->created_at }} สถานะ : {{ $detailstatus->status }}</p>
             @endforeach
-            <button type="button" class="btn btn-secondary" data-toggle="modal"
-                data-target="#showupdatestatus">อัพเดตสถานะ</button>
+            <div style="display: block">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showpickup"
+                id="showpickupid">ยืนยันมารับชุด</button>
+            </div>
+
+            <div style="display: block">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showreturn"
+                id="showreturnid">ยืนยันคืนชุด</button>
+            </div>
+
+            {{-- modal ยืนยันคืนชุด --}}
+            <div class="modal fade" id="showreturn" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            ยืนยันการคืนชุด
+                        </div>
+                        <div class="modal-body">
+                            <label for="">ราคาประกัน</label>
+                            <input type="number" name="" id="">
+                        
+                            <br>
+                            <label for="">เหตุผล</label>
+                            <input type="text" placeholder="เหตุผลในการหัก">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
 
             {{-- modalอัพเดตสถานะ --}}
-            <div class="modal fade" id="showupdatestatus" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="showpickup" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
 
-                        <form action="{{route('updateorderstatus',['id' =>$rentdetail->id])}}" method="POST">
+                        <form action="{{ route('updateorderstatus', ['id' => $rentdetail->id]) }}" method="POST">
                             @csrf
                             <div class="modal-header">
                                 คุณจะอัพเดตสถานะหรอ
                             </div>
                             <div class="modal-body">
                                 จองชุด--->กำลังเช่า--->คืนชุดแล้ว
-                                <input type="hidden" name="order_detail_id" id="order_detail_id" value="{{ $rentdetail->id }}">
+                                <input type="hidden" name="order_detail_id" id="order_detail_id"
+                                    value="{{ $rentdetail->id }}">
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
@@ -315,12 +359,44 @@
 
         </div>
 
+        {{-- รอให้หน้าเว็บโหลดเสร็จ --}}
+        {{-- ส่วนบล็อคปุ่มต่างๆ ไม่ให้มันกดได้  --}}
+        <script>
+            document.addEventListener('DOMContentLoaded',function(){
+                var Status_orderdetail = "{{$valuestatus}}" ;  //รับค่าล่าสุดมา
+                var showpickupid = document.getElementById('showpickupid'); //ปุ่มยืนยันการมารับชุด
+                var showreturnid = document.getElementById('showreturnid'); //ปุ่มยืนยันคืนชุด
+                var showfittingid = document.getElementById('showfittingid') ; //ปุ่มเพิ่มวันนัดลองชุด
+                var showdecorationid = document.getElementById('showdecorationid'); //ปุ่มปักเพิ่ม
+                var showaddimageid = document.getElementById('showaddimageid') ; //เพิ่มเพิ่มรูปภาพ
+                var showeditdateid = document.getElementById('showeditdateid') ; //แก้ไขวันที่
+
+                if(Status_orderdetail === "จองชุด"){
+                    showreturnid.style.display = "none" ; 
+                }
+                if(Status_orderdetail === "กำลังเช่า"){
+                    showpickupid.style.display = "none"
+                    showreturnid.style.display = "block";
+                    showfittingid.style.display = "none" ; 
+                    showdecorationid.style.display = "none";
+                    showaddimageid.style.display = "none";
+                    showeditdateid.style.display = "none" ; 
+                }
+            });
+        </script>
+
+
+
+
 
         <div class="col-md-6 bg-light border border-gray-500">
             {{-- <h1>กรอบขวา</h1> --}}
             <h3>เพิ่มเติมกรณีปักดอกไม้เพิ่ม</h3>
-            <button type="button" class="btn btn-primary" data-toggle="modal"
-                data-target="#adddecoration">+ปักเพิ่ม</button>
+            <div style="display: block">
+                <button type="button" class="btn btn-secondary" data-toggle="modal"
+                data-target="#adddecoration" id="showdecorationid">+ปักเพิ่ม</button>
+            </div>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -436,8 +512,11 @@
             @foreach ($imagerents as $imagerent)
                 <img src="{{ asset('storage/' . $imagerent->image) }}" alt="123" style="width:90px; height: 90px;">
             @endforeach
-            <button class="btn btn-secondary" style="width:90px; height: 90px;" data-toggle="modal"
-                data-target="#showaddimahe">เพิ่มรูปภาพ</button>
+            <div style="display: block">
+                <button class="btn btn-secondary" style="width:90px; height: 90px;" data-toggle="modal"
+                data-target="#showaddimahe" id="showaddimageid">เพิ่มรูปภาพ</button>
+
+            </div>
         </div>
 
 

@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="main.css">
 
-    
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
 
@@ -133,7 +131,7 @@ nav {
             </div>
 
 
-            <a href="{{route('admin.showDress')}}" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+            <a href="{{route('admin.showdresstotal')}}" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
               <span class="bi bi-box"></span>
               <span class="ml-2">จัดการชุด</span>
           </a>
@@ -207,9 +205,6 @@ nav {
             @yield('content')
 
         
-
-
-
         </main>
     </div>
 
@@ -246,6 +241,3 @@ nav {
 </body>
 
 </html>
-
-
-

@@ -276,7 +276,12 @@ class CreateOrderController extends Controller
             ->select('id', 'cost_type', 'cost_value', 'created_at', 'order_detail_id')
             ->get();
 
-        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs'));
+        //ส่งค่าสถานะ เพื่อไปตรวจสอบในการ บล้อคช่องปุ่มกดต่างๆ 
+        $valuestatus = Orderdetailstatus::where('order_detail_id',$id)
+                    ->latest('created_at')
+                    ->value('status');
+
+        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs','valuestatus'));
     }
 
 
@@ -499,7 +504,6 @@ class CreateOrderController extends Controller
             $addstatus->status = "คืนชุดแล้ว";
         }
         $addstatus->save();
-
 
         return redirect()->back()->with('success', "อัพเดตสถานะสำเร็จแล้ว");
     }
