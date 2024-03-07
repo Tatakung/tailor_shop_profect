@@ -8,6 +8,8 @@
         <img src="{{ asset('storage/' . $dress->dress_image) }}" alt="" width="120" height="90">
     </div>
 
+    
+
     @if (session('fail'))
         <div class="alert alert-danger">
             {{ session('fail') }}
@@ -24,6 +26,12 @@
         </div>
     @endif
 
+
+    @if (session('addselect'))
+        <div class="alert alert-danger">
+            {{ session('addselect') }}
+        </div>
+    @endif
 
 
 
@@ -53,17 +61,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
 
 
     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showaddsize">+เพิ่มไซส์</button>
@@ -139,8 +136,83 @@
                     <td>{{ $size->deposit }}</td>
                     <td>{{ $size->amount }}</td>
                     <td>
-                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                        {{-- ปุ่มแก้ไข --}}
+                        <button type="button" class="btn btn-secondary" data-toggle="modal"
                             data-target="#showedit{{ $size->id }}">แก้ไข</button>
+                        {{-- ปุ่มลบ --}}
+
+                        <button type="button" data-toggle="modal" data-target="#showconfirmdeletesize{{ $size->id }}">
+                            <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20" height="20">
+                        </button>
+
+                        <button type="button" data-toggle="modal"
+                        data-target="#showhistory{{ $size->id }}">ดูประวัติ</button>
+
+
+                        {{-- modalลบsize --}}
+                        <div class="modal fade" id="showconfirmdeletesize{{ $size->id }}" role="dialog"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        จะลบจริงหรอ
+                                    </div>
+                                    <div class="modal-body">
+                                        จะลบจริงๆใช้ไหม
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">ยกเลิก</button>
+                                        <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {{-- momdalแสดงประวัติ --}}
+                        <div class="modal fade" id="showhistory{{ $size->id }}" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        ประวัติการแก้ไข
+                                    </div>
+                                    <div class="modal-body">
+                                        {{$size->id}}
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>size_id</th>
+                                                    <th>action</th>
+                                                    <th>ค่าเดิม</th>
+                                                    <th>ค่าใหม่</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach(   \App\Models\Dresssizehistory::where('size_id',$size->id)->get() as $history  )
+                                                <tr>
+                                                    <td>{{$history->size_id}}</td>
+                                                    <td>{{$history->action}}</td>
+                                                    <td>{{$history->old_amount}}</td>
+                                                    <td>{{$history->new_amount}}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                                        <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
                         {{-- modalแสดงแก้ไข --}}
                         <div class="modal fade" id="showedit{{ $size->id }}" role="dialog" aria-hidden="true">
                             <div class="modal-dialog modal-lg" role="document">
@@ -148,9 +220,6 @@
                                     <div class="modal-header">
                                         จะแก้ไข
                                     </div>
-
-
-
                                     <form action="{{ route('admin.updatepricegroup') }}" method="POST">
                                         @csrf
                                         <div class="modal-body">
@@ -166,14 +235,15 @@
                                             <br>
 
                                             <label for="amount" id="amount">เพิ่ม/ลบจำนวนชุด</label>
-                                            <select name="action_type" id="action_type">
+                                            <select name="action_type" id="action_type_{{ $size->id }}">
                                                 <option value="" selected>เลือก</option>
                                                 <option value="add">เพิ่มจำนวน</option>
                                                 <option value="remove">ลบจำนวน</option>
                                             </select>
 
                                             <label for="quantity">จำนวนที่ต้องการ</label>
-                                            <input type="number" name="quantity" id="quantity" disabled>
+                                            <input type="number" name="quantity" id="quantity_{{ $size->id }}">
+
 
                                             <input type="hidden" name="size_id" id="size_id"
                                                 value="{{ $size->id }}">
@@ -184,28 +254,54 @@
                                                     data-dismiss="modal">ยกเลิก</button>
                                                 <button type="submit" class="btn btn-secondary">บันทึก</button>
                                             </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
-                        </div>
+
+
+
+
 
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-    <script>
-        selecttype = document.getElementById('action_type'); //เลือกปกติ
-        quantityinput = document.getElementById('quantity'); //ช่องกรอกข้อมูลนะ
+    {{-- <script>
+        selecttype = document.getElementById('action_type_{{ $size->id }}'); //เลือกปกติ
+        quantityinput = document.getElementById('quantityy_{{ $size->id }}'); //ช่องกรอกข้อมูลนะ
+        var isQuantityDisabled = true;
         selecttype.addEventListener('change', function() {
             if (selecttype.value === "add" || selecttype.value === "remove") {
                 quantityinput.value = '';
                 quantityinput.disabled = false;
+                isQuantityDisabled = false;
+
             } else {
                 quantityinput.value = '';
                 quantityinput.disabled = true;
+                isQuantityDisabled = true;
             }
 
         });
-    </script>
-@endsection
+    </script> --}}
+
+    {{-- modalแสดงประวัติแก้ไข --}}
+    <div class="modal fade" id="history{{ $size->id }}" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    จะแสดงประวัติ
+                </div>
+                <div class="modal-body">
+
+                    กกหหกกห
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-secondary">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endsection

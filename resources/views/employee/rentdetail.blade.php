@@ -432,6 +432,7 @@
                                     <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
                                         height="20">
                                 </button>
+                                {{-- modalของลบ --}}
                                 <div class="modal fade" id="showconfirmdeletedecoration{{ $decoration->id }}"
                                     role="dialog" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">

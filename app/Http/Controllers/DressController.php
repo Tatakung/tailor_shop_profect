@@ -248,6 +248,7 @@ class DressController extends Controller
         $size = Size::where('dress_id', $id)
             ->get();
         $dress = Dress::find($id);
+
         return view('admin.showdetail', compact('size', 'dress'));
     }
 
@@ -274,7 +275,15 @@ class DressController extends Controller
             $savesize->size_name = $request->input('add_size_name');
         }
         $savesize->price = $request->input('add_price');
-        $savesize->deposit = $request->input('add_deposit');
+
+
+        if($request->input('add_deposit') > $request->input('add_price')){
+            return redirect()->back()->with('fail', "ราคามัดจำต้องไม่เกินราคาชุด");
+        }
+        else{
+            $savesize->deposit = $request->input('add_deposit');
+        }
+
         $savesize->amount = $request->input('add_amount');
         $savesize->save();
         return redirect()->back()->with('success', "เพิ่มไซส์สำเร็จ");
@@ -304,7 +313,7 @@ class DressController extends Controller
         $update = Size::find($request->input('size_id'));
 
 
-        //บันทึกประวัติการปรับราคา
+        // //บันทึกประวัติการปรับราคา
         if ($request->input('update_price') != $update->price) {
             if ($request->input('update_price') > $update->price) {
                 $textprice = "ปรับเพิ่มราคาขึ้น";
@@ -317,22 +326,15 @@ class DressController extends Controller
                 'old_amount' =>  $update->price,
                 'new_amount' => $request->input('update_price'),
             ]);
+            $update->price = $request->input('update_price');
+            // $update->save();
+            // return redirect()->back()->with('success', $textprice);
         }
 
-
-        $update->price = $request->input('update_price');
-
-
-
-        //เพิ่มประวัติแก้ไขราคามัดจำ 
-        if ($request->input('update_deposit') != $update->deposit) {   //มีการเปลี่ยนแปลงมัดจำ
-            if ($request->input('update_deposit') <= $update->price) {
-            }
-        }
+        // //เพิ่มประวัติแก้ไขราคามัดจำ 
 
 
         if ($request->input('update_deposit') <= $update->price) {
-
             if ($request->input('update_deposit') != $update->deposit) {
                 if ($request->input('update_deposit') > $update->deposit) {
                     $textdeposit = "ปรับเพิ่มราคามัดจำ";
@@ -347,49 +349,45 @@ class DressController extends Controller
                 ]);
                 $update->deposit = $request->input('update_deposit');
             } else {
-                return redirect()->back()->with('fail', "ไม่สามารถแก้ไขราคามัดจำที่มากกว่าราคาเช่าต่อชุดได้");
+                $update->deposit = $request->input('update_deposit');
+                $textdeposit = "มันเท่ากันไม่มีอะไร";
             }
+        } else {
+            return redirect()->back()->with('fail', "ไม่สามารถแก้ไขราคามัดจำที่มากกว่าราคาเช่าต่อชุดได้");
         }
 
-        //แก้ไขราคามัดจำ
-        // if($request->input('update_deposit') > $update->price ){
-        //     return redirect()->back()->with('fail',"ไม่สามารถแก้ไขราคามัดจำที่มากกว่าราคาเช่าต่อชุดได้")  ; 
-        // }
-        // else{
-        //     $update->deposit = $request->input('update_deposit') ; 
-        // }
 
 
-
-
-
-
-
-        //แก้ไขจำนวน
         if ($request->input('action_type') == "add") {
+            Dresssizehistory::create([
+                'size_id' => $update->id , 
+                'action' => "เพิ่มจำนวน",
+                'old_amount' => $update->amount , 
+                'new_amount' => $request->input('quantity') + $update->amount , 
+            ]) ; 
             $update->amount = $request->input('quantity') + $update->amount;
-        } elseif ($request->input('action_type') == "remove") {
+        } 
+        elseif ($request->input('action_type') == "remove") {
             if ($request->input('quantity') <= $update->amount) {
-                $update->amount = $update->amount -  $request->input('quantity');
-            } else {
-                return redirect()->back()->with('faildeleteamount', 'ไม่สามารถลบจำนวนเครื่องปรับที่มากกว่าจำนวนที่มีในร้านได้');
+                Dresssizehistory::create([
+                    'size_id' => $update->id , 
+                    'action' => "ลดจำนวน",
+                    'old_amount' => $update->amount , 
+                    'new_amount' => $update->amount - $request->input('quantity') , 
+                ]) ; 
+                $update->amount = $update->amount - $request->input('quantity');
+            } 
+            else {
+                return redirect()->back()->with('faildeleteamount', 'ไม่สามารถลบจำนวนชุดที่มากกว่าจำนวนที่มีในร้านได้');
             }
         }
+        elseif($request->input('action_type') == "" && $request->input('quantity') != ""){
+            return redirect()->back()->with('addselect', 'กรุณาเลือกเพิ่ม/ลบจำนวนชุดที่ต้องการ'); 
+        }
+
 
         $update->save();
-
         return redirect()->back()->with('success', 'แก้ไขสำเร็จ');
-
-
-
-        // Dresssizehistory::create([
-        //                 'size_id' => $size->id,
-        //                 'action' => $text_edit_price,
-        //                 'old_amount' => $size->price,
-        //                 'new_amount' =>$request->input('price'),
-        //             ]);
-
-
     }
 
 
