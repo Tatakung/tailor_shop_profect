@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Accessory;
 use App\Models\Dress;
 use App\Models\Size;
 use Illuminate\Http\Request;
@@ -87,6 +88,13 @@ class NewdressController extends Controller
     //     return view('admin.showdetail',compact('size','dress')) ; 
     // }
 
+    public function showAccessories()
+{
+    $accessories = Accessory::all();
+    $accessoryTypes = $accessories->pluck('accessory_name')->unique();
+    
+    return view('admin.showaccess', compact('accessories', 'accessoryTypes'));
+}
 
 
 

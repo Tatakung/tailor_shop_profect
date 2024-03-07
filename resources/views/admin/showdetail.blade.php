@@ -183,6 +183,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>size_id</th>
+                                                    <th>วันที่ทำรายการ</th>
                                                     <th>action</th>
                                                     <th>ค่าเดิม</th>
                                                     <th>ค่าใหม่</th>
@@ -192,6 +193,7 @@
                                                 @foreach(   \App\Models\Dresssizehistory::where('size_id',$size->id)->get() as $history  )
                                                 <tr>
                                                     <td>{{$history->size_id}}</td>
+                                                    <td>{{$history->created_at->format('Y-m-d')}}</td>
                                                     <td>{{$history->action}}</td>
                                                     <td>{{$history->old_amount}}</td>
                                                     <td>{{$history->new_amount}}</td>

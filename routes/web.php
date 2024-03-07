@@ -112,6 +112,11 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::post('/updatepricegroup', [DressController::class, 'updatepricegroup'])->name('admin.updatepricegroup'); //บันทึกค่าที่แก้ไขในตาราง size     
 
 
+    //ทำใหม้นะ ? เครื่องประดับ
+    Route::get('/admin/access', [AccessoryController::class, 'showAccessories'])->name('admin.showAccessories'); //หน้าโชทั้งหมด
+    Route::get('/admin/accessdetail/{id}', [AccessoryController::class, 'accessdetail'])->name('admin.accessdetail'); //แสดงรายละเอียด
+    Route::post('/admin/updateaccessdetail', [AccessoryController::class, 'updateaccessdetail'])->name('admin.updateaccessdetail'); //อัปเดต
+
 
 
 
