@@ -13,45 +13,45 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
 
-body{
-  font-family: 'Barlow', sans-serif;
-}
+        body {
+            font-family: 'Barlow', sans-serif;
+        }
 
-a:hover{
-  text-decoration: none;
-}
+        a:hover {
+            text-decoration: none;
+        }
 
-.border-left{
-  border-left: 2px solid var(--primary) !important;
-}
+        .border-left {
+            border-left: 2px solid var(--primary) !important;
+        }
 
 
-.sidebar{
-  top: 0;
-  left : 0;
-  z-index : 100;
-  overflow-y: auto;
-}
+        .sidebar {
+            top: 0;
+            left: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
 
-.overlay{
-  background-color: rgb(0 0 0 / 45%);
-  z-index: 99;
-}
+        .overlay {
+            background-color: rgb(0 0 0 / 45%);
+            z-index: 99;
+        }
 
-/* sidebar for small screens */
-@media screen and (max-width: 767px){
-  
-  .sidebar{
-    max-width: 18rem;
-    transform : translateX(-100%);
-    transition : transform 0.4s ease-out;
-  }
-  
-  .sidebar.active{
-    transform : translateX(0);
-  }
-  
-}
+        /* sidebar for small screens */
+        @media screen and (max-width: 767px) {
+
+            .sidebar {
+                max-width: 18rem;
+                transform: translateX(-100%);
+                transition: transform 0.4s ease-out;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+        }
     </style>
 
 
@@ -71,7 +71,7 @@ a:hover{
                 <span class="bi bi-border-all"></span>
                 <span class="ml-2">Today</span>
             </a>
-            
+
 
 
             <button
@@ -87,37 +87,38 @@ a:hover{
                 <div class="list-group">
                     <a href="#" class="list-group-item list-group-item-action border-0 pl-5">สำหรับตัดชุด</a>
                     <a href="#" class="list-group-item list-group-item-action border-0 pl-5">สำหรับเช่าชุด</a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 pl-5">สำหรับเช่าเครื่องประดับ</a>
+                    <a href="#"
+                        class="list-group-item list-group-item-action border-0 pl-5">สำหรับเช่าเครื่องประดับ</a>
                     <a href="#" class="list-group-item list-group-item-action border-0 pl-5">สำหรับเช่าตัดชุด</a>
                 </div>
             </div>
 
 
             <a href="" class="list-group-item list-group-item-action border-0 align-items-center">
-              <span class="bi bi-box"></span>
-              <span class="ml-2">จัดการชุด</span>
-          </a>
+                <span class="bi bi-box"></span>
+                <span class="ml-2">จัดการชุด</span>
+            </a>
 
 
-          <a href="" class="list-group-item list-group-item-action border-0 align-items-center">
-            <span class="bi bi-box"></span>
-            <span class="ml-2">จัดการเครื่องประดับ</span>
-        </a>
+            <a href="" class="list-group-item list-group-item-action border-0 align-items-center">
+                <span class="bi bi-box"></span>
+                <span class="ml-2">จัดการเครื่องประดับ</span>
+            </a>
 
-        <a href="" class="list-group-item list-group-item-action border-0 align-items-center">
+            <a href="" class="list-group-item list-group-item-action border-0 align-items-center">
 
-          <span class="bi bi-box"></span>
-          <span class="ml-2">จัดการพนักงาน</span>
-      </a>
+                <span class="bi bi-box"></span>
+                <span class="ml-2">จัดการพนักงาน</span>
+            </a>
 
 
 
-      <a href="#" class="list-group-item list-group-item-action border-0 align-items-center">
-        <span class="bi bi-box"></span>
-        <span class="ml-2">จัดการบัญชี</span>
-    </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 align-items-center">
+                <span class="bi bi-box"></span>
+                <span class="ml-2">จัดการบัญชี</span>
+            </a>
 
-            
+
         </div>
     </div>
 
@@ -137,7 +138,7 @@ a:hover{
                     <span class="bi bi-chevron-down ml-1 mb-2 small"></span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right border-0 shadow-sm" aria-labelledby="logout-dropdown">
-                  <a class="dropdown-item" href="">profile</a>
+                    <a class="dropdown-item" href="">profile</a>
                     <a class="dropdown-item" href="#">Logout</a>
                 </div>
             </div>
@@ -147,9 +148,120 @@ a:hover{
         {{-- <main class="p-4 min-vh-100"> --}}
 
 
-            @yield('content')
+        @yield('content')
 
-        
+        โหล
+
+        <form action="/submit" method="post">
+            <label for="pickup_date">วันที่นัดรับชุด:</label>
+            <input type="date" name="pickup_date" id="pickup_date" required min="<?= date('Y-m-d') ?>"
+                max="<?= date('Y-m-d', strtotime('+30 days')) ?>">
+
+            <label for="return_date">วันที่นัดคืนชุด:</label>
+            <input type="date" name="return_date" id="return_date" required min="<?= date('Y-m-d') ?>">
+            <br>
+            <label for="late_charge">Late Charge หรือ ค่าบริการขยายเวลาเช่าชุด :</label>
+            <input type="text" id="late_charge" name="late_charge" class="form-control" readonly>
+
+            <button type="submit">Submit</button>
+        </form>
+
+
+
+        <script>
+            var pickupDateInput = document.getElementById('pickup_date'); // นัดรับชุด
+            var returnDateInput = document.getElementById('return_date'); // นัดคืนชุด
+            var lateChargeInput = document.getElementById('late_charge'); // late_charge
+            var price = 1000 ; 
+
+            function updateLateCharge() {
+                var pickupDate = new Date(pickupDateInput.value); //ค่าที่กรอก 20/03/2024
+                var returnDate = new Date(returnDateInput.value); //ค่าที่กอรก 25/03/2024
+                var lateCharge = 0;
+
+                var timeDiff = returnDate.getTime() - pickupDate.getTime(); //435200000
+                var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // 5 วัน 
+
+                if (daysDiff > 3) {
+                    lateCharge = (daysDiff - 3) * (price * 0.25);
+                } else {
+                    lateCharge = 0;
+                }
+                lateChargeInput.value = lateCharge;
+            }
+
+            returnDateInput.addEventListener('change', function() {
+                updateLateCharge();
+            });
+
+            pickupDateInput.addEventListener('change', function() {
+                updateLateCharge();
+                returnDateInput.value = ''; // Reset return date
+                lateChargeInput.value = null;
+
+            });
+
+            pickupDateInput.addEventListener('input', function() {
+                var pickupDate = new Date(this.value); //20/03/2024 วันที่นัดรับชุด 
+                var returnDateInput = document.getElementById('return_date');
+                returnDateInput.min = pickupDate.toISOString().split('T')[0];
+            });
+        </script>
+
+        {{-- <script>
+            document.getElementById('pickup_date').addEventListener('input',
+            function() { //ทันทีที่มีการกรกอค่าใน วันที่นัดรับชุด
+                var pickupDate = new Date(this.value); //20/03/2024 วันที่นัดรับชุด 
+                var returnDateInput = document.getElementById('return_date');
+                returnDateInput.min = pickupDate.toISOString().split('T')[0];
+            });
+        </script> --}}
+
+
+
+        {{-- <script>
+  var pickupDateInput = document.getElementById('pickup_date');
+var returnDateInput = document.getElementById('return_date');
+var lateChargeInput = document.getElementById('late_charge');
+
+function calculateDays(pickupDate, returnDate) {
+  var date1 = new Date(pickupDate);
+  var date2 = new Date(returnDate);
+  var diffInDays = Math.floor((date2 - date1) / (1000 * 60 * 60 * 24));
+  return diffInDays;
+}
+
+function updateLateCharge() {
+  var pickupDate = pickupDateInput.value;
+  var returnDate = returnDateInput.value;
+  var days = calculateDays(pickupDate, returnDate);
+  var lateCharge = days > 4 ? (days - 4) * 100 : 0;
+  lateChargeInput.value = lateCharge;
+}
+
+pickupDateInput.addEventListener('change', updateLateCharge);
+returnDateInput.addEventListener('change', updateLateCharge);
+
+updateLateCharge(); // เรียกใช้ฟังก์ชันครั้งแรกเพื่อแสดงค่าเริ่มต้น
+
+</script> --}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -160,32 +272,32 @@ a:hover{
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
     <script src="main.js"></script>
-<script>
-    $(document).ready(()=>{
-  
-  $('#open-sidebar').click(()=>{
-     
-      // add class active on #sidebar
-      $('#sidebar').addClass('active');
-      
-      // show sidebar overlay
-      $('#sidebar-overlay').removeClass('d-none');
-    
-   });
-  
-  
-   $('#sidebar-overlay').click(function(){
-     
-      // add class active on #sidebar
-      $('#sidebar').removeClass('active');
-      
-      // show sidebar overlay
-      $(this).addClass('d-none');
-    
-   });
-  
-});
-</script>
+    <script>
+        $(document).ready(() => {
+
+            $('#open-sidebar').click(() => {
+
+                // add class active on #sidebar
+                $('#sidebar').addClass('active');
+
+                // show sidebar overlay
+                $('#sidebar-overlay').removeClass('d-none');
+
+            });
+
+
+            $('#sidebar-overlay').click(function() {
+
+                // add class active on #sidebar
+                $('#sidebar').removeClass('active');
+
+                // show sidebar overlay
+                $(this).addClass('d-none');
+
+            });
+
+        });
+    </script>
 </body>
 
 </html>

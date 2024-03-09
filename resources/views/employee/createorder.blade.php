@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h2>เพิ่มออเดอร์เช่าชุด</h2>
+        <h2>เพิ่มออเดอม</h2>
         <form method="post" action="{{ route('order.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
@@ -23,6 +23,13 @@
 
             </div>
 
+            <div class="form-group">
+                <button type="button" class="btn btn-secondary">+เพิ่มตัดชุด</button>
+                <button type="button" class="btn btn-secondary">+เพิ่มเช่าชุด</button>
+                <button type="button" class="btn btn-secondary">+เพิ่มเช่าเครื่องประดับ</button>
+                <button type="button" class="btn btn-secondary">+เพิ่มเช่าตัด</button>
+            </div>
+
 
             <div class="form-group">
                 <label for="type_dress">ประเภทชุด:</label>
@@ -35,7 +42,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="dress_code" class="form-label">รหัสชุด</label>
+                <label for="dress_code" class="form-label">แบบชุด</label>
                 <select class="form-control" id="dress_code" name="dress_code">
                 </select>
             </div>
@@ -161,10 +168,13 @@
                             // showdeposit.value = data.deposit;
 
                             showprice.value = data.price;
+
                             showdeposit.value = data.deposit;
                             showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + data.amount + ' ชุด';
                             hiddenidsize.value = data.id;
                             hiddendressid.value = data.dress_id;
+                            calculate(data.price);
+
 
                         });
                 });
@@ -220,51 +230,46 @@
             </div>
 
             <script>
-                var pickupDateInput = document.getElementById('pickup_date'); //นัดรับชุด
-                var returnDateInput = document.getElementById('return_date'); //นัดคืนชุด
-                var lateChargeInput = document.getElementById('late_charge'); //late_charge
+                var pickupinput = document.getElementById('pickup_date') ;
+                var returninput = document.getElementById('return_date') ; 
+                var showlate_charge = document.getElementById('late_charge') ; 
+                // var price = document.getElementById('price').value ; 
+                // console.log(price)
+                // console.log(price)
 
-                function updateLateCharge() {
-                    var pickupDate = new Date(pickupDateInput.value);
-                    var returnDate = new Date(returnDateInput.value);
+                function calculate(price){
+                    console.log('ราคาที่ได้จาก API:', data.price);
+                    var pickupvalue = new Date(pickupinput.value) ; 
+                    var returnvalue = new Date(returninput.value) ; 
 
-                    if (returnDate < pickupDate) {
-                        pickupDateInput.value = ''; // Reset pickup date
-                        returnDateInput.value = ''; // Reset return date
-                        lateChargeInput.value = '';
-                        return;
+                    var time = returnvalue.getTime() - pickupvalue.getTime()  ; 
+                    var day = Math.ceil(time / (24*60*60*1000))  ; 
+
+                    if(day > 3 ) {
+                        showlate_charge.value = (day-3) * (price*0.25)  ; 
                     }
-
-                    var timeDiff = returnDate.getTime() - pickupDate.getTime();
-                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                    if (daysDiff > 5) {
-                        var lateCharge = (daysDiff - 5) * 100;
-                    } else {
-                        var lateCharge = 0;
+                    else{
+                        showlate_charge.value = 0 ; 
                     }
-
-                    lateChargeInput.value = lateCharge;
                 }
 
-                returnDateInput.addEventListener('change', updateLateCharge);
-                pickupDateInput.addEventListener('change', updateLateCharge);
+                pickupinput.addEventListener('change',function(){
+                    calculate() ; 
+                    returninput.value = '' ; 
+                    showlate_charge.value = null ; 
+                }) ; 
+
+                returninput.addEventListener('change',function(){
+                    calculate() ; 
+                }) ; 
+
+                pickupinput.addEventListener('input',function(){
+                    var input_of_pickup = new Date(pickupinput.value) ;
+                    var returnvalue = document.getElementById('return_date') ; 
+                    returnvalue.min = input_of_pickup.toISOString().split('T')[0]  ;
+
+                }) ; 
             </script>
-
-            <script>
-                document.getElementById('pickup_date').addEventListener('input', function() {
-                    var pickupDate = new Date(this.value);
-                    var returnDateInput = document.getElementById('return_date');
-                    returnDateInput.min = pickupDate.toISOString().split('T')[0];
-                });
-            </script>
-
-
-
-
-
-
-
 
 
 
