@@ -41,33 +41,51 @@ class AccessoryController extends Controller
 
 
         if ($request->input('accessory_name') !== "other") {
-            Accessory::create([
-                'accessory_name' => $request->input('accessory_name'),
-                'accessory_code_new' => $request->input('accessory_code'),
-                'accessory_count' => $request->input('accessory_count'),
-                'accessory_price' => $request->input('accessory_price'),
-                'accessory_deposit' => $request->input('accessory_deposit'),
-                'accessory_description' => $request->input('accessory_description'),
-                'accessory_image' => $imagePath
-            ]);
-        } else {
-            if ($request->input('other_new')) {
+            if ($request->input('accessory_deposit') <= $request->input('accessory_price')) {
+                Accessory::create([
+                    'accessory_name' => $request->input('accessory_name'),
+                    'accessory_code_new' => $request->input('accessory_code'),
+                    'accessory_count' => $request->input('accessory_count'),
+                    'accessory_price' => $request->input('accessory_price'),
+                    'accessory_deposit' => $request->input('accessory_deposit'),
+                    'accessory_description' => $request->input('accessory_description'),
+                    'accessory_image' => $imagePath
+                ]);
+            }
+            else{
+                return redirect()->back()->with('duplicate', "ราคามัดจำต้องไม่เกินราคาของเครื่องประดับ");
+            }
+
+
+        } 
+        else {
+            if ($request->input('other_new') != '') {
                 $checkother = Accessory::where('accessory_name', $request->input('other_new'))->first();
                 if (!$checkother) {
-                    Accessory::create([
-                        'accessory_name' => $request->input('other_new'),
-                        'accessory_code_new' => $request->input('accessory_code'),
-                        'accessory_count' => $request->input('accessory_count'),
-                        'accessory_price' => $request->input('accessory_price'),
-                        'accessory_deposit' => $request->input('accessory_deposit'),
-                        'accessory_description' => $request->input('accessory_description'),
-                        'accessory_image' => $imagePath
-                    ]);
+                    if($request->input('accessory_deposit') <= $request->input('accessory_price')){
+                        Accessory::create([
+                            'accessory_name' => $request->input('other_new'),
+                            'accessory_code_new' => $request->input('accessory_code'),
+                            'accessory_count' => $request->input('accessory_count'),
+                            'accessory_price' => $request->input('accessory_price'),
+                            'accessory_deposit' => $request->input('accessory_deposit'),
+                            'accessory_description' => $request->input('accessory_description'),
+                            'accessory_image' => $imagePath
+                        ]);
+                    }
+                    else{
+                        return redirect()->back()->with('duplicate', "ราคามัดจำต้องไม่เกินราคาของเครื่องประดับ");
+                    }
+                    
+                } 
+                else {
+                    return redirect()->back()->with('duplicate', "ซ้ำกับฐานข้อมูล");
                 }
-                return redirect()->back()->with('duplicate', "ซ้ำกับฐานข้อมูล");
+            } 
+            elseif ($request->input('other_new') == '') {
+                return redirect()->back()->with('duplicate', "กรุณากรอกชื่อเครื่องประดับ");
             }
         }
-
         return redirect()->back()->with('success', 'บันทึกสำเร็จ');
     }
 
@@ -230,8 +248,8 @@ class AccessoryController extends Controller
     public function accessdetail($id)
     {
         $access = Accessory::find($id);
-        $history = Accessoryhistory::find($id) ; 
-        return view('admin.accessdetail', compact('access','history'));
+        $history = Accessoryhistory::find($id);
+        return view('admin.accessdetail', compact('access', 'history'));
     }
 
     public function updateaccessdetail(Request $request)
@@ -242,87 +260,81 @@ class AccessoryController extends Controller
             'update_des' => 'nullable|string',
             'update_image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'quantity' => 'nullable|integer|min:1'
-        ]) ; 
+        ]);
 
 
-        $update = Accessory::find($request->input('id')) ; 
+        $update = Accessory::find($request->input('id'));
 
 
-        if($request->input('update_price') != $update->accessory_price){
-            if($request->input('update_price') > $update->accessory_price ){
-                $textprice = "ปรับเพิ่มราคาขึ้น"  ; 
-            }
-            else{
-                $textprice = "ปรับลดราคาลง"  ; 
+        if ($request->input('update_price') != $update->accessory_price) {
+            if ($request->input('update_price') > $update->accessory_price) {
+                $textprice = "ปรับเพิ่มราคาขึ้น";
+            } else {
+                $textprice = "ปรับลดราคาลง";
             }
             Accessoryhistory::create([
-                'accessory_id' => $update->id , 
-                'action' => $textprice , 
-                'old_amount' => $update->accessory_price , 
+                'accessory_id' => $update->id,
+                'action' => $textprice,
+                'old_amount' => $update->accessory_price,
                 'new_amount' => $request->input('update_price')
-            ]) ; 
+            ]);
             $update->accessory_price = $request->input('update_price');
         }
 
 
 
-        if($request->input('update_deposit') <= $update->accessory_price){
-            if($request->input('update_deposit') != $update->accessory_deposit){
-                if($request->input('update_deposit') > $update->accessory_deposit){
-                    $textdeposit = "ปรับราคามัดจำขึ้น" ; 
-                }
-                else{
-                    $textdeposit = "ปรับราคามัดจำลง" ; 
+        if ($request->input('update_deposit') <= $update->accessory_price) {
+            if ($request->input('update_deposit') != $update->accessory_deposit) {
+                if ($request->input('update_deposit') > $update->accessory_deposit) {
+                    $textdeposit = "ปรับราคามัดจำขึ้น";
+                } else {
+                    $textdeposit = "ปรับราคามัดจำลง";
                 }
                 Accessoryhistory::create([
-                    'accessory_id' => $update->id , 
-                    'action' => $textdeposit , 
-                    'old_amount' => $update->accessory_deposit , 
+                    'accessory_id' => $update->id,
+                    'action' => $textdeposit,
+                    'old_amount' => $update->accessory_deposit,
                     'new_amount' => $request->input('update_deposit')
-                ]) ; 
-                $update->accessory_deposit = $request->input('update_deposit')  ; 
+                ]);
+                $update->accessory_deposit = $request->input('update_deposit');
             }
+        } else {
+            return redirect()->back()->with('fail', "ราคามัดจำต้องไม่เกินราคาเครื่องประดับ");
         }
-        else{
-            return redirect()->back()->with('fail',"ราคามัดจำต้องไม่เกินราคาเครื่องประดับ") ; 
-        }
 
-    
-        $update->accessory_description = $request->input('update_des') ; 
+
+        $update->accessory_description = $request->input('update_des');
 
 
 
-        if($request->input('update_amount') == "add"){
+        if ($request->input('update_amount') == "add") {
             Accessoryhistory::create([
-                'accessory_id' => $update->id , 
-                'action' => "ปรับเพิ่มจำนวน" , 
-                'old_amount' => $update->accessory_count , 
-                'new_amount' => $request->input('quantity') +  $update->accessory_count  , 
-            ]) ; 
-            $update->accessory_count = $request->input('quantity') + $update->accessory_count ; 
-        }
-        elseif($request->input('update_amount') == "remove"){
-            if($request->input('quantity') <= $update->accessory_count){
+                'accessory_id' => $update->id,
+                'action' => "ปรับเพิ่มจำนวน",
+                'old_amount' => $update->accessory_count,
+                'new_amount' => $request->input('quantity') +  $update->accessory_count,
+            ]);
+            $update->accessory_count = $request->input('quantity') + $update->accessory_count;
+        } elseif ($request->input('update_amount') == "remove") {
+            if ($request->input('quantity') <= $update->accessory_count) {
                 Accessoryhistory::create([
-                    'accessory_id' => $update->id , 
-                    'action' => "ปรับลดจำนวน" , 
-                    'old_amount' => $update->accessory_count , 
-                    'new_amount' => $update->accessory_count  - $request->input('quantity') , 
-                ]) ;
-                $update->accessory_count = $update->accessory_count - $request->input('quantity') ; 
+                    'accessory_id' => $update->id,
+                    'action' => "ปรับลดจำนวน",
+                    'old_amount' => $update->accessory_count,
+                    'new_amount' => $update->accessory_count  - $request->input('quantity'),
+                ]);
+                $update->accessory_count = $update->accessory_count - $request->input('quantity');
+            } else {
+                return redirect()->back()->with('fail', "ไม่สามารถลบจำนวนเครื่องประดับ ที่มากกว่า ที่มีได้นะ");
             }
-            else{
-                return redirect()->back()->with('fail',"ไม่สามารถลบจำนวนเครื่องประดับ ที่มากกว่า ที่มีได้นะ")  ; 
-            }
+        } elseif ($request->input('update_amount') == "" && $request->input('quantity') != "") {
+            return redirect()->back()->with('fail', "กรุณาเลือกเพิ่ม/ลบจำนวนเครื่องประกับที่ต้องการ");
         }
-        elseif($request->input('update_amount') == "" && $request->input('quantity') != "") {
-            return redirect()->back()->with('fail',"กรุณาเลือกเพิ่ม/ลบจำนวนเครื่องประกับที่ต้องการ")  ; 
+
+        if ($request->hasFile('update_image')) {
+            $update->accessory_image = $request->file('update_image')->store('accessory_images', 'public');
         }
-        
-        if($request->hasFile('update_image')){
-            $update->accessory_image = $request->file('update_image')->store('accessory_images','public') ; 
-        }
-        $update->save() ; 
-        return redirect()->back()->with('success',"แก้ไขสำเร็จ")  ; 
+        $update->save();
+        return redirect()->back()->with('success', "แก้ไขสำเร็จ");
     }
 }

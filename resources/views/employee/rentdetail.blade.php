@@ -3,26 +3,36 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 bg-light border border-gray-500">
+                @if(session('success'))
+                <div class="alert alert-success">
+                    {{session('success')}}
+                </div>
+                @endif
                 <h1>กรอบบน</h1>
                 <div class="row">
                     <div class="col-md-6">
                         <p class="users-details">Dress ID: {{ $rentdetail->dress_id }}</p>
-                        @php
+                        {{-- @php
                             $date = $dates->sortByDesc('id')->first();
                         @endphp
                         <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ล่าสุด</p>
-                        <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p>
+                        <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p> --}}
+
+                        <p>วันที่นัดรับชุด : {{$valuepickupdate}}</p>
+                        <p>วันที่นัดคืนชุด : {{$valuereturndate}}</p>
 
 
-                        ทดสอบค่าที่ส่งมา -> : {{ $valuestatus }}
+                        
+
+                        
+
+                        {{-- ทดสอบค่าที่ส่งมา -> : {{ $valuestatus }} --}}
                         <p> ประเภทชุด :{{ $dress->dress_type }}</p>
                         <p>แบบชุดที่ {{ $dress->dress_code }}</p>
                         <p>ไซส์ :{{ $size->size_name }}</p>
                         <p class="users-details">Order ID: {{ $rentdetail->order_id }}</p>
                         <p> พนักงานที่เพิ่มออเดอร์นี้ คุณ : {{ $employee->name . ' ' . $employee->lname }}</p>
-                        @foreach ($orderdetailstatuses as $detailstatus)
-                            <p> สถานะ : {{ $detailstatus->latest()->first()->status }} (ล่าสุด)</p>
-                        @endforeach
+                        <p>สถานะ : {{$rentdetail->status_detail}}</p>
                         <p class="users-details">เลขชาท: {{ $rentdetail->late_charge }} บาท</p>
                         <p class="users-details">ประเภทชุด: {{ $rentdetail->type_dress }}</p>
                     </div>
@@ -59,108 +69,6 @@
                 @foreach ($dates as $date)
                     <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ||||| วันที่นัดคืนชุด : {{ $date->return_date }}</p>
                 @endforeach
-                {{-- ปุ่มแก้ไขวันที่ --}}
-                <div style="display: block">
-                    <button type="button" class="btn btn-secondary" data-toggle="modal"
-                    data-target="#showeditdate" id="showeditdateid">แก้ไขวันที่</button>
-                </div>
-
-                {{-- modal แสดง ตอนที่กดแก้ไขวันที่นัดรับชุดและนัดคืนชุด --}}
-                <div class="modal fade" id="showeditdate" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                แก้ไขวันที่ (นัดรับชุด) / (นัดคืนชุด)
-                            </div>
-                            <form action="{{ route('adddate') }}" method="POST">
-                                @csrf
-                                <div class="modal-body">
-                                    <label for="pickup_date">วันที่นัดรับชุด</label>
-                                    <input type="date" name="pickup_date" id="pickup_date"
-                                        max="<?= date('Y-m-d', strtotime('+30 days')) ?>"
-                                        value="{{ $dates->sortByDesc('id')->first()->pickup_date }}">
-
-                                    <label for="return_date">วันที่นัดคืนชุด</label>
-                                    <input type="date" name="return_date" id="return_date"
-                                        value="{{ $dates->sortByDesc('id')->first()->return_date }}">
-
-                                    <input type="hidden" name="order_id_id" id="order_id_id"
-                                        value="{{ $rentdetail->id }}">
-
-                                    <br>
-                                    <label for="late_charge">Late Charge หรือ ค่าบริการขยายเวลาเช่าชุด :</label> <br>
-                                    <input type="text" id="late_charge" name="late_charge" readonly>
-                                    **หมายเหตุ กรณีเช่าชุด วันที่นัดรับชุด - วันที่นัดคืนชุด ทางร้านอนุญาตให้เช่าชุดสูงสุด 5
-                                    วัน
-                                    หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุด 100 / วัน
-
-
-                                    <script>
-                                        var pickupDateInput = document.getElementById('pickup_date'); //นัดรับชุด
-                                        var returnDateInput = document.getElementById('return_date'); //นัดคืนชุด
-                                        var lateChargeInput = document.getElementById('late_charge'); //late_charge
-
-                                        var originalPickupDateValue = pickupDateInput.value; // เก็บค่า value เดิม
-
-                                        function updateLateCharge() {
-                                            var pickupDate = new Date(pickupDateInput.value);
-                                            var returnDate = new Date(returnDateInput.value);
-
-                                            if (returnDate < pickupDate) {
-                                                pickupDateInput.value = originalPickupDateValue; // รีเซ็ตค่าเป็นค่าเดิม
-                                                pickupDateInput.value = '{{ $dates->sortByDesc('id')->first()->pickup_date }}'; // Reset pickup date
-                                                returnDateInput.value = ''; // Reset return date
-                                                lateChargeInput.value = '';
-                                                return;
-                                            }
-
-                                            var timeDiff = returnDate.getTime() - pickupDate.getTime();
-                                            var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                                            if (daysDiff > 5) {
-                                                var lateCharge = (daysDiff - 5) * 100;
-                                            } else {
-                                                var lateCharge = 0;
-                                            }
-
-                                            lateChargeInput.value = lateCharge;
-                                        }
-
-                                        returnDateInput.addEventListener('change', updateLateCharge);
-                                        pickupDateInput.addEventListener('change', updateLateCharge);
-                                    </script>
-
-                                    <script>
-                                        document.getElementById('pickup_date').addEventListener('input', function() {
-                                            var pickupDate = new Date(this.value);
-                                            var returnDateInput = document.getElementById('return_date');
-                                            returnDateInput.min = pickupDate.toISOString().split('T')[0];
-                                            updateLateCharge(); // เรียกใหม่เมื่อมีการเปลี่ยนแปลงในวันที่นัดรับชุด
-                                        });
-                                    </script>
-
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                                    <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             </div>
@@ -168,7 +76,8 @@
                 {{-- <h1>กรอบขวา</h1> --}}
                 <h3>นัดลองชุด</h3>
                 <div style="display: block;">
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal" id="showfittingid">เพิ่มวันนัดลองชุด</button>
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal"
+                        id="showfittingid">เพิ่มวันนัดลองชุด</button>
                 </div>
 
                 <table class="table">
@@ -293,12 +202,12 @@
             @endforeach
             <div style="display: block">
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showpickup"
-                id="showpickupid">ยืนยันมารับชุด</button>
+                    id="showpickupid">ยืนยันมารับชุด</button>
             </div>
 
             <div style="display: block">
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showreturn"
-                id="showreturnid">ยืนยันคืนชุด</button>
+                    id="showreturnid">ยืนยันคืนชุด</button>
             </div>
 
             {{-- modal ยืนยันคืนชุด --}}
@@ -308,18 +217,23 @@
                         <div class="modal-header">
                             ยืนยันการคืนชุด
                         </div>
-                        <div class="modal-body">
-                            <label for="">ราคาประกัน</label>
-                            <input type="number" name="" id="">
-                        
-                            <br>
-                            <label for="">เหตุผล</label>
-                            <input type="text" placeholder="เหตุผลในการหัก">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                            <button type="submit" class="btn btn-secondary">ยืนยัน</button>
-                        </div>
+                        <form action="{{route('updateorderreturn')}}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <p>ประกันที่จ่าย {{ $rentdetail->damage_insurance }} บาท ณ วันที่มารับชุด</p>
+                                <label for="damage_insurance">หักเงินประกันจริง</label>
+                                <input type="number" name="damage_insurance" id="damage_insurance" value="0" required> บาทท
+                                <br>
+                                <label for="why">เหตุผล</label>
+                                <input type="text" name="why" id="why" placeholder="เหตุผลในการหัก">
+                                <input type="hidden" name="order_detail_id" id="order_detail_id"
+                                    value="{{ $rentdetail->id }}">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                <button type="submit" class="btn btn-secondary">ยืนยัน</button>
+                            </div>
+                        </form>
                     </div>
 
                 </div>
@@ -333,7 +247,7 @@
 
 
 
-            {{-- modalอัพเดตสถานะ --}}
+            {{-- modalยืนยันมารับชุด --}}
             <div class="modal fade" id="showpickup" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -344,7 +258,7 @@
                                 คุณจะอัพเดตสถานะหรอ
                             </div>
                             <div class="modal-body">
-                                จองชุด--->กำลังเช่า--->คืนชุดแล้ว
+                                ยืนยันการมารับชุด
                                 <input type="hidden" name="order_detail_id" id="order_detail_id"
                                     value="{{ $rentdetail->id }}">
                             </div>
@@ -362,25 +276,30 @@
         {{-- รอให้หน้าเว็บโหลดเสร็จ --}}
         {{-- ส่วนบล็อคปุ่มต่างๆ ไม่ให้มันกดได้  --}}
         <script>
-            document.addEventListener('DOMContentLoaded',function(){
-                var Status_orderdetail = "{{$valuestatus}}" ;  //รับค่าล่าสุดมา
+            document.addEventListener('DOMContentLoaded', function() {
+                var Status_orderdetail = "{{ $valuestatus }}"; //รับค่าล่าสุดมา
                 var showpickupid = document.getElementById('showpickupid'); //ปุ่มยืนยันการมารับชุด
                 var showreturnid = document.getElementById('showreturnid'); //ปุ่มยืนยันคืนชุด
-                var showfittingid = document.getElementById('showfittingid') ; //ปุ่มเพิ่มวันนัดลองชุด
+                var showfittingid = document.getElementById('showfittingid'); //ปุ่มเพิ่มวันนัดลองชุด
                 var showdecorationid = document.getElementById('showdecorationid'); //ปุ่มปักเพิ่ม
-                var showaddimageid = document.getElementById('showaddimageid') ; //เพิ่มเพิ่มรูปภาพ
-                var showeditdateid = document.getElementById('showeditdateid') ; //แก้ไขวันที่
+                var showaddimageid = document.getElementById('showaddimageid'); //เพิ่มเพิ่มรูปภาพ
 
-                if(Status_orderdetail === "จองชุด"){
-                    showreturnid.style.display = "none" ; 
+                if (Status_orderdetail === "จองชุด") {
+                    showreturnid.style.display = "none";
                 }
-                if(Status_orderdetail === "กำลังเช่า"){
+                if (Status_orderdetail === "กำลังเช่า") {
                     showpickupid.style.display = "none"
                     showreturnid.style.display = "block";
-                    showfittingid.style.display = "none" ; 
+                    showfittingid.style.display = "none";
                     showdecorationid.style.display = "none";
                     showaddimageid.style.display = "none";
-                    showeditdateid.style.display = "none" ; 
+                }
+                if(Status_orderdetail === "คืนชุดแล้ว"){
+                    showpickupid.style.display = "none" ; 
+                    showreturnid.style.display = "none" ; 
+                    showfittingid.style.display = "none" ;
+                    showdecorationid.style.display = "none" ; 
+                    showaddimageid.style.display = "none" ; 
                 }
             });
         </script>
@@ -393,8 +312,8 @@
             {{-- <h1>กรอบขวา</h1> --}}
             <h3>เพิ่มเติมกรณีปักดอกไม้เพิ่ม</h3>
             <div style="display: block">
-                <button type="button" class="btn btn-secondary" data-toggle="modal"
-                data-target="#adddecoration" id="showdecorationid">+ปักเพิ่ม</button>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#adddecoration"
+                    id="showdecorationid">+ปักเพิ่ม</button>
             </div>
 
             <table class="table">
@@ -515,7 +434,7 @@
             @endforeach
             <div style="display: block">
                 <button class="btn btn-secondary" style="width:90px; height: 90px;" data-toggle="modal"
-                data-target="#showaddimahe" id="showaddimageid">เพิ่มรูปภาพ</button>
+                    data-target="#showaddimahe" id="showaddimageid">เพิ่มรูปภาพ</button>
 
             </div>
         </div>

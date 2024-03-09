@@ -116,6 +116,8 @@ class CreateOrderController extends Controller
             $orderdetail->size_id = $request->input('id_of_size'); //id 30
             $orderdetail->order_id = $order->id;
             $orderdetail->employee_id = Auth::user()->id;
+            $orderdetail->pickup_date = $request->input('pickup_date');
+            $orderdetail->return_date = $request->input('return_date');
             $orderdetail->late_charge = $request->input('late_charge');
             $orderdetail->type_dress = $request->input('dress_type');
             $orderdetail->type_order = $request->input('type_order');
@@ -229,18 +231,84 @@ class CreateOrderController extends Controller
     }
 
 
+    // public function showTable()
+    // {
+
+    //     //ตารางหลัก (customers) มีความสัมพันธ์กับตารางลูก (orders) และตารางลูก (orders) 
+    //     //ก็มีความสัมพันธ์กับตารางลูกอีกตารางหนึ่ง (orderdetails) โดยที่มันต่อเนื่องกัน.
+    //     $data = Customer::with([
+    //         'orders:id,customer_id,created_at',
+    //         'orders.orderdetails:id,type_dress,price,amount,order_id',
+    //         'orders.orderdetails.dates:id,order_detail_id,return_date'
+    //     ])
+    //         ->select('id', 'customer_fname', 'customer_lname')
+    //         ->orderBy('orders.created_at', 'desc') // เรียงลำดับตาม created_at จากมากไปน้อย
+    //         ->get();
+    //     return view('employee.showrent', compact('data'));
+    // }
+
     public function showTable()
     {
+        $data = DB::table('customers')
+            ->join('orders', 'customers.id', '=', 'orders.customer_id')
+            ->join('orderdetails', 'orders.id', '=', 'orderdetails.order_id')
+            // ->join('dates', 'orderdetails.id', '=', 'dates.order_detail_id')
+            ->select(
+                'customers.id as customer_id',
+                'customers.customer_fname',
+                'customers.customer_lname',
+                'orders.created_at as order_created_at',
+                'orders.id as order_id',
+                'orderdetails.return_date',
+                'orderdetails.type_dress',
+                'orderdetails.status_detail',
+                'orderdetails.amount',
+                'orderdetails.id as detail_id'
+            )
 
-        //ตารางหลัก (customers) มีความสัมพันธ์กับตารางลูก (orders) และตารางลูก (orders) 
-        //ก็มีความสัมพันธ์กับตารางลูกอีกตารางหนึ่ง (orderdetails) โดยที่มันต่อเนื่องกัน.
-        $data = Customer::with(['orders:id,customer_id,created_at', 'orders.orderdetails:id,type_dress,price,amount,order_id', 'orders.orderdetails.dates:id,order_detail_id,return_date'])
-            ->select('id', 'customer_fname', 'customer_lname')
-            ->orderBy('created_at', 'asc') // เรียงลำดับตาม created_at จากน้อยไปมาก
+            ->orderBy('order_created_at', 'desc') // เรียงลำดับตาม created_at จากมากไปน้อย
             ->get();
-
+    
         return view('employee.showrent', compact('data'));
     }
+
+    //ทำใหม้ 
+
+    //แสดงตารางบิลรวม
+    public function showorder(){
+        $showorder = Customer::with('orders')->orderBy('created_at' , 'desc')->get() ; 
+        return view('employee.showorder' , compact('showorder')) ; 
+    }
+    // Query
+    // public function showorder() {
+    //     $showorder = DB::table('customers')
+    //                     ->join('orders', 'customers.id', '=', 'orders.customer_id')
+    //                     ->select('customers.*', 'orders.id as order_id', 'orders.created_at as order_created_at')
+    //                     ->get();
+    
+    //     return view('employee.showorder', compact('showorder'));
+    // }
+
+    //แสดงตาราง orderbill
+    public function showorderbill($id){
+        $bill = Orderdetail::where('order_id' , $id)->get() ; 
+        
+        return view('employee.showorderbill' ,compact('bill')) ; 
+    }
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
 
 
     public function rentdetail($id)
@@ -277,11 +345,20 @@ class CreateOrderController extends Controller
             ->get();
 
         //ส่งค่าสถานะ เพื่อไปตรวจสอบในการ บล้อคช่องปุ่มกดต่างๆ 
-        $valuestatus = Orderdetailstatus::where('order_detail_id',$id)
-                    ->latest('created_at')
-                    ->value('status');
+        $valuestatus = Orderdetailstatus::where('order_detail_id', $id)
+            ->latest('created_at')
+            ->value('status');
 
-        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs','valuestatus'));
+        $valuepickupdate = Date::where('order_detail_id', $id)
+            ->latest('created_at')
+            ->value('pickup_date');
+        $valuereturndate = Date::where('order_detail_id', $id)
+            ->latest('created_at')
+            ->value('return_date');
+
+
+
+        return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs', 'valuestatus', 'valuepickupdate', 'valuereturndate'));
     }
 
 
@@ -473,6 +550,7 @@ class CreateOrderController extends Controller
         return redirect()->back()->with('success', 'แก้ไขสำเร็จแล้ว');
     }
 
+    //อัพเดตสภานะจาก จองชุดเป็นกำลังเช่า 
     public function updateorderstatus(Request $request)
     {
         //ดึงสถนะของออเดอร์ดีเทล
@@ -486,25 +564,60 @@ class CreateOrderController extends Controller
             ->value('payment_status');
 
 
+        //อัพเดตในสถานะในตารางorderdetail ด้วยนะ 
+        $statusdetail = Orderdetail::find($request->input('order_detail_id'));
+        if ($statusdetail->status_detail == "จองชุด") {
+            $statusdetail->status_detail = "กำลังเช่า";
+        }
+        //อัพเดตสถานะการเงินในตาราง orderdetai lดว้ยนะ 
+        if ($statusdetail->status_payment == "1") {
+            $statusdetail->status_payment = "2";
+        }
+        $statusdetail->save();
 
+
+        //อัพเดตสถานะออเดอร์detail 
         $addstatus = new Orderdetailstatus;
         if ($valuestatus === "จองชุด") {
             $addstatus->order_detail_id = $request->input('order_detail_id');
             $addstatus->status = "กำลังเช่า";
-            
-            if($valuepayment === "1"){
-                $addpayment = new Paymentstatus;
-                $addpayment->order_detail_id = $request->input('order_detail_id');
-                $addpayment->payment_status = "2" ;
-                $addpayment->save();
-            }
+            $addstatus->save();
         }
-        if ($valuestatus === "กำลังเช่า") {
-            $addstatus->order_detail_id = $request->input('order_detail_id');
-            $addstatus->status = "คืนชุดแล้ว";
+
+
+        //อัพเดตสถานะเงิน
+        if ($valuepayment === "1") {
+            $addpayment = new Paymentstatus;
+            $addpayment->order_detail_id = $request->input('order_detail_id');
+            $addpayment->payment_status = "2";
+            $addpayment->save();
         }
-        $addstatus->save();
+
 
         return redirect()->back()->with('success', "อัพเดตสถานะสำเร็จแล้ว");
+    }
+    public function updateorderreturn(Request $request)
+    {
+        $request->validate([
+            'damage_insurance' => 'required|numeric',
+            'why' => 'nullable|string',
+        ]);
+
+        $confirm = Orderdetail::find($request->input('order_detail_id'));
+        $confirm->total_damage_insurance = $request->input('damage_insurance');
+        if ($request->input('why') == "") {
+            $confirm->cause_for_insurance = "ชุดไม่มีการเสียหาย";
+        } else {
+            $confirm->cause_for_insurance = $request->input('why');
+        }
+        $confirm->status_detail = "คืนชุดแล้ว";
+        $confirm->save();
+
+
+        $orderdetailstatus = new Orderdetailstatus;
+        $orderdetailstatus->order_detail_id = $request->input('order_detail_id');
+        $orderdetailstatus->status = "คืนชุดแล้ว";
+        $orderdetailstatus->save();
+        return redirect()->back()->with('success', "ยืนยันการคืนชุดสำเร็จ");
     }
 }

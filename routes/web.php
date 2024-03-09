@@ -50,13 +50,13 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
     Route::get('/getCode/{accessory_name}', [AccessoryController::class, 'getMaxAccessoryCode']);
 
-    Route::get('/admin/showaccessory', [AccessoryController::class, 'showAccessory'])->name('admin.showAccessory'); //แสดงเครื่องประดับ
-    Route::get('/admin/filterAccessory', [AccessoryController::class, 'showAccessory'])->name('admin.filterAccessory');
+    // Route::get('/admin/showaccessory', [AccessoryController::class, 'showAccessory'])->name('admin.showAccessory'); //แสดงเครื่องประดับ
+    // Route::get('/admin/filterAccessory', [AccessoryController::class, 'showAccessory'])->name('admin.filterAccessory');
 
-    Route::get('/admin/detailaccessory/{id}', [AccessoryController::class, 'detailAccessory'])->name('admin.detailAccessory'); //แสดงรายละเอียดเครื่องประดับ
+    // Route::get('/admin/detailaccessory/{id}', [AccessoryController::class, 'detailAccessory'])->name('admin.detailAccessory'); //แสดงรายละเอียดเครื่องประดับ
 
-    Route::get('/admin/editaccessory/{id}', [AccessoryController::class, 'editAccessory'])->name('admin.editAccessory'); //หน้าแก้ไข
-    Route::post('/admin/updateaccessory/{id}', [AccessoryController::class, 'updateAccessory'])->name('admin.updateAccessory'); //หน้าอัปเดต
+    // Route::get('/admin/editaccessory/{id}', [AccessoryController::class, 'editAccessory'])->name('admin.editAccessory'); //หน้าแก้ไข
+    // Route::post('/admin/updateaccessory/{id}', [AccessoryController::class, 'updateAccessory'])->name('admin.updateAccessory'); //หน้าอัปเดต
 
 
     // Route::get('/admin/showaccessory/{filterAccessory?}', [AccessoryController::class, 'showAccessory'])->name('admin.showAccessory');
@@ -206,9 +206,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     //เพิ่มวันที่แก้ไขชุด
     Route::post('/adddate', [CreateOrderController::class, 'adddate'])->name('adddate'); //เพิ่มวันที่
 
+    //อัปเดตสถานะกำลังเช่า
+    Route::post('/updateorderstatus', [CreateOrderController::class, 'updateorderstatus'])->name('updateorderstatus'); // orderdetailอัปเดตสถานะกำลังเช่า
+    //อัปเดตสถานะคืนชุดแล้ว
+    Route::post('/updateorderreturn', [CreateOrderController::class, 'updateorderreturn'])->name('updateorderreturn'); // orderdetail อัปเดตสถานะคืนชุดแล้ว
 
-    //อัปเดตสถานะ
-    Route::post('/updateorderstatus', [CreateOrderController::class, 'updateorderstatus'])->name('updateorderstatus'); //อัปเดตสถานะของ orderdetail
+
+    Route::get('/showorder', [CreateOrderController::class, 'showorder'])->name('showorder'); //แสดง ตาราง บิลนะ 
+    Route::get('/showorder/{id}', [CreateOrderController::class, 'showorderbill'])->name('showorderbill'); //แสดงตารางorderbill
 
 
 });
@@ -216,6 +221,12 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 Route::get('/testlogin', function () {
     return view('test');
+});
+
+
+
+Route::get('/t', function () {
+    return view('employee.t');
 });
 
 

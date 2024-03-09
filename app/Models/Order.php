@@ -27,7 +27,7 @@ class Order extends Model
 
     // ตารางorder เป็น M - 1 ของตารางuser
     public function user(){
-        $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class,'user_id');
     }
     
     //ตารางorder เป็น 1 - M ของตาราง orderdetail

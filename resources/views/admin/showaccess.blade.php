@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('content')
-<a href="{{route('admin.formaccessory')}}">เพิ่มเครื่องประดับใหม่</a>
+<a href="{{route('admin.formaccessory')}}" class="btn btn-secondary">เพิ่มเครื่องประดับใหม่</a>
     @foreach ($accessoryTypes as $accessoryType)
         <div id="carousel-container">
             <div id="carousel-{{ $accessoryType }}" class="carousel slide" data-ride="carousel" data-interval="false">
@@ -11,7 +11,7 @@
                             <div class="row">
                                 @foreach ($chunk as $accessory)
                                     <div class="col-md-3">
-                                        <div class="card" style="width: 18rem;">
+                                        <div class="card" style="width: 22rem;">
                                             <div class="card-body">
                                                 <a href="{{route('admin.accessdetail', ['id' => $accessory->id])}}">
                                                     <p class="card-text">แบบที่ {{ $accessory->accessory_code_new }}</p>
@@ -28,11 +28,11 @@
                         </div>
                     @endforeach
                 </div>
-                <a class="carousel-control-prev" href="#carousel-{{ $accessoryType }}" role="button" data-slide="prev">
+                <a class="carousel-control-prev" href="#carousel-{{ $accessoryType }}" role="button" data-slide="prev"  >
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#carousel-{{ $accessoryType }}" role="button" data-slide="next">
+                <a class="carousel-control-next" href="#carousel-{{ $accessoryType }}" role="button" data-slide="next" >
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>

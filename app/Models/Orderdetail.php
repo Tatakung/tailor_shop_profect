@@ -34,7 +34,9 @@ class Orderdetail extends Model
         'late_fee',
         'total_cost',
         'total_decoration_price',
-        'total_fitting_price'
+        'total_fitting_price',
+        'pickup_date' , 
+        'return_date' ,
     ];
 
     //ตารางorderdetail เป็น M - 1 ของตาราง order

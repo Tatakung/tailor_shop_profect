@@ -88,11 +88,22 @@ nav {
   background-color: #31304D;
   color: #FFFFFF;
 }
+.list-group-item.active {
+    background-color: #31304D !important;
+    color: #FFFFFF !important;
+}
+
+.list-group-item.active:hover {
+    background-color: #31304D !important;
+}
+
+.list-group-item.active:active,
+.list-group-item.active:focus {
+    background-color: #31304D !important;
+}
 
 
     </style>
-
-
 
 
 </head>
@@ -108,6 +119,7 @@ nav {
       </h1>
         <div class="list-group rounded-0">
             <a href="#" class="list-group-item list-group-item-action active border-0 d-flex align-items-center">
+
                 <span class="bi bi-border-all"></span>
                 <span class="ml-2">Today</span>
             </a>
@@ -158,7 +170,6 @@ nav {
             
         </div>
     </div>
-
 
 
     <div class="col-md-9 col-lg-10 ml-md-auto px-0 ms-md-auto">
