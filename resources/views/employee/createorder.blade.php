@@ -53,7 +53,7 @@
                 </select>
             </div>
 
-            <!--ดึงรหัสชุด(ถูกต้อง) -->
+            <!--ดึงแบบชุด -->
             <script>
                 var dressType = document.getElementById('dress_type'); //เลือกประเภทชุดเสด
                 dressType.addEventListener('change', function() {
@@ -72,7 +72,7 @@
                 });
             </script>
 
-            <!--ดึงไซส์ (ถูกต้อง)-->
+            <!--ดึงไซส์-->
             <script>
                 var selecttype = document.getElementById('dress_type') //เลือกประเภทชุด
                 var selectcode = document.getElementById('dress_code') //เลือกประเภทชุด 
@@ -127,7 +127,7 @@
 
             <div class="form-group">
                 <label for="price">ราคาต่อชุด</label>
-                <input type="number"id="price" name="price" class="form-control" value="" readonly>
+                <input type="number"id="price" name="price" class="form-control" readonly>
             </div>
 
 
@@ -173,7 +173,6 @@
                             showamount.textContent = 'จำนวนชุดที่มีในร้าน: ' + data.amount + ' ชุด';
                             hiddenidsize.value = data.id;
                             hiddendressid.value = data.dress_id;
-                            calculate(data.price);
 
 
                         });
@@ -229,46 +228,48 @@
                 หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุด 100 / วัน
             </div>
 
+
             <script>
-                var pickupinput = document.getElementById('pickup_date') ;
-                var returninput = document.getElementById('return_date') ; 
-                var showlate_charge = document.getElementById('late_charge') ; 
-                // var price = document.getElementById('price').value ; 
-                // console.log(price)
-                // console.log(price)
+                var input_for_pickup = document.getElementById('pickup_date'); //นัดรับชุด
+                var input_for_return = document.getElementById('return_date'); //นัดคืนชุด
+                var value_for_latecharge = document.getElementById('late_charge'); //แสดงค่าขยายเวลาเช่าชุด
+                var price_of_latecharge = document.getElementById('price');
 
-                function calculate(price){
-                    console.log('ราคาที่ได้จาก API:', data.price);
-                    var pickupvalue = new Date(pickupinput.value) ; 
-                    var returnvalue = new Date(returninput.value) ; 
+                function calculate() {
+                    var datapickup = new Date(input_for_pickup.value);
+                    var datareturn = new Date(input_for_return.value);
 
-                    var time = returnvalue.getTime() - pickupvalue.getTime()  ; 
-                    var day = Math.ceil(time / (24*60*60*1000))  ; 
+                    var time = datareturn.getTime() - datapickup.getTime();
+                    var day = Math.ceil(time / (24 * 60 * 60 * 1000)); //จำนวนวัน 5 
 
-                    if(day > 3 ) {
-                        showlate_charge.value = (day-3) * (price*0.25)  ; 
-                    }
-                    else{
-                        showlate_charge.value = 0 ; 
+                    if (day > 3) {
+                        value_for_latecharge.value = (day - 3) * (parseFloat(price_of_latecharge.value) * 0.25)
+                    } else {
+                        value_for_latecharge.value = 0;
                     }
                 }
 
-                pickupinput.addEventListener('change',function(){
-                    calculate() ; 
-                    returninput.value = '' ; 
-                    showlate_charge.value = null ; 
-                }) ; 
+                input_for_pickup.addEventListener('change', function() {
+                    calculate();
+                    input_for_return.value = '';
+                    value_for_latecharge.value = null;
+                });
+                input_for_return.addEventListener('change', function() {
+                    calculate();
+                });
 
-                returninput.addEventListener('change',function(){
-                    calculate() ; 
-                }) ; 
+                document.getElementById('dress_size').addEventListener('change',function(){
+                    input_for_pickup.value = '';
+                    input_for_return.value = '';
+                    value_for_latecharge.value = null ; 
+                });
 
-                pickupinput.addEventListener('input',function(){
-                    var input_of_pickup = new Date(pickupinput.value) ;
-                    var returnvalue = document.getElementById('return_date') ; 
-                    returnvalue.min = input_of_pickup.toISOString().split('T')[0]  ;
+                //กำหนดค่าต้ำสุดให้มันวันที่นัดคืนชุด
+                input_for_pickup.addEventListener('input',function(){
+                    var inputforpickup = new Date(input_for_pickup.value) ; 
+                    input_for_return.min = inputforpickup.toISOString().split('T')[0];
+                });
 
-                }) ; 
             </script>
 
 
