@@ -108,6 +108,7 @@ class CreateOrderController extends Controller
             $order->customer_id = $customer->id;
             $order->total_price = $request->input('price');
             $order->total_deposit = $request->input('deposit');
+            $order->total_quantity = "1";
             $order->save();
 
             //รายละเอียดออเดอร์
@@ -120,7 +121,7 @@ class CreateOrderController extends Controller
             $orderdetail->return_date = $request->input('return_date');
             $orderdetail->late_charge = $request->input('late_charge');
             $orderdetail->type_dress = $request->input('dress_type');
-            $orderdetail->type_order = $request->input('type_order');
+            $orderdetail->type_order = "2";
 
             // ลดจำนวนสินค้าในตาราง size
             $reduce = Size::find($request->input('id_of_size'));
@@ -141,10 +142,7 @@ class CreateOrderController extends Controller
             $orderdetail->status_payment = $request->input('status_payment');
             $orderdetail->late_fee = 0;
             $orderdetail->total_cost = 0;
-            // $orderdetail->total_decoration_price = $request->input('total_decoration_price');
-            // $orderdetail->total_fitting_price = $request->input('total_fitting_price');
             $orderdetail->save();
-
 
             //วันที่
             $date = new Date;
@@ -166,23 +164,21 @@ class CreateOrderController extends Controller
             $orderdetailstatus->save();
 
 
-
-            //เครื่องประดับ
+            //เพิ่มเติมลวดลายชุด
             // //ตรวจสอบว่า ถ้ามีค่าที่ส่งมา
-            if ($request->has('decoration_type_') && $request->has('decoration_type_description_') && $request->has('decoration_price_')) {
-                $dec_type = $request->input('decoration_type_');
+            if ($request->has('decoration_type_description_') && $request->has('decoration_price_')) {
+                // $dec_type = $request->input('decoration_type_');
                 $dec_description = $request->input('decoration_type_description_');
                 $dec_price = $request->input('decoration_price_');
-                foreach ($dec_type as $index => $dec_type) {
+                foreach ($dec_description as $index => $dec_dec) {
                     $decoration = new Decoration;
                     $decoration->order_detail_id = $orderdetail->id;
-                    $decoration->decoration_type = $dec_type;
-                    $decoration->decoration_type_description = $dec_description[$index];
+                    // $decoration->decoration_type = $dec_type;
+                    $decoration->decoration_type_description = $dec_dec;
                     $decoration->decoration_price = $dec_price[$index];
                     $decoration->save();
                 }
             }
-
 
             //รูปภาพ
             if ($request->hasFile('imagerent_')) {
@@ -201,7 +197,7 @@ class CreateOrderController extends Controller
             if ($request->has('fitting_date_')) {
                 $fittingdate = $request->input('fitting_date_');
                 $fittingNote = $request->input('fitting_note_');
-                $fittingPrice = $request->input('fitting_price_');
+                // $fittingPrice = $request->input('fitting_price_');
                 foreach ($fittingdate as $index => $fittingdate) {
                     $request->validate([
                         'imagerent_' . $index => 'file|mimes:jpeg,png,jpg|max:2048',
@@ -214,20 +210,22 @@ class CreateOrderController extends Controller
                     $fitting->order_detail_id = $orderdetail->id;
                     $fitting->fitting_date = $fittingdate;
                     $fitting->fitting_note = $fittingNote[$index];
-                    $fitting->fitting_price = $fittingPrice[$index];
+                    // $fitting->fitting_price = $fittingPrice[$index];
                     $fitting->fitting_status = "ยังไม่ลองชุด";
                     $fitting->save();
                 }
             }
 
             DB::commit();
-            return redirect()->back()->with('successpasstry', "บันทึกข้อมูลสำเร็จ");
+            // return redirect()->back()->with('successpasstry', "บันทึกข้อมูลสำเร็จ");
+            return redirect()->route('showorderbill',['id'=>$order->id])->with('success' , "สำเร็จนะ") ; 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('errortotal', "เกิดข้อผิดพลาดในขณะที่ประมวลผลคำสั่งซื้อ");
+            return redirect()->back()->with('errortotal', "เกิดข้อผิดพลาด");
         }
 
-        return redirect()->back()->with('success', 'บันทึกข้อมูลลูกค้าและคำสั่งสำเร็จ');
+        // return redirect()->back()->with('success', 'บันทึกข้อมูลลูกค้าและคำสั่งสำเร็จ');
+        // return redirect()->route('showorderbill',['id'=>$order->id])->with('success' , "สำเร็จนะ") ; 
     }
 
 
@@ -268,16 +266,17 @@ class CreateOrderController extends Controller
 
             ->orderBy('order_created_at', 'desc') // เรียงลำดับตาม created_at จากมากไปน้อย
             ->get();
-    
+
         return view('employee.showrent', compact('data'));
     }
 
     //ทำใหม้ 
 
     //แสดงตารางบิลรวม
-    public function showorder(){
-        $showorder = Customer::with('orders')->orderBy('created_at' , 'desc')->get() ; 
-        return view('employee.showorder' , compact('showorder')) ; 
+    public function showorder()
+    {
+        $showorder = Customer::with('orders')->orderBy('created_at', 'desc')->get();
+        return view('employee.showorder', compact('showorder'));
     }
     // Query
     // public function showorder() {
@@ -285,21 +284,22 @@ class CreateOrderController extends Controller
     //                     ->join('orders', 'customers.id', '=', 'orders.customer_id')
     //                     ->select('customers.*', 'orders.id as order_id', 'orders.created_at as order_created_at')
     //                     ->get();
-    
+
     //     return view('employee.showorder', compact('showorder'));
     // }
 
     //แสดงตาราง orderbill
-    public function showorderbill($id){
-        $bill = Orderdetail::where('order_id' , $id)->get() ; 
-        
-        return view('employee.showorderbill' ,compact('bill')) ; 
+    public function showorderbill($id)
+    {
+        $bill = Orderdetail::where('order_id', $id)->get();
+
+        return view('employee.showorderbill', compact('bill'));
     }
 
 
 
 
-    
+
 
 
 
@@ -620,4 +620,7 @@ class CreateOrderController extends Controller
         $orderdetailstatus->save();
         return redirect()->back()->with('success', "ยืนยันการคืนชุดสำเร็จ");
     }
+
+
+
 }

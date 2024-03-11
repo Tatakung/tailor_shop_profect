@@ -11,16 +11,37 @@
 
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modaleditaccess">แก้ไข</button>
     <button type="button" data-toggle="modal" data-target="#history">ประวัติการแก้ไข</button>
-    @if(session('success'))
-    <div class="alert alert-success">
-        {{session('success')}}
-    </div>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
     @endif
-    @if(session('fail'))
+    @if (session('fail'))
     <div class="alert alert-danger">
         {{session('fail')}}
     </div>
     @endif
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     {{-- ส่วน modalแก้ไข --}}
     <div class="modal fade" id="modaleditaccess" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -28,15 +49,17 @@
                 <div class="modal-header">
                     จะแก้ไขไหมนะ
                 </div>
-                <form action="{{route('admin.updateaccessdetail')}}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.updateaccessdetail') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <label for="update_price">ราคา</label>
-                        <input type="number" name="update_price" id="update_price" value="{{ $access->accessory_price }}" required>
+                        <input type="number" name="update_price" id="update_price" value="{{ $access->accessory_price }}"
+                            required>
                         <br>
 
                         <label for="update_deposit">ราคามัดจำ</label>
-                        <input type="number" name="update_deposit" id="update_deposit" value="{{ $access->accessory_deposit }}" required>
+                        <input type="number" name="update_deposit" id="update_deposit"
+                            value="{{ $access->accessory_deposit }}" required>
 
                         <br>
 
@@ -56,8 +79,8 @@
                         <br>
                         <label for="update_image">แก้ไขรูปภาพ</label>
                         <input type="file" name="update_image" id="update_image">
-                        
-                        <input type="hidden" name="id" id="id" value="{{$access->id}}">
+
+                        <input type="hidden" name="id" id="id" value="{{ $access->id }}">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
@@ -92,28 +115,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(\App\Models\Accessoryhistory::where('accessory_id',$access->id)->get() as $history)
-                            <tr>
-                                <td>{{$history->id}}</td>
-                                <td>{{$history->created_at}}</td>
-                                <td>{{$history->action}}</td>
-                                <td>{{$history->old_amount}}</td>
-                                <td>{{$history->new_amount}}</td>
-                            </tr>
+                            @foreach (\App\Models\Accessoryhistory::where('accessory_id', $access->id)->get() as $history)
+                                <tr>
+                                    <td>{{ $history->id }}</td>
+                                    <td>{{ $history->created_at }}</td>
+                                    <td>{{ $history->action }}</td>
+                                    <td>{{ $history->old_amount }}</td>
+                                    <td>{{ $history->new_amount }}</td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                    
+
                 </div>
             </div>
         </div>
     </div>
-
-
-
-
-
 @endsection

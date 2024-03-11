@@ -172,7 +172,7 @@
             var pickupDateInput = document.getElementById('pickup_date'); // นัดรับชุด
             var returnDateInput = document.getElementById('return_date'); // นัดคืนชุด
             var lateChargeInput = document.getElementById('late_charge'); // late_charge
-            var price = 1000 ; 
+            var price = 1000;
 
             function updateLateCharge() {
                 var pickupDate = new Date(pickupDateInput.value); //ค่าที่กรอก 20/03/2024
@@ -208,43 +208,131 @@
             });
         </script>
 
-        {{-- <script>
-            document.getElementById('pickup_date').addEventListener('input',
-            function() { //ทันทีที่มีการกรกอค่าใน วันที่นัดรับชุด
-                var pickupDate = new Date(this.value); //20/03/2024 วันที่นัดรับชุด 
-                var returnDateInput = document.getElementById('return_date');
-                returnDateInput.min = pickupDate.toISOString().split('T')[0];
+        {{-- 
+        <br>
+
+        <div class="form-group">
+            <label for="decoration_name">ชื่อเครื่องประดับ</label>
+            <input type="text" name="decoration_name" id="decoration_name">
+        </div>
+
+        <div class="form-group">
+            <label for="decoration_price">ราคาเครื่องประดับ</label>
+            <input type="number" name="decoration_price" id="decoration_price">
+        </div>
+
+
+        <button type="button" class="btn btn-danger" onclick="delete()">ลบ</button> --}}
+
+
+
+
+        <div id="aria">
+            {{-- พืน้ที่สำหรับแสดง รnput --}}
+        </div>
+
+
+
+        
+        <button type="button" class="btn btn-secondary" id="addbutton">+เพิ่ม</button>
+        <script>
+            var aria = document.getElementById('aria'); //สำหรับแสดงช่อง input 
+            var addbutton = document.getElementById('addbutton'); //กดเพื่อคลิ๊กเพิ่ม
+            var count = 0;
+            addbutton.addEventListener('click', function() {
+                count++;
+                var newdiv = document.createElement('div'); //สร้าง div ขึ้นมาใหม่นะ 
+                newdiv.id = "decoration" + count;
+
+                var input =
+
+                    ' <div class="form-group"> ' +
+                    '<label for="decoration_name ' + count + ' ">ชื่อเครื่องประดับ</label>' +
+                    '<input type="text" name="decoration_name_[' + count + ']" id="decoration_name ' + count + ' ">' +
+                    '</div>' +
+
+
+
+                    '<button type="button" class="btn btn-danger" onclick="removeDecoration(' + count +
+                    ' )">ลบ</button> ';
+
+                newdiv.innerHTML = input;
+                aria.appendChild(newdiv);
+
             });
-        </script> --}}
+
+
+            function removeDecoration(index) {
+                var deletetodiv = document.getElementById('decoration' + index); //ลบตาม เลข div id 
+                deletetodiv.remove();
+            }
+        </script>
 
 
 
-        {{-- <script>
-  var pickupDateInput = document.getElementById('pickup_date');
-var returnDateInput = document.getElementById('return_date');
-var lateChargeInput = document.getElementById('late_charge');
 
-function calculateDays(pickupDate, returnDate) {
-  var date1 = new Date(pickupDate);
-  var date2 = new Date(returnDate);
-  var diffInDays = Math.floor((date2 - date1) / (1000 * 60 * 60 * 24));
-  return diffInDays;
+        {{-- /////////////////////////// --}}
+        <button type="button" id="addDecorationButton" class="btn btn-success">+เพิ่มปักดอกไม้</button>
+
+        <div id="additionalDecorations">
+            <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
+        </div>
+        <script>
+            var add = document.getElementById('addDecorationButton'); //กดเพื่อปักดอกไม้เพิ่ม
+            var ariashow = document.getElementById('additionalDecorations'); //พื้นที่สำหรับแสดงตอที่กด
+            var counter = 0;
+
+            add.addEventListener('click', function() {
+                counter++;
+                var creatediv = document.createElement('div'); //สร้างdiv มาขึ้นมาใหม่
+                creatediv.id = 'decoration' + counter; // กำหนด id ให้มัน
+                var inputs =
+                    '<div class="form-group">' +
+                    counter + ' . ' +
+                    ' <label for="decoration_type ' + counter + '">ประเภทปักดอกไม้</label> ' +
+                    ' <input type="text" name="decoration_type_[' + counter + '] " id="decoration_type ' + counter +
+                    ' "> ' +
+                    '</div>' +
+
+                    ' <div class="form-group"> ' +
+                    counter + ' . ' +
+                    ' <label for="decoration_type_description ' + counter + ' ">รายละเอียดปักดอกไม้</label> ' +
+                    ' <input type="text" name="decoration_type_description_[' + counter +
+                    '] " id="decoration_type_description ' + counter + ' ">' +
+                    '</div>' +
+                    // 
+                    '<div class="form-group">' +
+                    counter + ' . ' +
+                    ' <label for="decoration_price ' + counter + ' ">ราคาปักดอกไม้</label> ' +
+                    ' <input type="number" name="decoration_price_[' + counter + '] " id="decoration_price ' + counter +
+                    ' "> ' +
+                    '</div>' +
+
+                    '<button type="button" class="btn btn-danger" onclick="removeDecoration(' + counter +
+                    ' )">ลบปักดอกไม้</button> ';
+
+                creatediv.innerHTML = inputs; // เอา ก้อนinputs ไปต่อในdiv ของ creatediv
+                ariashow.appendChild(
+                    creatediv
+
+
+                ); //เอาก้อนcreatediv ไปแทรกข้างในdiv ที่สร้างไว้ <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
+            });
+
+            function removeDecoration(index) {
+                var deletetodiv = document.getElementById('decoration' + index); //ลบตาม เลข div id 
+                deletetodiv.remove();
+            }
+        </script>
+
+
+
+
+
 }
 
-function updateLateCharge() {
-  var pickupDate = pickupDateInput.value;
-  var returnDate = returnDateInput.value;
-  var days = calculateDays(pickupDate, returnDate);
-  var lateCharge = days > 4 ? (days - 4) * 100 : 0;
-  lateChargeInput.value = lateCharge;
-}
 
-pickupDateInput.addEventListener('change', updateLateCharge);
-returnDateInput.addEventListener('change', updateLateCharge);
 
-updateLateCharge(); // เรียกใช้ฟังก์ชันครั้งแรกเพื่อแสดงค่าเริ่มต้น
-
-</script> --}}
 
 
 

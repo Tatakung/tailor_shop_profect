@@ -8,13 +8,59 @@
         <img src="{{ asset('storage/' . $dress->dress_image) }}" alt="" width="120" height="90">
     </div>
 
-    
 
-    @if (session('fail'))
+
+    {{-- @if (session('fail'))
         <div class="alert alert-danger">
             {{ session('fail') }}
         </div>
+    @endif --}}
+
+
+
+    {{-- @if (session('fail'))
+        <div id="fail-alert" class="alert alert-danger">
+            {{ session('fail') }}
+        </div>
     @endif
+
+
+    <script>
+        setTimeout(function() {
+            document.getElementById('fail-alert').style.display = 'none';
+        }, 5000); // 5000 milliseconds = 5 seconds
+    </script> --}}
+
+
+  
+@if (session('fail'))
+    <div id="fail-alert" class="alert alert-danger">
+        {{ session('fail') }}
+    </div>
+@endif
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> <!-- Include jQuery -->
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            // $('#fail-alert').fadeOut(1000); // 1000 milliseconds = 1 second
+            $('#fail-alert, #success-alert').fadeOut(1000); // 1000 milliseconds = 1 second
+
+
+        }, 3000); // 5000 milliseconds = 5 seconds
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -146,7 +192,7 @@
                         </button>
 
                         <button type="button" data-toggle="modal"
-                        data-target="#showhistory{{ $size->id }}">ดูประวัติ</button>
+                            data-target="#showhistory{{ $size->id }}">ดูประวัติ</button>
 
 
                         {{-- modalลบsize --}}
@@ -178,7 +224,7 @@
                                         ประวัติการแก้ไข
                                     </div>
                                     <div class="modal-body">
-                                        {{$size->id}}
+                                        {{ $size->id }}
                                         <table class="table">
                                             <thead>
                                                 <tr>
@@ -190,14 +236,14 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach(   \App\Models\Dresssizehistory::where('size_id',$size->id)->get() as $history  )
-                                                <tr>
-                                                    <td>{{$history->size_id}}</td>
-                                                    <td>{{$history->created_at->format('Y-m-d')}}</td>
-                                                    <td>{{$history->action}}</td>
-                                                    <td>{{$history->old_amount}}</td>
-                                                    <td>{{$history->new_amount}}</td>
-                                                </tr>
+                                                @foreach (\App\Models\Dresssizehistory::where('size_id', $size->id)->get() as $history)
+                                                    <tr>
+                                                        <td>{{ $history->size_id }}</td>
+                                                        <td>{{ $history->created_at->format('Y-m-d') }}</td>
+                                                        <td>{{ $history->action }}</td>
+                                                        <td>{{ $history->old_amount }}</td>
+                                                        <td>{{ $history->new_amount }}</td>
+                                                    </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -205,7 +251,8 @@
 
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">ยกเลิก</button>
                                         <button type="submit" class="btn btn-secondary">ยืนยัน</button>
                                     </div>
                                 </div>

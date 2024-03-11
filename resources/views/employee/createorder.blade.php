@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h2>เพิ่มออเดอม</h2>
+        <h2>เพิ่มออเดอร์</h2>
         <form method="post" action="{{ route('order.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
@@ -24,10 +24,10 @@
             </div>
 
             <div class="form-group">
-                <button type="button" class="btn btn-secondary">+เพิ่มตัดชุด</button>
-                <button type="button" class="btn btn-secondary">+เพิ่มเช่าชุด</button>
-                <button type="button" class="btn btn-secondary">+เพิ่มเช่าเครื่องประดับ</button>
-                <button type="button" class="btn btn-secondary">+เพิ่มเช่าตัด</button>
+                <button type="button" class="btn btn-secondary">+ เพิ่มตัดชุด</button>
+                <button type="button" class="btn btn-secondary">+ เพิ่มเช่าชุด</button>
+                <button type="button" class="btn btn-secondary">+ เพิ่มเช่าเครื่องประดับ</button>
+                <button type="button" class="btn btn-secondary">+ เพิ่มเช่าตัด</button>
             </div>
 
 
@@ -40,6 +40,10 @@
                     @endforeach
                 </select>
             </div>
+
+
+
+
 
             <div class="mb-3">
                 <label for="dress_code" class="form-label">แบบชุด</label>
@@ -56,6 +60,8 @@
             <!--ดึงแบบชุด -->
             <script>
                 var dressType = document.getElementById('dress_type'); //เลือกประเภทชุดเสด
+                var clssize = document.getElementById('dress_size'); // เลือกไซส์
+
                 dressType.addEventListener('change', function() {
                     fetch('/getdresscode/' + dressType.value)
                         .then(response => response.json())
@@ -63,14 +69,19 @@
                             // console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
                             var showcode = document.getElementById('dress_code'); //แสดงดรอปดาวรหัสชุด    
 
-                            showcode.innerHTML = '<option value="" selected disabled>เลือกรหัสชุด</option>';
+                            showcode.innerHTML = '<option value="" selected disabled>เลือกแบบชุด</option>';
                             data.forEach(dressCode => {
-                                showcode.innerHTML += '<option value="' + dressCode + '">' + dressCode +
-                                    '</option>';
+                                showcode.innerHTML += '<option value="' + dressCode + '">' + 'แบบที่ ' +
+                                    dressCode + '</option>';
                             });
                         });
+                    //ล้างตัวเลือกไซส์
+                    clssize.innerHTML = '<option value="" selected disabled></option>';
+                    document.getElementById('imageshow').src = '';
                 });
             </script>
+
+
 
             <!--ดึงไซส์-->
             <script>
@@ -90,6 +101,7 @@
                                     ' </option>';
                             });
                         });
+                    document.getElementById('imageshow').src = '';
                 });
             </script>
 
@@ -222,10 +234,10 @@
             </div>
 
             <div class="form-group">
-                <label for="late_charge">Late Charge หรือ ค่าบริการขยายเวลาเช่าชุด :</label>
+                <label for="late_charge">ค่าบริการขยายเวลาเช่าชุด :</label>
                 <input type="text" id="late_charge" name="late_charge" class="form-control" readonly>
-                **หมายเหตุ กรณีเช่าชุด วันที่นัดรับชุด - วันที่นัดคืนชุด ทางร้านอนุญาตให้เช่าชุดสูงสุด 5 วัน
-                หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุด 100 / วัน
+                **หมายเหตุ กรณีเช่าชุด วันที่นัดรับชุด - วันที่นัดคืนชุด ทางร้านอนุญาตให้เช่าชุดสูงสุด 3 วัน
+                หากเกินกำหนดจะคิดค่าบริการขยายเวลาเช่าชุดวันละ 20% ของราคาค่าเช่าชุด
             </div>
 
 
@@ -243,7 +255,7 @@
                     var day = Math.ceil(time / (24 * 60 * 60 * 1000)); //จำนวนวัน 5 
 
                     if (day > 3) {
-                        value_for_latecharge.value = (day - 3) * (parseFloat(price_of_latecharge.value) * 0.25)
+                        value_for_latecharge.value = (day - 3) * (parseFloat(price_of_latecharge.value) * 0.2)
                     } else {
                         value_for_latecharge.value = 0;
                     }
@@ -258,29 +270,22 @@
                     calculate();
                 });
 
-                document.getElementById('dress_size').addEventListener('change',function(){
+                document.getElementById('dress_size').addEventListener('change', function() {
                     input_for_pickup.value = '';
                     input_for_return.value = '';
-                    value_for_latecharge.value = null ; 
+                    value_for_latecharge.value = null;
                 });
 
                 //กำหนดค่าต้ำสุดให้มันวันที่นัดคืนชุด
-                input_for_pickup.addEventListener('input',function(){
-                    var inputforpickup = new Date(input_for_pickup.value) ; 
+                input_for_pickup.addEventListener('input', function() {
+                    var inputforpickup = new Date(input_for_pickup.value);
                     input_for_return.min = inputforpickup.toISOString().split('T')[0];
                 });
-
             </script>
 
 
 
-            <div class="form-group">
-                <label>ประเภท:</label><br>
-                <input type="radio" name="type_order" value="1" disabled> ตัดชุด
-                <input type="radio" name="type_order" value="2" checked readonly> เช่าชุด
-                <input type="radio" name="type_order" value="3" disabled> เช่าเครื่องประดับ
-                <input type="radio" name="type_order" value="4" disabled> เช่าตัด
-            </div>
+
 
             <div class="form-group">
                 <label>ชำระเงิน:</label><br>
@@ -288,20 +293,20 @@
                 <input type="radio" name="status_payment" value="2"> จ่ายเต็มจำนวน
             </div>
             <div class="form-group">
-                <label>โน๊ต/หมายเหตุ:</label><br>
+                <label>โน๊ต :</label><br>
                 <textarea class="form-control" id="note" name="note"></textarea>
             </div>
 
-            <button type="button" id="addDecorationButton" class="btn btn-success">+เพิ่มปักดอกไม้</button>
+            <button type="button" id="addDecorationButton" class="btn btn-secondary">+ เพิ่มเติมลวดลายชุด</button>
 
-            <button type="button" id="addimagerent" class="btn btn-success">+เพิ่มรูปภาพ</button>
+            <button type="button" id="addimagerent" class="btn btn-secondary">+ เพิ่มรูปภาพ</button>
 
-            <button type="button" id="addfitting" class="btn btn-success">+เพิ่มวันนัดลองชุด</button>
+            <button type="button" id="addfitting" class="btn btn-secondary">+ เพิ่มวันนัดลองชุด</button>
 
 
             <!-- ส่วนที่จะเพิ่มช่องกรอกข้อมูลปักดอกไม้ -->
             <div id="additionalDecorations">
-                <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
+                <!-- ช่องกรอกข้อมูลเพิ่มเติมลวดลายชุด -->
             </div>
 
             <div id="areaimage">
@@ -323,33 +328,35 @@
                     var creatediv = document.createElement('div'); //สร้างdiv มาขึ้นมาใหม่
                     creatediv.id = 'decoration' + counter; // กำหนด id ให้มัน
                     var inputs =
-                        '<div class="form-group">' +
-                        counter + ' . ' +
-                        ' <label for="decoration_type ' + counter + '">ประเภทปักดอกไม้</label> ' +
-                        ' <input type="text" name="decoration_type_[' + counter + '] " id="decoration_type ' + counter +
-                        ' "> ' +
-                        '</div>' +
+                        // '<div class="form-group">' +
+                        // counter + ' . ' +
+                        // ' <label for="decoration_type ' + counter + '">ประเภทปักดอกไม้</label> ' +
+                        // ' <input type="text" name="decoration_type_[' + counter + '] " id="decoration_type ' + counter +
+                        // ' "> ' +
+                        // '</div>' +
 
                         ' <div class="form-group"> ' +
                         counter + ' . ' +
-                        ' <label for="decoration_type_description ' + counter + ' ">รายละเอียดปักดอกไม้</label> ' +
+                        ' <label for="decoration_type_description ' + counter + ' ">รายละเอียด</label> ' +
                         ' <input type="text" name="decoration_type_description_[' + counter +
                         '] " id="decoration_type_description ' + counter + ' ">' +
                         '</div>' +
                         // 
                         '<div class="form-group">' +
                         counter + ' . ' +
-                        ' <label for="decoration_price ' + counter + ' ">ราคาปักดอกไม้</label> ' +
+                        ' <label for="decoration_price ' + counter + ' ">ราคา</label> ' +
                         ' <input type="number" name="decoration_price_[' + counter + '] " id="decoration_price ' + counter +
                         ' "> ' +
                         '</div>' +
 
                         '<button type="button" class="btn btn-danger" onclick="removeDecoration(' + counter +
-                        ' )">ลบปักดอกไม้</button> ';
+                        ' )">ลบ</button> ';
 
                     creatediv.innerHTML = inputs; // เอา ก้อนinputs ไปต่อในdiv ของ creatediv
                     ariashow.appendChild(
                         creatediv
+
+
                     ); //เอาก้อนcreatediv ไปแทรกข้างในdiv ที่สร้างไว้ <!-- ช่องกรอกข้อมูลปักดอกไม้จะถูกเพิ่มที่นี่ -->
                 });
 
@@ -362,9 +369,7 @@
 
             <script>
                 var addimage = document.getElementById('addimagerent');
-
                 var areaimage = document.getElementById('areaimage');
-
                 var count = 0;
 
                 addimage.addEventListener('click', function() {
@@ -375,7 +380,7 @@
 
                     var label = document.createElement('label');
                     label.htmlFor = 'imagerent' + count;
-                    label.innerHTML = 'เพิ่มจำนวนรูปชุด'
+                    label.innerHTML = count + 'เพิ่มรูปชุด'
 
                     var input = document.createElement('input');
                     input.type = 'file';
@@ -386,10 +391,17 @@
                     var button = document.createElement('button');
                     button.type = 'button';
                     button.className = 'btn btn-danger';
+                  
+                    
+                    button.addEventListener('click', function() {
+                        removeimage(creatediv); // ส่ง creatediv เพื่อให้รู้ว่าจะลบ div นี้
+                    });
+
                     button.onclick = function() {
                         removeimage(count);
-                    }
-                    button.innerHTML = "ลบออก";
+                    };
+
+                    button.innerHTML = "ลบ";
 
 
                     creatediv.appendChild(label);
@@ -401,16 +413,11 @@
 
                 });
 
-                function removeimage(index) {
-                    var deleteID = document.getElementById('imagerent' + index);
-                    deleteID.remove();
+                function removeimage(element) {
+                    element.remove();
                 }
+
             </script>
-
-
-
-
-
 
 
 
@@ -431,23 +438,23 @@
                         '<div class="form-group">' +
                         count + ' . ' +
                         '<label for="fitting_date ' + count + ' " >วันนัดลองชุด:</label>' +
-                        '<input type="date" name="fitting_date_[' + count + '] " id="fitting_date ' + count + ' ">' +
+                        '<input type="date" name="fitting_date_[' + count + '] " id="fitting_date ' + count + ' " min="<?=date('Y-m-d')?>">' +
                         '</div>' +
 
 
                         '<div class="form-group">' +
-                        '<label for="fitting_note ' + count + ' ">บันทึก:</label><br>' +
+                        '<label for="fitting_note ' + count + ' ">รายละเอียด:</label><br>' +
                         '<textarea class="form-control" name="fitting_note_[' + count + '] " id="fitting_note ' + count +
                         ' "></textarea>' +
                         '</div>' +
 
-                        '<div class="form-group">' +
-                        '<label for="fitting_price ' + count + ' " >ราคา:</label>' +
-                        '<input type="number" name="fitting_price_[' + count + '] " id="fitting_price ' + count + ' ">' +
-                        '</div>' +
+                        // '<div class="form-group">' +
+                        // '<label for="fitting_price ' + count + ' " >ราคา:</label>' +
+                        // '<input type="number" name="fitting_price_[' + count + '] " id="fitting_price ' + count + ' ">' +
+                        // '</div>' +
 
                         '<button type="button" class="btn btn-danger" onclick="removefitting(' + count +
-                        ' )">ลบปักดอกไม้</button> ';
+                        ' )">ลบ</button> ';
                     creatediv.innerHTML = input;
 
                     areafitting.appendChild(creatediv);
@@ -463,17 +470,28 @@
 
 
 
-
-
-
-
-
-
-
-
             <br>
 
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
 @endsection
