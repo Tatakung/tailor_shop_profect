@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 @section('content')
     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showeditdresstable">แก้ไข</button>
     <h4>ประเภทชุด {{ $dress->dress_type }}</h4>
@@ -7,30 +7,6 @@
     <div>
         <img src="{{ asset('storage/' . $dress->dress_image) }}" alt="" width="120" height="90">
     </div>
-
-
-
-    {{-- @if (session('fail'))
-        <div class="alert alert-danger">
-            {{ session('fail') }}
-        </div>
-    @endif --}}
-
-
-
-    {{-- @if (session('fail'))
-        <div id="fail-alert" class="alert alert-danger">
-            {{ session('fail') }}
-        </div>
-    @endif
-
-
-    <script>
-        setTimeout(function() {
-            document.getElementById('fail-alert').style.display = 'none';
-        }, 5000); // 5000 milliseconds = 5 seconds
-    </script> --}}
-
 
   
 @if (session('fail'))
@@ -51,16 +27,6 @@
     });
 </script>
 
-
-
-
-
-
-
-
-
-
-
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -77,12 +43,10 @@
         <div class="alert alert-danger">
             {{ session('addselect') }}
         </div>
-    @endif
-
-
+    @endif --}}
 
     {{-- modalของแก้ไขตาราง dress --}}
-    <div class="modal fade" id="showeditdresstable" role="dialog" aria-hidden="true">
+    {{-- <div class="modal fade" id="showeditdresstable" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -106,12 +70,12 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 
-    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showaddsize">+เพิ่มไซส์</button>
+    {{-- <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#showaddsize">+เพิ่มไซส์</button> --}}
     {{-- modalสำหรับเพิ่มไซส์ --}}
-    <div class="modal fade" id="showaddsize" role="dialog" aria-hidden="true">
+    {{-- <div class="modal fade" id="showaddsize" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -143,24 +107,11 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <table class="table">
+    {{-- <table class="table">
         <thead>
             <tr>
                 <th>id</th>
@@ -181,22 +132,22 @@
                     <td>{{ $size->price }}</td>
                     <td>{{ $size->deposit }}</td>
                     <td>{{ $size->amount }}</td>
-                    <td>
+                    <td> --}}
                         {{-- ปุ่มแก้ไข --}}
-                        <button type="button" class="btn btn-secondary" data-toggle="modal"
-                            data-target="#showedit{{ $size->id }}">แก้ไข</button>
+                        {{-- <button type="button" class="btn btn-secondary" data-toggle="modal"
+                            data-target="#showedit{{ $size->id }}">แก้ไข</button> --}}
                         {{-- ปุ่มลบ --}}
-
+{{-- 
                         <button type="button" data-toggle="modal" data-target="#showconfirmdeletesize{{ $size->id }}">
                             <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20" height="20">
                         </button>
 
                         <button type="button" data-toggle="modal"
-                            data-target="#showhistory{{ $size->id }}">ดูประวัติ</button>
+                            data-target="#showhistory{{ $size->id }}">ดูประวัติ</button> --}}
 
 
                         {{-- modalลบsize --}}
-                        <div class="modal fade" id="showconfirmdeletesize{{ $size->id }}" role="dialog"
+                        {{-- <div class="modal fade" id="showconfirmdeletesize{{ $size->id }}" role="dialog"
                             aria-hidden="true">
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
@@ -214,10 +165,10 @@
                                 </div>
                             </div>
 
-                        </div>
+                        </div> --}}
 
                         {{-- momdalแสดงประวัติ --}}
-                        <div class="modal fade" id="showhistory{{ $size->id }}" role="dialog" aria-hidden="true">
+                        {{-- <div class="modal fade" id="showhistory{{ $size->id }}" role="dialog" aria-hidden="true">
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -257,13 +208,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
 
 
 
                         {{-- modalแสดงแก้ไข --}}
-                        <div class="modal fade" id="showedit{{ $size->id }}" role="dialog" aria-hidden="true">
+                        {{-- <div class="modal fade" id="showedit{{ $size->id }}" role="dialog" aria-hidden="true">
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -316,28 +267,10 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>
-    {{-- <script>
-        selecttype = document.getElementById('action_type_{{ $size->id }}'); //เลือกปกติ
-        quantityinput = document.getElementById('quantityy_{{ $size->id }}'); //ช่องกรอกข้อมูลนะ
-        var isQuantityDisabled = true;
-        selecttype.addEventListener('change', function() {
-            if (selecttype.value === "add" || selecttype.value === "remove") {
-                quantityinput.value = '';
-                quantityinput.disabled = false;
-                isQuantityDisabled = false;
-
-            } else {
-                quantityinput.value = '';
-                quantityinput.disabled = true;
-                isQuantityDisabled = true;
-            }
-
-        });
-    </script> --}}
-
+    </table> --}}
+    
     {{-- modalแสดงประวัติแก้ไข --}}
-    <div class="modal fade" id="history{{ $size->id }}" role="dialog" aria-hidden="true">
+    {{-- <div class="modal fade" id="history{{ $size->id }}" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -353,4 +286,224 @@
                 </div>
             </div>
         </div>
-    @endsection
+    @endsection --}}
+
+
+@extends('layouts.admin')
+@section('content')
+
+<div class="container d-flex justify-content-start">
+    <div class="table-responsive text-start" style="width: 100%;">
+        <h2 class="text text-start pt-5 ">รายละเอียดชุด</h2>
+        <div class=”grid-container”>
+            <div class="card mb-3 border-2" style="max-width: 1080px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="{{ asset('storage/' . $dress->dress_image) }}" class="img-fluid rounded-start" alt="" width="120" height="90"> <!--ค่อยปรับตามรูปที่ต้องการ -->
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{-- {{$access}} --}}</h5>
+                            <p class="card-text">
+                                <span style="font-weight: bold;">ประเภทชุด : </span> {{ $dress->dress_type }}
+                            </p>
+                            <p class="card-text">
+                                <span style="font-weight: bold;">แบบชุดที่ : </span> {{ $dress->dress_code }}
+                            </p>
+                            <p class="card-text">
+                                <span style="font-weight: bold;">คำอธิบายชุด : </span> {{ $dress->dress_description }}
+                            </p>
+
+
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#showeditdresstable">แก้ไข</button>
+
+                            @if (session('fail'))
+                            <div class="alert alert-danger">
+                                {{ session('fail') }}
+                            </div>
+                            @endif
+                            @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                            @endif
+                            @if (session('faildeleteamount'))
+                            <div class="alert alert-danger">
+                                {{ session('faildeleteamount') }}
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- modalของแก้ไขตาราง dress --}}
+            <div class="modal fade" id="showeditdresstable" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header alert alert-warning" role="alert" style="font-weight: bold;">
+                            คุณต้องการจะแก้ไขหรือไม่?
+                        </div>
+                        <form action="{{ route('admin.updatedress') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="modal-body">
+                                <label for="description">แก้ไขคำอธิบายชุด : </label>
+                                <input type="text" name="description" id="description" value="{{ $dress->dress_description }}">
+                                <br>
+                                <label for="update_image">แก้ไขรูปภาพ : </label>
+                                <input type="file" name="update_image" id="update_image">
+                                <input type="hidden" name="dress_id" id="dress_id" value="{{ $dress->id }}">
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                <button type="submit" class="btn btn-success">บันทึก</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: start;" class="py-2">
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#showaddsize">+ เพิ่มไซส์</button>
+            </div>
+            {{-- modalสำหรับเพิ่มไซส์ --}}
+            <div class="modal fade" id="showaddsize" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header alert alert-success" role="alert" style="font-weight: bold;">
+                            คุณต้องการเพิ่มชุดที่มีอยู่แล้วหรือไม่?
+                        </div>
+                        <form action="{{ route('admin.savesize') }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <label for="add_size_name">       ขนาดไซส์ : </label>
+                                <input type="text" name="add_size_name" id="add_size_name" required>
+                                <br>
+                                <label for="add_price">       ราคา : </label>
+                                <input type="number" name="add_price" id="add_price" required>
+                                <br>
+                                <label for="add_deposit">       ราคามัดจำ : </label>
+                                <input type="number" name="add_deposit" id="add_deposit" required>
+                                <br>
+                                <label for="add_amount">       จำนวนชุด : </label>
+                                <input type="number" name="add_amount" id="add_amount" required>
+
+                                <input type="hidden" name="dress_id" id="dress_id" value="{{ $dress->id }}">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                <button type="submit" class="btn btn-success">ยันยัน</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>dress_id</th>
+                        <th>ไซส์</th>
+                        <th>ราคาชุด</th>
+                        <th>ราคามัดจำ</th>
+                        <th>จำนวนชุด</th>
+                        <th>action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($size as $size)
+                    <tr>
+                        <td>{{ $size->id }}</td>
+                        <td>{{ $size->dress_id }}</td>
+                        <td>{{ $size->size_name }}</td>
+                        <td>{{ $size->price }}</td>
+                        <td>{{ $size->deposit }}</td>
+                        <td>{{ $size->amount }}</td>
+                        <td>
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#showedit{{ $size->id }}">แก้ไข</button>
+                            {{-- modalแสดงแก้ไข --}}
+                            <div class="modal fade" id="showedit{{ $size->id }}" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header alert alert-warning" role="alert" style="font-weight: bold;">
+                                            คุณต้องการจะแก้ไขใช่หรือไม่ ?
+                                        </div>
+
+
+
+                                        <form action="{{ route('admin.updatepricegroup') }}" method="POST">
+                                            @csrf
+                                            <div class="modal-body">
+                                                <label for="update_price">แก้ไขราคาชุด : </label>
+                                                <input type="number" name="update_price" id="update_price" value="{{ $size->price }}">
+                                                <br>
+
+                                                <label for="update_deposit">แก้ไขราคามัดจำ : </label>
+                                                <input type="number" name="update_deposit" id="update_deposit" value="{{ $size->deposit }}">
+
+                                                <br>
+
+                                                <label for="amount" id="amount">เพิ่ม/ลบจำนวนชุด : </label>
+                                                <select name="action_type" id="action_type">
+                                                    <option value="" selected>เลือก</option>
+                                                    <option value="add">เพิ่มจำนวน</option>
+                                                    <option value="remove">ลบจำนวน</option>
+                                                </select>
+                                                <br>
+                                                <label for="quantity">จำนวนที่ต้องการ : </label>
+                                                <input type="number" name="quantity" id="quantity" disabled>
+
+                                                <input type="hidden" name="size_id" id="size_id" value="{{ $size->id }}">
+
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-success">บันทึก</button>
+                                                </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <script>
+                selecttype = document.getElementById('action_type'); //เลือกปกติ
+                quantityinput = document.getElementById('quantity'); //ช่องกรอกข้อมูลนะ
+                selecttype.addEventListener('change', function() {
+                    if (selecttype.value === "add" || selecttype.value === "remove") {
+                        quantityinput.value = '';
+                        quantityinput.disabled = false;
+                    } else {
+                        quantityinput.value = '';
+                        quantityinput.disabled = true;
+                    }
+
+                });
+            </script>
+        </div>
+    </div>
+</div>
+@endsection
+

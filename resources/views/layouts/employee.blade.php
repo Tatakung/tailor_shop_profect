@@ -9,89 +9,93 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="main.css">
 
-    
+
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
 
-body{
-  font-family: 'Barlow', sans-serif;
-}
+        body {
+            font-family: 'Barlow', sans-serif;
+        }
 
-a:hover{
-  text-decoration: none;
-}
+        a:hover {
+            text-decoration: none;
+        }
 
-.border-left{
-  border-left: 2px solid var(--primary) !important;
-}
-
-
-.sidebar{
-  top: 0;
-  left : 0;
-  z-index : 100;
-  overflow-y: auto;
-  background-color: #99999c;
-}
+        .border-left {
+            border-left: 2px solid var(--primary) !important;
+        }
 
 
-.overlay{
-  background-color: rgb(0 0 0 / 45%);
-  z-index: 99;
-}
-
-/* sidebar for small screens */
-@media screen and (max-width: 767px){
-  
-  .sidebar{
-    max-width: 18rem;
-    transform : translateX(-100%);
-    transition : transform 0.4s ease-out;
-  }
-  
-  .sidebar.active{
-    transform : translateX(0);
-  }
-  
-}
-.logo-container {
-    display: flex;
-    justify-content: center; /* จัดให้อยู่ตรงกลางแนวนอน */
-    align-items: center; /* จัดให้อยู่ตรงกลางแนวตั้ง */
-    margin-bottom: 10px; /* ปรับระยะห่างต่ำสุดตามความเหมาะสม */
-    margin-top: 10px;
-}
-
-nav {
-    background-color: #6c6c6c;
-    color: #000000;
-    padding: 7mm;
-    width: 100%;        
-}
-
-/* เพิ่ม */
-.list-group-item.active {
-    background-color: #464646;
-    color: #000000;
-}
+        .sidebar {
+            top: 0;
+            left: 0;
+            z-index: 100;
+            overflow-y: auto;
+            background-color: #99999c;
+        }
 
 
-#test{
-  background-color: #a5a1a1;
-  color: #000000;
+        .overlay {
+            background-color: rgb(0 0 0 / 45%);
+            z-index: 99;
+        }
 
-}
-#d{
-  background-color: #464646;
-  color: #000000;
-}
-#d1{
-  background-color: #464646;
-  color: #000000;
-}
+        /* sidebar for small screens */
+        @media screen and (max-width: 767px) {
+
+            .sidebar {
+                max-width: 18rem;
+                transform: translateX(-100%);
+                transition: transform 0.4s ease-out;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            /* จัดให้อยู่ตรงกลางแนวนอน */
+            align-items: center;
+            /* จัดให้อยู่ตรงกลางแนวตั้ง */
+            margin-bottom: 10px;
+            /* ปรับระยะห่างต่ำสุดตามความเหมาะสม */
+            margin-top: 10px;
+        }
+
+        nav {
+            background-color: #6c6c6c;
+            color: #000000;
+            padding: 7mm;
+            width: 100%;
+        }
+
+        /* เพิ่ม */
+        .list-group-item.active {
+            background-color: #464646;
+            color: #000000;
+        }
 
 
+        #test {
+            background-color: #a5a1a1;
+            color: #000000;
+
+        }
+
+        #d {
+            background-color: #464646;
+            color: #000000;
+        }
+
+        #d1 {
+            background-color: #464646;
+            color: #000000;
+        }
     </style>
 
 
@@ -105,15 +109,15 @@ nav {
 
     <!-- sidebar -->
     <div class="col-md-3 col-lg-2 px-0 position-fixed h-100 shadow-sm sidebar" id="sidebar">
-    <h1 class="logo-container">
-          <img src="{{ asset('images/logo2.png') }}" alt="รูปจร้า" width="70" height="70">
-      </h1>
+        <h1 class="logo-container">
+            <img src="{{ asset('images/logo2.png') }}" alt="รูปจร้า" width="70" height="70">
+        </h1>
         <div class="list-group rounded-0">
             <a href="#" class="list-group-item list-group-item-action active border-0 d-flex align-items-center">
                 <span class="bi bi-border-all"></span>
                 <span class="ml-2">Today</span>
             </a>
-            
+
             <button
                 class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center"
                 data-toggle="collapse" data-target="#sale-collapse" id="test">
@@ -132,32 +136,38 @@ nav {
                 </div>
             </div>
 
+            <a href="{{route('showorder')}}"
+                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                <span class="bi bi-box"></span>
+                <span class="ml-2">ออเดอร์</span>
+            </a>
+
+            <a href="{{ route('totaldress') }}"
+                class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                <span class="bi bi-box"></span>
+                <span class="ml-2">เช่าชุด</span>
+            </a>
+
 
             <a href="" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-              <span class="bi bi-box"></span>
-              <span class="ml-2">จัดการชุด</span>
-          </a>
+                <span class="bi bi-box"></span>
+                <span class="ml-2">ประวัติเช่าชุด</span>
+            </a>
 
+            <a href="" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
 
-          <a href="" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-            <span class="bi bi-box"></span>
-            <span class="ml-2">.</span>
-        </a>
-
-        <a href="" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-
-          <span class="bi bi-box"></span>
-          <span class="ml-2">.</span>
-      </a>
+                <span class="bi bi-box"></span>
+                <span class="ml-2">.</span>
+            </a>
 
 
 
-      <a href="#" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
-        <span class="bi bi-box"></span>
-        <span class="ml-2">.</span>
-    </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 align-items-center" id="d1">
+                <span class="bi bi-box"></span>
+                <span class="ml-2">.</span>
+            </a>
 
-            
+
         </div>
     </div>
 
@@ -165,7 +175,7 @@ nav {
 
     <div class="col-md-9 col-lg-10 ml-md-auto px-0 ms-md-auto">
         <!-- top nav -->
-              <nav class="d-flex shadow-sm">
+        <nav class="d-flex shadow-sm">
             <!-- close sidebar -->
             <button class="btn py-0 d-lg-none" id="open-sidebar">
                 <span class="bi bi-list text-primary h3"></span>
@@ -178,20 +188,20 @@ nav {
                 </button>
                 <div class="dropdown-menu dropdown-menu-right border-0 shadow-sm" aria-labelledby="logout-dropdown">
 
-                {{-- จัดการโปรไฟล์ --}}
-                  <li><a class="dropdown-item" href="{{route('admin.profile')}}">profile</a></li>
+                    {{-- จัดการโปรไฟล์ --}}
+                    <li><a class="dropdown-item" href="{{ route('admin.profile') }}">profile</a></li>
 
-                  {{-- ออกจากระบบ --}}
-                  <li><a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();
+                    {{-- ออกจากระบบ --}}
+                    <li><a class="dropdown-item" href="{{ route('logout') }}"
+                            onclick="event.preventDefault();
                                   document.getElementById('logout-form').submit();">
-                     {{ __('Logout') }}
-                 </a></li>
-                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
+                            {{ __('Logout') }}
+                        </a></li>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
 
-            
+
 
                 </div>
 
@@ -204,9 +214,9 @@ nav {
 
 
 
-            @yield('content')
+        @yield('content')
 
-        
+
 
 
 
@@ -217,35 +227,32 @@ nav {
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
     <script src="main.js"></script>
-<script>
-    $(document).ready(()=>{
-  
-  $('#open-sidebar').click(()=>{
-     
-      // add class active on #sidebar
-      $('#sidebar').addClass('active');
-      
-      // show sidebar overlay
-      $('#sidebar-overlay').removeClass('d-none');
-    
-   });
-  
-  
-   $('#sidebar-overlay').click(function(){
-     
-      // add class active on #sidebar
-      $('#sidebar').removeClass('active');
-      
-      // show sidebar overlay
-      $(this).addClass('d-none');
-    
-   });
-  
-});
-</script>
+    <script>
+        $(document).ready(() => {
+
+            $('#open-sidebar').click(() => {
+
+                // add class active on #sidebar
+                $('#sidebar').addClass('active');
+
+                // show sidebar overlay
+                $('#sidebar-overlay').removeClass('d-none');
+
+            });
+
+
+            $('#sidebar-overlay').click(function() {
+
+                // add class active on #sidebar
+                $('#sidebar').removeClass('active');
+
+                // show sidebar overlay
+                $(this).addClass('d-none');
+
+            });
+
+        });
+    </script>
 </body>
 
 </html>
-
-
-

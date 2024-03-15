@@ -150,6 +150,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 //สำหรับพนักงานและแอดมิน
 Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/homepage',[HomeController::class,'homepage'])->name('homepage') ; // หน้าแรก
     Route::get('/profile/edit', [ProfileController::class, 'EditProfile'])->name('profile.edit'); //จัดการโปรไฟล์
     Route::post('/profile/update/{user}', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -216,14 +217,17 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/showorder/{id}', [CreateOrderController::class, 'showorderbill'])->name('showorderbill'); //แสดงตารางorderbill
 
 
+
+    Route::get('/totaldress', [CreateOrderController::class,'totaldress'])->name('totaldress') ; //แสดงชุดทั้งหมดสำหรับพนักงาน
+    Route::get('/totaldress/detail/{id}', [CreateOrderController::class,'totaldressdetail'])->name('totaldressdetail'); //แสดงรายละเอียดชุด
 });
+
+
 
 
 Route::get('/testlogin', function () {
     return view('test');
 });
-
-
 
 Route::get('/t', function () {
     return view('employee.t');

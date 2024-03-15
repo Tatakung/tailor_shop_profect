@@ -12,21 +12,9 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p class="users-details">Dress ID: {{ $rentdetail->dress_id }}</p>
-                        {{-- @php
-                            $date = $dates->sortByDesc('id')->first();
-                        @endphp
-                        <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ล่าสุด</p>
-                        <p>วันที่นัดคืนชุด : {{ $date->return_date }} ล่าสุด</p> --}}
-
                         <p>วันที่นัดรับชุด : {{$valuepickupdate}}</p>
                         <p>วันที่นัดคืนชุด : {{$valuereturndate}}</p>
 
-
-                        
-
-                        
-
-                        {{-- ทดสอบค่าที่ส่งมา -> : {{ $valuestatus }} --}}
                         <p> ประเภทชุด :{{ $dress->dress_type }}</p>
                         <p>แบบชุดที่ {{ $dress->dress_code }}</p>
                         <p>ไซส์ :{{ $size->size_name }}</p>
@@ -64,7 +52,7 @@
         </div>
         <div class="row">
             <div class="col-md-6 bg-light border border-gray-500">
-                {{-- <h1>กรอบซ้าย</h1> --}}
+                <!-- <h1>กรอบซ้าย</h1> -->
                 <h3>วันที่</h3>
                 @foreach ($dates as $date)
                     <p>วันที่นัดรับชุด : {{ $date->pickup_date }} ||||| วันที่นัดคืนชุด : {{ $date->return_date }}</p>
@@ -73,7 +61,7 @@
 
             </div>
             <div class="col-md-6 bg-light border border-gray-500">
-                {{-- <h1>กรอบขวา</h1> --}}
+                <!--<h1>กรอบขวา</h1>-->
                 <h3>นัดลองชุด</h3>
                 <div style="display: block;">
                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal"
@@ -100,12 +88,12 @@
                                 <td>{{ $fitting->fitting_note }}</td>
                                 <td>{{ $fitting->fitting_price }}</td>
                                 <td>
-                                    {{-- ปุ่มแก้ไข --}}
+                                    <!-- ปุ่มแก้ไข -->
                                     <button data-toggle="modal" data-target="#showeditmodalfitting{{ $fitting->id }}">
                                         <img src="{{ asset('images/edit.png') }}" alt="" width="20"
                                             height="20">
                                     </button>
-                                    {{-- ปุ่มลบ --}}
+                                    <!-- ปุ่มลบ -->
                                     <button type="button" data-toggle="modal"
                                         data-target="#showmodaldeletefitting{{ $fitting->id }}">
                                         <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
@@ -118,7 +106,7 @@
                                     @endif
                                 </td>
 
-                                {{-- modalแก้ไข fitting --}}
+                                <!-- modalแก้ไข fitting -->
                                 <div class="modal fade" id="showeditmodalfitting{{ $fitting->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -154,7 +142,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- modalลบ fitting --}}
+                                <!-- modalลบ fitting -->
                                 <div class="modal fade" id="showmodaldeletefitting{{ $fitting->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -195,7 +183,7 @@
 
     <div class="row">
         <div class="col-md-6 bg-light border border-gray-500">
-            {{-- <h1>กรอบซ้าย</h1> --}}
+            <!-- <h1>กรอบซ้าย</h1> -->
             <h3>สถานะของออเดอร์123</h3>
             @foreach ($orderdetailstatuses as $detailstatus)
                 <p>วันที่ทำรายการ : {{ $detailstatus->created_at }} สถานะ : {{ $detailstatus->status }}</p>
@@ -210,7 +198,7 @@
                     id="showreturnid">ยืนยันคืนชุด</button>
             </div>
 
-            {{-- modal ยืนยันคืนชุด --}}
+        <!-- modal ยืนยันคืนชุด -->
             <div class="modal fade" id="showreturn" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -247,7 +235,7 @@
 
 
 
-            {{-- modalยืนยันมารับชุด --}}
+            <!-- modalยืนยันมารับชุด -->
             <div class="modal fade" id="showpickup" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
@@ -273,8 +261,7 @@
 
         </div>
 
-        {{-- รอให้หน้าเว็บโหลดเสร็จ --}}
-        {{-- ส่วนบล็อคปุ่มต่างๆ ไม่ให้มันกดได้  --}}
+        <!-- ส่วนบล็อคปุ่มต่างๆ ไม่ให้มันกดได้  -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 var Status_orderdetail = "{{ $valuestatus }}"; //รับค่าล่าสุดมา
@@ -309,7 +296,7 @@
 
 
         <div class="col-md-6 bg-light border border-gray-500">
-            {{-- <h1>กรอบขวา</h1> --}}
+            <!-- <h1>กรอบขวา</h1> -->
             <h3>เพิ่มเติมกรณีปักดอกไม้เพิ่ม</h3>
             <div style="display: block">
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#adddecoration"
@@ -338,20 +325,20 @@
                             <td>
 
 
-                                {{-- ปุ่มแก้ไขdecoration --}}
+                                <!-- ปุ่มแก้ไขdecoration -->
                                 <button type="button" data-toggle="modal"
                                     data-target="#showeditmodaldecoration{{ $decoration->id }}">
                                     <img src="{{ asset('images/edit.png') }}" alt="" width="20"
                                         height="20">
                                 </button>
 
-                                {{-- ปุ่มลบ --}}
+                                <!-- ปุ่มลบ -->
                                 <button type="button" data-toggle="modal"
                                     data-target="#showconfirmdeletedecoration{{ $decoration->id }}">
                                     <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
                                         height="20">
                                 </button>
-                                {{-- modalของลบ --}}
+                                <!-- modalของลบ -->
                                 <div class="modal fade" id="showconfirmdeletedecoration{{ $decoration->id }}"
                                     role="dialog" aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -380,7 +367,7 @@
                                     </div>
                                 </div>
 
-                                {{-- modalแก้ไขของ decoration --}}
+                                <!-- modalแก้ไขของ decoration -->
                                 <div class="modal fade" id="showeditmodaldecoration{{ $decoration->id }}" role="dialog"
                                     aria-hidden="true">
                                     <div class="modal-dialog modal-lg" role="document">
@@ -440,7 +427,7 @@
         </div>
 
 
-        {{-- เพิ่มรูปภาพ  --}}
+        <!-- เพิ่มรูปภาพ  -->
         <form action="{{ route('addimage') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal fade" id="showaddimahe" role="dialog" aria-hidden="true">
@@ -491,13 +478,13 @@
                             <td>{{ $cost->cost_type }}</td>
                             <td>{{ $cost->cost_value }}</td>
                             <td>
-                                {{-- ปุ่มแก้ไข --}}
+                                <!-- ปุ่มแก้ไข -->
                                 <button type="button" data-toggle="modal" data-target="#costedit{{ $cost->id }}">
                                     <img src="{{ asset('images/edit.png') }}" alt="" width="20"
                                         height="20">
                                 </button>
 
-                                {{-- ปุ่มลบ --}}
+                                <!-- ปุ่มลบ -->
                                 <button type="button" data-toggle="modal"
                                     data-target="#showconfirmdeletecost{{ $cost->id }}">
                                     <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
@@ -546,12 +533,12 @@
                                                     <br>
                                                     วันที่เพิ่มรายการ: {{ $cost->created_at }}
                                                     <br>
-                                                    {{-- ประเภทค่าใช้จ่าย :{{ $cost->cost_type }} --}}
+                                                    <!-- ประเภทค่าใช้จ่าย :{{ $cost->cost_type }} -->
                                                     <label for="cost_type">แก้ไขประเภทค่าใช้จ่าย</label>
                                                     <input type="text" name="cost_type" id="cost_type"
                                                         value="{{ $cost->cost_type }}">
                                                     <br>
-                                                    {{-- ราคาต้นทุน :{{ $cost->cost_value }} --}}
+                                                    <!-- ราคาต้นทุน :{{ $cost->cost_value }} -->
                                                     <label for="cost_value">แก้ไขราคา</label>
                                                     <input type="number" name="cost_value" id="cost_value"
                                                         value="{{ $cost->cost_value }}">
@@ -643,7 +630,7 @@
         </div>
     </form>
 
-    {{-- modalเพิ่มค่าใช้จ่าย --}}
+    <!-- modalเพิ่มค่าใช้จ่าย -->
     <form action="{{ route('addcost') }}" method="POST">
         @csrf
         <div class="modal fade" id="addcost" role="dialog" aria-hidden="true">
@@ -657,8 +644,7 @@
                     <div class="modal-body">
                         <div id="ariacost">
 
-                            {{-- </div> --}}
-                            {{-- แสดงช่องinputสำหรับเพิ่มค่าใช้จ่าย --}}
+                            <!-- แสดงช่องinputสำหรับเพิ่มค่าใช้จ่าย -->
                             <button type="button" class="btn btn-secondary" id="add_for_cost">+เพิ่มค่าใช้จ่าย</button>
 
                             <div class="form-group">

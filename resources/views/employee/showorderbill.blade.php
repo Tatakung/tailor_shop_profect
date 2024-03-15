@@ -1,6 +1,6 @@
 @extends('layouts.employee')
 @section('content')
-    <h4><center>รายละเอียดบิลที่ {{ $bill->first()->order_id }}</center></h4><br>
+    <h4>รายละเอียดบิลที่ {{ $bill->first()->order_id }}</h4><br>
     <table class="table">
         <thead>
             <tr>

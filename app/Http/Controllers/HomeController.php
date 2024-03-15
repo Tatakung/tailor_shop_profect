@@ -30,6 +30,11 @@ class HomeController extends Controller
         return view('admin.adminHome');
     }
 
+    //หน้าแรก ของ พนักงานหลังจากทีมีการ เข้าสู่ระบบนะ 
+    public function homepage(){
+        return view('employee.homepage') ; 
+    }
+
 
 
 

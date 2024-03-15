@@ -218,7 +218,7 @@ class CreateOrderController extends Controller
 
             DB::commit();
             // return redirect()->back()->with('successpasstry', "บันทึกข้อมูลสำเร็จ");
-            return redirect()->route('showorderbill',['id'=>$order->id])->with('success' , "สำเร็จนะ") ; 
+            return redirect()->route('showorderbill', ['id' => $order->id])->with('success', "สำเร็จนะ");
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('errortotal', "เกิดข้อผิดพลาด");
@@ -297,20 +297,7 @@ class CreateOrderController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //แสดงรายละเอียด orderdetail
     public function rentdetail($id)
     {
         $rentdetail = Orderdetail::find($id);
@@ -355,7 +342,6 @@ class CreateOrderController extends Controller
         $valuereturndate = Date::where('order_detail_id', $id)
             ->latest('created_at')
             ->value('return_date');
-
 
 
         return view('employee.rentdetail', compact('rentdetail', 'dates', 'finttings', 'orderdetailstatuses', 'employee', 'size', 'dress', 'decorations', 'imagerents', 'costs', 'valuestatus', 'valuepickupdate', 'valuereturndate'));
@@ -619,6 +605,24 @@ class CreateOrderController extends Controller
         $orderdetailstatus->status = "คืนชุดแล้ว";
         $orderdetailstatus->save();
         return redirect()->back()->with('success', "ยืนยันการคืนชุดสำเร็จ");
+    }
+
+
+
+    //แสดงชุดทั้งหมดในร้าน
+    public function totaldress()
+    {
+        $dress = Dress::all();
+        $dressTypes = $dress->pluck('dress_type')->unique();
+        return view('employee.totaldress', compact('dress','dressTypes'));
+    }
+
+    //แสดงรายละเอียดของชุด
+    public function totaldressdetail($id){
+        $detaildress = Dress::find($id) ; 
+        $detailsize = Size::where('dress_id',$id)
+                                ->get() ; 
+        return view('employee.totaldressdetail' , compact('detaildress','detailsize'));
     }
 
 
