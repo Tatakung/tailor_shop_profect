@@ -26,7 +26,10 @@
 </style>
 @extends('layouts.admin')
 @section('content')
-
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ route('admin.showEmployee') }}">จัดการพนักงาน</a></li>
+    <li class="breadcrumb-item active" aria-current="page">รายละเอียด</li>
+</ol>
 <div class="container d-flex justify-content-start">
     <div class="table-responsive text-start" style="width: 100%;">
         <h2 class="text text-start py-4">รายละเอียดของพนักงาน</h2>

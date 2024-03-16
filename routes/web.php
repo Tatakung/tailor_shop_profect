@@ -93,6 +93,8 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/editdress/{id}', [DressController::class, 'editDress'])->name('admin.editDress');   // หน้าแก้ไขชุด
     Route::post('/admin/updatedress/{id}', [DressController::class, 'updateDress'])->name('admin.updateDress'); //หน้าอัปเดต
 
+    Route::post('admin/deletesize/{id}',[DressController::class,'deletesize'])->name('deletesize'); //ยืนยันการลบไซส์
+
 
 
 
@@ -112,11 +114,14 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::post('/updatepricegroup', [DressController::class, 'updatepricegroup'])->name('admin.updatepricegroup'); //บันทึกค่าที่แก้ไขในตาราง size     
 
 
+
+
+
     //ทำใหม้นะ ? เครื่องประดับ
     Route::get('/admin/access', [AccessoryController::class, 'showAccessories'])->name('admin.showAccessories'); //หน้าโชทั้งหมด
     Route::get('/admin/accessdetail/{id}', [AccessoryController::class, 'accessdetail'])->name('admin.accessdetail'); //แสดงรายละเอียด
     Route::post('/admin/updateaccessdetail', [AccessoryController::class, 'updateaccessdetail'])->name('admin.updateaccessdetail'); //อัปเดต
-
+    Route::post('admin/deleteaccessory/{id}',[AccessoryController::class,'deleteaccessory'])->name('deleteaccessory') ; //ยืนยันการลบนะ 
 
 
 

@@ -291,8 +291,26 @@
 
 @extends('layouts.admin')
 @section('content')
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.showdresstotal') }}">จัดการชุด</a></li>
+        <li class="breadcrumb-item active" aria-current="page">รายละเอียด</li>
+    </ol>
+
+
     <div class="container d-flex justify-content-start">
         <div class="table-responsive text-start" style="width: 100%;">
+
+
+
+
+            {{-- <nav aria-label="breadcrumb"> --}}
+            {{-- <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="#">จัดการชุด</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">รายละเอียด</li>
+                </ol> --}}
+            {{-- </nav> --}}
+
+
             <h2 class="text text-start pt-5 ">รายละเอียดชุด</h2>
             <div class=”grid-container”>
                 <div class="card mb-3 border-2" style="max-width: 1080px;">
@@ -431,23 +449,65 @@
                                 <td>{{ $size->deposit }}</td>
                                 <td>{{ $size->amount }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-warning" data-toggle="modal"
-                                        data-target="#showedit{{ $size->id }}">แก้ไข</button>
+                                    <button type="button" data-toggle="modal"
+                                        data-target="#showedit{{ $size->id }}">
+                                        <img src="{{ asset('images/edit.png') }}" alt="" width="20"
+                                            height="25">
+                                    </button>
 
-                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="">ลบชุด</button>
+                                    <button type="button" data-toggle="modal"
+                                        data-target="#showdeletesize{{ $size->id }}">
+                                        <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
+                                            height="25">
+                                    </button>
 
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#showhistorysize{{$size->id}}">ดูประวัติแก้ไข</button>
+                                    <button type="button" data-toggle="modal"
+                                        data-target="#showhistorysize{{ $size->id }}">
+                                        <img src="{{ asset('images/history.png') }}" width="20" height="25">
+                                    </button>
+
+
+
+                                    <!--modalลบชุด-->
+                                    <div class="modal fade" id="showdeletesize{{ $size->id }}" role="dialog"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        คุณต้องการจะลบใช่หรือไม่ ?
+                                                    </div>
+                                                    <form action="{{ route('deletesize', ['id' => $size->id]) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <div class="modal-body">
+                                                            <p>ไซส์ : {{ $size->size_name }}</p>
+                                                            <p>ราคาต่อชุด : {{ $size->price }}</p>
+                                                            <p>ราคามัดจำ : {{ $size->deposit }}</p>
+                                                            <p>จำนวนชุด : {{ $size->amount }}</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">ยกเลิก</button>
+                                                            <button type="submit" class="btn btn-success">ยืนยัน</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
 
                                     <!--modal ประวัติการแก้ไข-->
-
-                                    <div class="modal fade" id="showhistorysize{{$size->id}}" role="dialog" aria-hidden="true">
+                                    <div class="modal fade" id="showhistorysize{{ $size->id }}" role="dialog"
+                                        aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     ประวัติการแก้ไข
                                                 </div>
                                                 <div class="modal-body" style="font-weight: bold;">
-                                                    
+
                                                     {{-- {{$size->id}} --}}
 
                                                     <table class="table">
@@ -462,22 +522,23 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach( \App\Models\Dresssizehistory::where('size_id',$size->id)->get() as $showhis     )
-                                                            <tr>
-                                                                <td>{{$showhis->id}}</td>
-                                                                <td>{{$showhis->size_id }}</td>
-                                                                <td>{{$showhis->created_at}}</td>
-                                                                <td>{{$showhis->action}}</td>
-                                                                <td>{{$showhis->old_amount}}</td>
-                                                                <td>{{$showhis->new_amount}}</td>
-                                                            </tr>
+                                                            @foreach (\App\Models\Dresssizehistory::where('size_id', $size->id)->get() as $showhis)
+                                                                <tr>
+                                                                    <td>{{ $showhis->id }}</td>
+                                                                    <td>{{ $showhis->size_id }}</td>
+                                                                    <td>{{ $showhis->created_at }}</td>
+                                                                    <td>{{ $showhis->action }}</td>
+                                                                    <td>{{ $showhis->old_amount }}</td>
+                                                                    <td>{{ $showhis->new_amount }}</td>
+                                                                </tr>
                                                             @endforeach
                                                         </tbody>
                                                     </table>
 
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">กลับ</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">กลับ</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -531,7 +592,7 @@
                                         </div>
                                     </div>
 
-                            
+
 
                                 </td>
                             </tr>

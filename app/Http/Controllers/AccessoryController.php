@@ -337,4 +337,15 @@ class AccessoryController extends Controller
         $update->save();
         return redirect()->back()->with('success', "แก้ไขสำเร็จ");
     }
+
+    //ยืนยันการลบ
+    public function deleteaccessory($id){
+        $delete = Accessory::find($id);
+        $delete->delete() ; 
+        return redirect()->route('admin.showAccessories')->with('success',"ลบสำเร็จแล้ว") ; 
+    }
+
+
+
+
 }

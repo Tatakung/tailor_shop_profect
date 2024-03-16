@@ -388,20 +388,15 @@ class DressController extends Controller
 
         $update->save();
         return redirect()->back()->with('success', 'แก้ไขสำเร็จ');
+
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //ลบไซส์
+    public function deletesize($id){
+        $deletesize = Size::find($id) ; 
+        $deletesize->delete() ; 
+        return redirect()->route('admin.showdressdetail',['id'=>$deletesize->dress_id])->with('success',"ลบไซส์สำเร็จ") ; 
+    }
 
 
 
