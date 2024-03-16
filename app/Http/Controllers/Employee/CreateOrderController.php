@@ -275,7 +275,9 @@ class CreateOrderController extends Controller
     //แสดงตารางบิลรวม
     public function showorder()
     {
-        $showorder = Customer::with('orders')->orderBy('created_at', 'desc')->get();
+        $showorder = Customer::with('orders')
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('employee.showorder', compact('showorder'));
     }
     // Query
@@ -614,16 +616,23 @@ class CreateOrderController extends Controller
     {
         $dress = Dress::all();
         $dressTypes = $dress->pluck('dress_type')->unique();
-        return view('employee.totaldress', compact('dress','dressTypes'));
+        return view('employee.totaldress', compact('dress', 'dressTypes'));
     }
 
     //แสดงรายละเอียดของชุด
-    public function totaldressdetail($id){
-        $detaildress = Dress::find($id) ; 
-        $detailsize = Size::where('dress_id',$id)
-                                ->get() ; 
-        return view('employee.totaldressdetail' , compact('detaildress','detailsize'));
+    public function totaldressdetail($id)
+    {
+        $detaildress = Dress::find($id);
+        $detailsize = Size::where('dress_id', $id)
+            ->get();
+        return view('employee.totaldressdetail', compact('detaildress', 'detailsize'));
     }
+
+
+
+
+
+
 
 
 
