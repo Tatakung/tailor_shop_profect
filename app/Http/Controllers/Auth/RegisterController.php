@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 class RegisterController extends Controller
 {
     /*
@@ -52,13 +54,12 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'lname' => ['required','string','max:255'],
-            'phone' => ['required','string','max:10'],
-            'start_date' => ['required','date'],
-            'birthday' => ['required','date'],
-            'image' => ['nullable', 'mimes:jpeg,jpg,png,gif','max:2048'] //2048 คือ 2 MB
+            'lname' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:10'],
+            'start_date' => ['required', 'date'],
+            'birthday' => ['required', 'date'],
+            'image' => ['nullable', 'mimes:jpeg,jpg,png,gif', 'max:2048'] //2048 คือ 2 MB
         ]);
-
     }
 
     /**
@@ -73,7 +74,7 @@ class RegisterController extends Controller
         $imagepath = null;
         if (isset($data['image'])) {
             // $imagepath = $data['image']->store('public/user_images');    
-            $imagepath = $data['image']->store('user_images','public');     //storage/app/public/user_images
+            $imagepath = $data['image']->store('user_images', 'public');     //storage/app/public/user_images
 
 
         }
@@ -95,15 +96,21 @@ class RegisterController extends Controller
 
 
     //หน้าสมัครสมาชิกนะ
-    public function showRegistrationForm(){
+    public function showRegistrationForm()
+    {
         return view('auth.register');
     }
 
 
     //จัดการโปรไฟล์
-    public function profile(){
-        return view('admin.profile',['adm' => auth()->user()]);
+    public function profile()
+    {
+        $adm = auth()->user();
+        return view('admin.profile', compact('adm'));
     }
+
+
+
 
     public function updateprofile(Request $request, User $user)
     {
@@ -116,18 +123,19 @@ class RegisterController extends Controller
             'birthday' => 'required|date',
             'image' => 'nullable|mimes:jpeg,jpg,png,gif|max:2048',
         ]);
-        if ($request->hasFile('image')){
-            $input['image'] = $request->file('image')->store('user_images','public'); 
+        if ($request->hasFile('image')) {
+            $input['image'] = $request->file('image')->store('user_images', 'public');
         }
         $user->update($input);
-        return redirect()->back()->with('success', 'Profile updated successfully');
+        return redirect()->back()->with('success', 'แก้ไขสำเร็จแล้ว');
     }
 
 
     //แสดงพนักงาน
-    public function showEmployee(){
+    public function showEmployee()
+    {
         $employee = User::paginate(10);
-        return view('admin.ShowEmployee',compact('employee'));
+        return view('admin.ShowEmployee', compact('employee'));
     }
 
 
@@ -135,7 +143,8 @@ class RegisterController extends Controller
 
 
     //ดูรายละเอียดพนักงานโดยเข้าถึงโดย id
-    public function EmployeeDetail($id){
+    public function EmployeeDetail($id)
+    {
         $employeefind = User::findOrFail($id);
         return view('admin.EmployeeDetail', compact('employeefind'));
     }
@@ -143,17 +152,42 @@ class RegisterController extends Controller
 
 
 
-public function changeStatus($id) {
-    $employee = User::findOrFail($id);
-    if($employee->status == 1 ) {
-        $employee->status = 0;
+    public function changeStatus($id)
+    {
+        $employee = User::findOrFail($id);
+        if ($employee->status == 1) {
+            $employee->status = 0;
+        } elseif ($employee->status == 0) {
+            $employee->status = 1;
+        }
+        $employee->save();
+        return redirect()->back()->with('success', "สำเร็จแล้ว");
     }
-    elseif($employee->status == 0){
-        $employee->status = 1 ;
+
+    //เปลี่ยนรหัสผ่าน
+    public function changepassword(){
+        $adm = auth()->user();
+        return view('admin.changepassword',compact('adm')); 
     }
-    $employee->save();
-    return redirect()->back()->with('success',"สำเร็จแล้ว");
-}
+
+    //อัปเดตรหัสผ่าน
+    public function password_action(Request $request){
+        $request->validate([
+            'old_password' => 'required|current_password',
+            'new_password' => 'required|confirmed',
+        ], [
+            'old_password.required' => 'กรุณากรอกรหัสผ่านเดิม',
+            'old_password.current_password' => 'รหัสผ่านเดิมไม่ถูกต้อง',
+            'new_password.required' => 'กรุณากรอกรหัสผ่านใหม่',
+            'new_password.confirmed' => 'รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน',
+        ]);
+        $user = User::find(Auth::id());
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+        $request->session()->regenerate();
+        return redirect()->back()->with('success','เปลี่ยนรหัสผ่านสำเร็จ') ; 
+    }
+
 
 
 }

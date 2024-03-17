@@ -37,11 +37,13 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register'); //สมัครสมาชิก
     Route::get('/admin/profile', [RegisterController::class, 'profile'])->name('admin.profile'); //แก้ไขโปรไฟล์
     Route::post('/admin/profile/updateprofile/{user}', [RegisterController::class, 'updateprofile'])->name('admin.updateprofile'); //แก้ไขโปรไฟล์
+    Route::get('/admin/changepassword' , [RegisterController::class,'changepassword'])->name('changepassword');//หน้าเปลี่ยนรหัสผ่าน 
+    Route::post('/admin/updatepassword', [RegisterController::class, 'password_action'])->name('updatepassword');
 
     //พนักงาน
     Route::get('/admin/showemployee', [RegisterController::class, 'showEmployee'])->name('admin.showEmployee'); //แสดงพนักงาน
     Route::get('/admin/employeedetail/{id}', [RegisterController::class, 'EmployeeDetail'])->name('admin.employeedetail'); //แสดงรายละเอียดพนักงาน
-    Route::get('/admin/changestatus/{id}', [RegisterController::class, 'changeStatus'])->name('admin.changestatus'); //เปลี่ยนสถานะพนักงานนะ
+    Route::post('/admin/changestatus/{id}', [RegisterController::class, 'changeStatus'])->name('admin.changestatus'); //เปลี่ยนสถานะพนักงานนะ
 
 
     //เครื่องประดับ
