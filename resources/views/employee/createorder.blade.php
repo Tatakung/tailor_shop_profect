@@ -51,6 +51,10 @@
                 </select>
             </div>
 
+
+
+
+
             <div class="mb-3">
                 <label for="dress_size" class="form-label">ไซส์</label>
                 <select class="form-control" id="dress_size" name="dress_size">
@@ -71,11 +75,10 @@
 
                             showcode.innerHTML = '<option value="" selected disabled>เลือกแบบชุด</option>';
                             data.forEach(dressCode => {
-                                showcode.innerHTML += '<option value="' + dressCode + '">' + 'แบบที่ ' +
-                                    dressCode + '</option>';
+                                showcode.innerHTML += '<option value="' + dressCode + '">' + 'แบบที่ ' + dressCode + '</option>';
                             });
                         });
-                    //ล้างตัวเลือกไซส์
+                    //ล้างตัวเลือกไซส์และรูปภาพ
                     clssize.innerHTML = '<option value="" selected disabled></option>';
                     document.getElementById('imageshow').src = '';
                 });
@@ -86,7 +89,7 @@
             <!--ดึงไซส์-->
             <script>
                 var selecttype = document.getElementById('dress_type') //เลือกประเภทชุด
-                var selectcode = document.getElementById('dress_code') //เลือกประเภทชุด 
+                var selectcode = document.getElementById('dress_code') //เลือกแบบชุด 
                 selectcode.addEventListener('change', function() {
                     fetch('/get/sizename/' + selecttype.value + '/' + selectcode.value)
                         .then(response => response.json())
@@ -94,8 +97,8 @@
                             // console.log(data); // ดูค่าที่ API คืนมาทั้งหมดใน console
 
                             var showsizename = document.getElementById('dress_size'); //แสดงดรอปดาวไซส์นะ
+                            
                             showsizename.innerHTML = '<option value=""> เลือกไซส์ </option>';
-
                             data.forEach(sizename => {
                                 showsizename.innerHTML += '<option value=" ' + sizename + ' "> ' + sizename +
                                     ' </option>';
@@ -194,7 +197,7 @@
 
             <div class="form-group">
                 <label for="damage_insurance">ประกันค่าเสียหาย</label>
-                <input type="text" name="damage_insurance" class="form-control">
+                <input type="text" name="damage_insurance" class="form-control" min="0">
                 **หมายเหตุ -ประกันค่าเสียหายจะคืนให้ลูกค้าหลังจากที่ลูกค้านำชุดมาคืน
             </div>
             <div class="form-group">
@@ -419,11 +422,6 @@
 
             </script>
 
-
-
-
-
-
             <script>
                 var addfitting = document.getElementById('addfitting'); //เพิ่มวันที่นัดลองชุด
                 var areafitting = document.getElementById('areafitting') //พื้นที่สำหรับแสดงเพิ่มวันที่นัดชุด
@@ -448,10 +446,6 @@
                         ' "></textarea>' +
                         '</div>' +
 
-                        // '<div class="form-group">' +
-                        // '<label for="fitting_price ' + count + ' " >ราคา:</label>' +
-                        // '<input type="number" name="fitting_price_[' + count + '] " id="fitting_price ' + count + ' ">' +
-                        // '</div>' +
 
                         '<button type="button" class="btn btn-danger" onclick="removefitting(' + count +
                         ' )">ลบ</button> ';

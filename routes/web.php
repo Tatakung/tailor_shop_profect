@@ -237,5 +237,13 @@ Route::get('/t', function () {
 // Route::post('/save',[TestController::class,'save'])->name('save') ; 
 
 
-    Route::get('/testdresstotal',[TestController::class,'testdresstotal'])->name('testdresstotal'); ; 
-    Route::get('/testdresstotal/{id}',[TestController::class,'testdetail'])->name('testdetail'); ; 
+    // Route::get('/testdresstotal',[TestController::class,'testdresstotal'])->name('testdresstotal'); ; 
+    // Route::get('/testdresstotal/{id}',[TestController::class,'testdetail'])->name('testdetail'); ; 
+
+
+    Route::get('/form',[TestController::class,'form'])->name('form');
+    Route::get('/getcode/{seleteType}',[TestController::class,'getcode']); 
+    Route::get('/getsize/{seleteType}/{seletecode}',[TestController::class,'getsize']); 
+    Route::get('/typeprice/{seleteType}/{seleteCode}/{seleteSize}',[TestController::class,'typeprice']); 
+
+

@@ -1,219 +1,121 @@
-{{-- @extends('layouts.admin')
+@extends('layouts.employee')
 @section('content')
+    <label for="type">ประเภทชุด</label>
+    <select name="seletetype" id="seletetype">
+        <option value="" selected disabled>เลือกประเภทชุด</option>
+        @foreach ($gettype as $gettype)
+            <option value="{{ $gettype }}">{{ $gettype }}</option>
+        @endforeach
+    </select>
 
-@if (session('success'))
-<div class="alert alert-success">
-    {{session('success')}}
-</div>
-@endif
-
-<form action="{{route('adddata')}}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="form-group">
-
-        <select name="seletetype" id="seletetype" class="form-select">
-            <option value="" selected disabled>กรุณาเลือกเครื่องประดับ</option>
-            @foreach ($gettype as $gettype)
-                <option value="{{ $gettype }}">{{ $gettype }}</option>
-            @endforeach
-            <option value="other">เครื่องประดับใหม่</option>
-        </select>
-    </div>
-
-    <div id="showforinput" style="display: none">
-        <label class="form-label" for="othertype">กรอกสำหรับเครื่องประดับใหม่</label>
-        <input class="form-control" type="text" name="othertype" id="othertype">
-    </div>
 
     <div>
-        <label for="code">แบบที่</label>
-        <input type="number" name="code" id="code" value="" readonly> 
+        <label for="code">แบบชุด</label>
+        <select name="seletecode" id="seletecode"></select>
     </div>
 
+    </select>
 
+
+    {{-- ดึงแบบชุด --}}
     <script>
-        var seleteType = document.getElementById('seletetype'); //เลือกประเภทเครื่องประดับ
-        var showinput = document.getElementById('showforinput'); //ช่องกรอกสำหรับinput 
+        var seleteType = document.getElementById('seletetype'); //เลือกประเภทชุด
+        var showcode = document.getElementById('seletecode'); //แสดงแบบชุด
         seleteType.addEventListener('change', function() {
-            if (seleteType.value == "other") {
-                showinput.style.display = "block";
-            } else {
-                showinput.style.display = "none";
-            }
+            fetch('getcode/' + seleteType.value)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    showcode.innerHTML = '<option value="">เลือกแบบชุด</option>';
+                    data.forEach(getcode => {
+                        showcode.innerHTML += '<option value="' + getcode + '">' + 'แบบที่ ' + getcode +
+                            '</option>';
+                    });
+                });
         });
     </script>
 
+    <label for="size">เลือกไซส์</label>
+    <select name="selectsize" id="selectsize"></select>
+
+    {{-- ดึงไซส์ --}}
+    <script>
+        var seleteType = document.getElementById('seletetype'); //เลือกประเภทชุด
+        var selecycode = document.getElementById('seletecode'); //เลือกแบบชุด
+        var showsize = document.getElementById('selectsize'); //แสดงไซา์ นะ 
+        selecycode.addEventListener('change', function() {
+            fetch('/getsize/' + seleteType.value + '/' + selecycode.value)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    showsize.innerHTML = '<option value="" selected disabled>กรุณาเลือกไซส์</option>';
+                    data.forEach(getsize => {
+                        showsize.innerHTML += '<option value=" ' + getsize + ' "> ' + getsize +
+                            ' </option>'
+                    });
+                });
+        });
+    </script>
+    <br>
+    <label for="price">ราคาต่อชุด</label>
+    <input type="number" name="price" id="price" readonly>
+
+    <label for="deposit">ราคามัดจำ</label>
+    <input type="number" name="deposit" id="deposit" readonly>
+
+
+    <input type="number" name="id_for_size" id="id_for_size" >
+    <input type="number" name="dress_id" id="dress_id">
+
+    <p  id="amount_for_dress">จำนวนชุดที่มีในร้าน</p>
+
+
 
     <script>
-        var seleteType = document.getElementById('seletetype'); //เลือกประเภทเครื่องประดับ
-        var calculatecode = document.getElementById('code') ;  //สำหรับช่องโชว์การ คำนวณ
-        seleteType.addEventListener('change',function(){
-            fetch('caculatemax/' +  seleteType.value)
+        var seleteType = document.getElementById('seletetype'); //เลือกประเภทชุด
+        var selecyCode = document.getElementById('seletecode'); //เลือกแบบชุด
+        var selectSize = document.getElementById('selectsize'); //เลือกไซส์ 
+        var showprice = document.getElementById('price') ; 
+        var showdeposit = document.getElementById('deposit') ; 
+        var id_for_size = document.getElementById('id_for_size') ; 
+        var dress_id = document.getElementById('dress_id') ; 
+        var amount_for_dress = document.getElementById('amount_for_dress') ; 
+        selectsize.addEventListener('change',function(){
+            fetch('/typeprice' + '/' + seleteType.value + '/' + selecyCode.value + '/' + selectSize.value)
             .then(response => response.json())
             .then(data => {
-
-                if(seleteType.value == "other"){
-                    calculatecode.value = 1 ; 
-                }
-                else{
-                    calculatecode.value = data.findmaxcode + 1 ; 
-                }
-
-
+                console.log(data) ; 
+                showprice.value = data.price ; 
+                showdeposit.value = data.deposit ; 
+                id_for_size.value = data.id ; 
+                dress_id.value = data.dress_id ; 
+                amount_for_dress.textContent = "จำนวนชุดที่มีในร้าน" + data.amount ; 
             }) ; 
-        }) ;  
+        }) ; 
+
     </script>
 
 
-<label for="amount">จำนวนเครื่องประดับ</label>
-<input type="number" name="amount" id="amount">
 
+<label for="pickupdate">วันที่นัดรับชุด</label>          
+<input type="date" name="pickupdate" id="pickupdate" min="<?= date('Y-m-d')?>">
 
-<label for="price">ราคาเครื่องประดับ</label>
-<input type="number" name="price" id="price">
-
-
-<label for="deposit">ราคามัดจำเครื่องประดับ</label>
-<input type="number" name="deposit" id="deposit">
-
-<br>
-
-<label for="des">ลายละเอียดเครื่องประดับ</label>
-<textarea name="des" id="des" cols="3" rows="3"></textarea>
-
-<label for="imagee">สำหรับเพิ่มรูปภาพ</label>
-<input type="file" name="imagee" id="imagee">
-
-
-<button type="submit" class="btn btn-success">บันทึก</button>
-</form>
-@endsection --}}
+<label for="returndate">วันที่นัดคืนชุด</label>
+<input type="date" name="returndate" id="returndate">
 
 
 
 
-{{-- @extends('layouts.admin')
-@section('content')
-@if (session('success'))
-<div class="alert alert-success">
-    {{session('success')}}
-</div>
-@endif
-@if (session('fail'))
-<div class="alert alert-success">
-    {{session('fail')}}
-</div>
-@endif
-    <form action="{{route('save')}}" method="POST" enctype="multipart/form-data">
-        @csrf
-
-        <div mb-3>
-            <select name="seletetype" id="seletetype">
-                <option value="" selected disabled>กรุณาเลือกประเภทชุด</option>
-                @foreach ($type as $type)
-                    <option value="{{ $type }}">{{ $type }}</option>
-                @endforeach
-                <option value="other">กรอกประเภทใหม่</option>
-            </select>
-        </div>
-
-        <div class="mb-3" id="showinput" style="display: none">
-            <label for="typenew" class="form-label">กรอกประเภทชุดใหม่</label>
-            <input class="form-control" type="text" name="typenew" id="typenew">
-        </div>
-
-
-        <script>
-            var selectType = document.getElementById('seletetype'); //เลือกประเภทชุด
-            var show = document.getElementById('showinput'); //แสดงช่งอสำหรับกรอกinput
-            selectType.addEventListener('change', function() {
-                if (selectType.value == "other") {
-                    show.style.display = "block";
-                } else {
-                    show.style.display = "none";
-                }
-            });
-        </script>
-
-        <div class="mb-3">
-            <label class="form-label" for="code">แบบชุด</label>
-            <input class="form-control" type="number" name="code" id="code" value="" readonly>
-        </div>
-
-
-        <script>
-            var selectType = document.getElementById('seletetype'); //เลือกประเภทชุด
-            var calculatecode = document.getElementById('code'); //แบบชุด
-            selectType.addEventListener('change', function() {
-                fetch('getcodemax/' + selectType.value)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (selectType.value == "other") {
-                            calculatecode.value = 1;
-                        } else {
-                            calculatecode.value = data.max + 1;
-                        }
-                    });
-            });
-        </script>
 
 
 
 
-        <div class="mb-3">
-            <label for="size" class="form-label">ไซส์</label>
-            <input type="text" name="size" id="size" class="form-control">
-        </div>
-
-        <div class="mb-3">
-            <label for="amount" class="form-label">จำนวนชุด</label>
-            <input type="text" name="amount" id="amount" class="form-control">
-        </div>
-
-        <div class="mb-3">
-            <label for="price" class="form-label">ราคาชุด</label>
-            <input type="text" name="price" id="price" class="form-control">
-        </div>
-
-        <div class="mb-3">
-            <label for="deposit" class="form-label">ราคามัดจำ</label>
-            <input type="text" name="deposit" id="deposit" class="form-control">
-        </div>
-
-        <div class="mb-3">
-            <label for="des">รายละเอยีด</label>
-            <textarea name="des" id="des" cols="5" rows="5"></textarea>
-        </div>
-
-        <div>
-            <label for="images">เพิ่มรูปภาพ</label>
-            <input type="file" name="images" id="images">
-        </div>
-
-
-
-        <button type="submit" class="btn btn-secondary">บันทึก</button>
-
-
-    </form> --}}
 
 
 
 
-@extends('layouts.admin')
-@section('content')
-    <div class="container">
-        <div class="row">
-            @foreach ($dress as $dress)
-                <div class="col-md-3 md-3">
-                    <a href="{{route('testdetail',['id'=>$dress->id])}}">
-                        <img src="{{ asset('storage/' . $dress->dress_image) }}" alt="" width="100px" height="100px">
-                        {{ $dress->dress_type }}
-                        แบบที่ {{ $dress->dress_code }}
-                    </a>
 
-                </div>
-            @endforeach
-        </div>
-    </div>
+
+
+
 @endsection
