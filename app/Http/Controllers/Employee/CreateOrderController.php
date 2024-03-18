@@ -88,7 +88,7 @@ class CreateOrderController extends Controller
         ]);
 
         try {
-            // เริ่มการทำงานของ transaction
+    
             DB::beginTransaction();
 
             $customer = Customer::updateOrCreate(
@@ -129,7 +129,7 @@ class CreateOrderController extends Controller
                 $reduce->amount = $reduce->amount - $request->input('amount');
                 $reduce->save();
             } else {
-                DB::rollBack(); // ถ้ามีปัญหา ทำการยกเลิกธุรกรรม
+                DB::rollBack(); 
                 return redirect()->back()->with('Overamount', "ไม่สามารถเช่าชุดเกินจำนวนที่มี");
             }
             $orderdetail->amount = $request->input('amount');
@@ -165,15 +165,13 @@ class CreateOrderController extends Controller
 
 
             //เพิ่มเติมลวดลายชุด
-            // //ตรวจสอบว่า ถ้ามีค่าที่ส่งมา
+           
             if ($request->has('decoration_type_description_') && $request->has('decoration_price_')) {
-                // $dec_type = $request->input('decoration_type_');
                 $dec_description = $request->input('decoration_type_description_');
                 $dec_price = $request->input('decoration_price_');
                 foreach ($dec_description as $index => $dec_dec) {
                     $decoration = new Decoration;
                     $decoration->order_detail_id = $orderdetail->id;
-                    // $decoration->decoration_type = $dec_type;
                     $decoration->decoration_type_description = $dec_dec;
                     $decoration->decoration_price = $dec_price[$index];
                     $decoration->save();
@@ -184,7 +182,6 @@ class CreateOrderController extends Controller
             if ($request->hasFile('imagerent_')) {
                 $images = $request->file('imagerent_');
                 foreach ($images as $index => $image) {
-                    // ตรวจสอบว่าไฟล์ถูกส่งมา
                     $additionalImage = new imagerent;
                     $additionalImage->order_detail_id = $orderdetail->id;
                     $additionalImage->image = $image->store('imagerent_images', 'public');

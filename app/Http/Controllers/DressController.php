@@ -391,12 +391,7 @@ class DressController extends Controller
 
 
     }
-    //ลบไซส์
-    public function deletesize($id){
-        $deletesize = Size::find($id) ; 
-        $deletesize->delete() ; 
-        return redirect()->route('admin.showdressdetail',['id'=>$deletesize->dress_id])->with('success',"ลบไซส์สำเร็จ") ; 
-    }
+
 
 
 

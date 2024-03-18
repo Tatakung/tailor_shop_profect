@@ -430,8 +430,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>id</th>
-                            <th>dress_id</th>
                             <th>ไซส์</th>
                             <th>ราคาชุด</th>
                             <th>ราคามัดจำ</th>
@@ -442,8 +440,6 @@
                     <tbody>
                         @foreach ($size as $size)
                             <tr>
-                                <td>{{ $size->id }}</td>
-                                <td>{{ $size->dress_id }}</td>
                                 <td>{{ $size->size_name }}</td>
                                 <td>{{ $size->price }}</td>
                                 <td>{{ $size->deposit }}</td>
@@ -455,66 +451,26 @@
                                             height="25">
                                     </button>
 
-                                    <button type="button" data-toggle="modal"
-                                        data-target="#showdeletesize{{ $size->id }}">
-                                        <img src="{{ asset('images/icondelete.jpg') }}" alt="" width="20"
-                                            height="25">
-                                    </button>
+      
 
                                     <button type="button" data-toggle="modal"
                                         data-target="#showhistorysize{{ $size->id }}">
                                         <img src="{{ asset('images/history.png') }}" width="20" height="25">
                                     </button>
-
-
-
-                                    <!--modalลบชุด-->
-                                    <div class="modal fade" id="showdeletesize{{ $size->id }}" role="dialog"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        คุณต้องการจะลบใช่หรือไม่ ?
-                                                    </div>
-                                                    <form action="{{ route('deletesize', ['id' => $size->id]) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <div class="modal-body">
-                                                            <p>ไซส์ : {{ $size->size_name }}</p>
-                                                            <p>ราคาต่อชุด : {{ $size->price }}</p>
-                                                            <p>ราคามัดจำ : {{ $size->deposit }}</p>
-                                                            <p>จำนวนชุด : {{ $size->amount }}</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-danger"
-                                                                data-dismiss="modal">ยกเลิก</button>
-                                                            <button type="submit" class="btn btn-success">ยืนยัน</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
+    
 
                                     <!--modal ประวัติการแก้ไข-->
                                     <div class="modal fade" id="showhistorysize{{ $size->id }}" role="dialog"
                                         aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
-                                                <div class="modal-header">
+                                                <div class="modal-header alert alert-primary">
                                                     ประวัติการแก้ไข
                                                 </div>
                                                 <div class="modal-body" style="font-weight: bold;">
-
-                                                    {{-- {{$size->id}} --}}
-
                                                     <table class="table">
                                                         <thead>
                                                             <tr>
-                                                                <th>id</th>
-                                                                <th>size_id</th>
                                                                 <th>วันที่แก้ไข</th>
                                                                 <th>action</th>
                                                                 <th>ค่าเดิม</th>
@@ -524,8 +480,6 @@
                                                         <tbody>
                                                             @foreach (\App\Models\Dresssizehistory::where('size_id', $size->id)->get() as $showhis)
                                                                 <tr>
-                                                                    <td>{{ $showhis->id }}</td>
-                                                                    <td>{{ $showhis->size_id }}</td>
                                                                     <td>{{ $showhis->created_at }}</td>
                                                                     <td>{{ $showhis->action }}</td>
                                                                     <td>{{ $showhis->old_amount }}</td>
@@ -545,52 +499,51 @@
                                     </div>
 
                                     <!-- modalแสดงแก้ไข -->
-                                    <div class="modal fade" id="showedit{{ $size->id }}" role="dialog"
-                                        aria-hidden="true">
+                                    <div class="modal fade" id="showedit{{ $size->id }}" role="dialog" aria-hidden="true">
                                         <div class="modal-dialog modal-lg" role="document">
                                             <div class="modal-content">
-                                                <div class="modal-header alert alert-warning" role="alert"
-                                                    style="font-weight: bold;">
+                                                <div class="modal-header alert alert-warning" role="alert" style="font-weight: bold;">
                                                     คุณต้องการจะแก้ไขใช่หรือไม่ ?
                                                 </div>
                                                 <form action="{{ route('admin.updatepricegroup') }}" method="POST">
                                                     @csrf
                                                     <div class="modal-body">
-                                                        <label for="update_price">แก้ไขราคาชุด : </label>
-                                                        <input type="number" name="update_price" id="update_price"
-                                                            value="{{ $size->price }}">
-                                                        <br>
-
-                                                        <label for="update_deposit">แก้ไขราคามัดจำ : </label>
-                                                        <input type="number" name="update_deposit" id="update_deposit"
-                                                            value="{{ $size->deposit }}">
-
-                                                        <br>
-
-                                                        <label for="amount" id="amount">เพิ่ม/ลบจำนวนชุด : </label>
-                                                        <select name="action_type" id="action_type">
-                                                            <option value="" selected>เลือก</option>
-                                                            <option value="add">เพิ่มจำนวน</option>
-                                                            <option value="remove">ลบจำนวน</option>
-                                                        </select>
-                                                        <br>
-                                                        <label for="quantity">จำนวนที่ต้องการ : </label>
-                                                        <input type="number" name="quantity" id="quantity">
-
-
-                                                        <input type="hidden" name="size_id" id="size_id"
-                                                            value="{{ $size->id }}">
-
-
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-danger"
-                                                                data-dismiss="modal">ยกเลิก</button>
-                                                            <button type="submit" class="btn btn-success">บันทึก</button>
+                                                        <div class="form-group">
+                                                            <label for="update_price">แก้ไขราคาชุด :</label>
+                                                            <input type="number" class="form-control" name="update_price" id="update_price" value="{{ $size->price }}">
                                                         </div>
+                                    
+                                                        <div class="form-group">
+                                                            <label for="update_deposit">แก้ไขราคามัดจำ :</label>
+                                                            <input type="number" class="form-control" name="update_deposit" id="update_deposit" value="{{ $size->deposit }}">
+                                                        </div>
+                                    
+                                                        <div class="form-group">
+                                                            <label for="action_type">เพิ่ม/ลบจำนวนชุด :</label>
+                                                            <select class="form-control" name="action_type" id="action_type">
+                                                                <option value="" selected>เลือก</option>
+                                                                <option value="add">เพิ่มจำนวน</option>
+                                                                <option value="remove">ลบจำนวน</option>
+                                                            </select>
+                                                        </div>
+                                    
+                                                        <div class="form-group">
+                                                            <label for="quantity">จำนวนที่ต้องการ :</label>
+                                                            <input type="number" class="form-control" name="quantity" id="quantity">
+                                                        </div>
+                                    
+                                                        <input type="hidden" name="size_id" id="size_id" value="{{ $size->id }}">
+                                                    </div>
+                                    
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                                                        <button type="submit" class="btn btn-success">บันทึก</button>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
+                                    
 
 
 

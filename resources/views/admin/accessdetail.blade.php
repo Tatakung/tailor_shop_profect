@@ -160,8 +160,6 @@
                                 <button type="button" class="btn btn-warning" data-toggle="modal"
                                     data-target="#modaleditaccess">แก้ไข</button>
 
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
-                                    data-target="#showmodaldeleteaccess">ลบเครื่องประดับ</button>
 
                                 <button type="button" data-toggle="modal" data-target="#history"
                                     class="btn btn-primary">ประวัติการแก้ไข</button>
@@ -254,17 +252,15 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>accessory_id</th>
                                 <th>วันที่แก้ไข</th>
                                 <th>action</th>
-                                <th>ค่าเก่า</th>
+                                <th>ค่าเดิม</th>
                                 <th>ค่าใหม่</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (\App\Models\Accessoryhistory::where('accessory_id', $access->id)->get() as $history)
                                 <tr>
-                                    <td>{{ $history->id }}</td>
                                     <td>{{ $history->created_at }}</td>
                                     <td>{{ $history->action }}</td>
                                     <td>{{ $history->old_amount }}</td>
@@ -282,28 +278,5 @@
         </div>
     </div>
 
-    <!--modalลบ-->
-    <div class="modal fade" id="showmodaldeleteaccess" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    คุณต้องการจะลบใช่หรือไม่
-                </div>
-                <form action="{{route('deleteaccessory',['id'=>$access->id])}}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <p>ประเภทเครื่องประดับ : {{ $access->accessory_name }}</p>
-                        <p>จำนวนเครื่องประดับ : {{ $access->accessory_count }} ชิ้น</p>
-                        <p>ราคา : {{ $access->accessory_price }} บาท</p>
-                        <p>ราคามัดจำ : {{ $access->accessory_deposit }} บาท</p>
-                        <p>คำอธิบาย : {{ $access->accessory_description }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                        <button type="submit" class="btn btn-success">ยืนยัน</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    
 @endsection

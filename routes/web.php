@@ -7,6 +7,7 @@ use App\Http\Controllers\Employee\CreateOrderController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewdressController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register'); //สมัครสมาชิก
     Route::get('/admin/profile', [RegisterController::class, 'profile'])->name('admin.profile'); //แก้ไขโปรไฟล์
     Route::post('/admin/profile/updateprofile/{user}', [RegisterController::class, 'updateprofile'])->name('admin.updateprofile'); //แก้ไขโปรไฟล์
-    Route::get('/admin/changepassword' , [RegisterController::class,'changepassword'])->name('changepassword');//หน้าเปลี่ยนรหัสผ่าน 
+    Route::get('/admin/changepassword', [RegisterController::class, 'changepassword'])->name('changepassword'); //หน้าเปลี่ยนรหัสผ่าน 
     Route::post('/admin/updatepassword', [RegisterController::class, 'password_action'])->name('updatepassword');
 
     //พนักงาน
@@ -85,7 +86,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     // Route::get('/admin/image/{dressType}/{dressCode}', [DressController::class, 'getimage']);  //ดึงรูปภาพ
 
     // Route::get('/admin/getdes/{dressType}/{dressCode}', [DressController::class, 'getDescription']); //ดึงdescription
-    
+
     //คอมเม้นโค้ดส่วนเดิมไว้
 
 
@@ -95,7 +96,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/editdress/{id}', [DressController::class, 'editDress'])->name('admin.editDress');   // หน้าแก้ไขชุด
     Route::post('/admin/updatedress/{id}', [DressController::class, 'updateDress'])->name('admin.updateDress'); //หน้าอัปเดต
 
-    Route::post('admin/deletesize/{id}',[DressController::class,'deletesize'])->name('deletesize'); //ยืนยันการลบไซส์
 
 
 
@@ -123,16 +123,6 @@ Route::middleware(['web', 'is_admin'])->group(function () {
     Route::get('/admin/access', [AccessoryController::class, 'showAccessories'])->name('admin.showAccessories'); //หน้าโชทั้งหมด
     Route::get('/admin/accessdetail/{id}', [AccessoryController::class, 'accessdetail'])->name('admin.accessdetail'); //แสดงรายละเอียด
     Route::post('/admin/updateaccessdetail', [AccessoryController::class, 'updateaccessdetail'])->name('admin.updateaccessdetail'); //อัปเดต
-    Route::post('admin/deleteaccessory/{id}',[AccessoryController::class,'deleteaccessory'])->name('deleteaccessory') ; //ยืนยันการลบนะ 
-
-
-
-
-
-
-
-
-
 
 
 
@@ -157,7 +147,7 @@ Route::middleware(['web', 'is_admin'])->group(function () {
 
 //สำหรับพนักงานและแอดมิน
 Route::middleware(['web', 'auth'])->group(function () {
-    Route::get('/homepage',[HomeController::class,'homepage'])->name('homepage') ; // หน้าแรก
+    Route::get('/homepage', [HomeController::class, 'homepage'])->name('homepage'); // หน้าแรก
     Route::get('/profile/edit', [ProfileController::class, 'EditProfile'])->name('profile.edit'); //จัดการโปรไฟล์
     Route::post('/profile/update/{user}', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -176,14 +166,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::post('/addfitting/{orderdetailid}', [CreateOrderController::class, 'addfitting'])->name('addfitting'); //เพิ่มfitting
-
-
-
-
-
-
-
-
 
     Route::post('/addcost', [CreateOrderController::class, 'addcost'])->name('addcost'); // เพิ่ม cost
 
@@ -209,7 +191,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/updatefitting/{id}', [CreateOrderController::class, 'updatefitting'])->name('updatefitting'); //อัพเดต fitting 
     Route::delete('/deletefitting/{id}', [CreateOrderController::class, 'deletefitting'])->name('deletefitting'); //ลบ fitting 
 
-    
+
 
     //เพิ่มวันที่แก้ไขชุด
     Route::post('/adddate', [CreateOrderController::class, 'adddate'])->name('adddate'); //เพิ่มวันที่
@@ -225,8 +207,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
 
-    Route::get('/totaldress', [CreateOrderController::class,'totaldress'])->name('totaldress') ; //แสดงชุดทั้งหมดสำหรับพนักงาน
-    Route::get('/totaldress/detail/{id}', [CreateOrderController::class,'totaldressdetail'])->name('totaldressdetail'); //แสดงรายละเอียดชุด
+    Route::get('/totaldress', [CreateOrderController::class, 'totaldress'])->name('totaldress'); //แสดงชุดทั้งหมดสำหรับพนักงาน
+    Route::get('/totaldress/detail/{id}', [CreateOrderController::class, 'totaldressdetail'])->name('totaldressdetail'); //แสดงรายละเอียดชุด
 });
 
 
@@ -242,3 +224,18 @@ Route::get('/t', function () {
 
 
 
+
+//ทดสอบการเขียนโค้ด
+// Route::get('/pulltype', [TestController::class, 'pulltype'])->name('pulltype');  //หน้าform
+// Route::get('/caculatemax/{seleteType}', [TestController::class, 'caculatemax'])->name('pulltype'); //หน้าคาคมากที่สุดนะ 
+// Route::post('/adddata', [TestController::class, 'adddata'])->name('adddata');
+
+
+// Route::get('/pulltype',[TestController::class,'pulltype'])->name('pulltype') ; 
+
+// Route::get('/getcodemax/{selectType}',[TestController::class,'getcodemax'])->name('getcodemax') ; 
+// Route::post('/save',[TestController::class,'save'])->name('save') ; 
+
+
+    Route::get('/testdresstotal',[TestController::class,'testdresstotal'])->name('testdresstotal'); ; 
+    Route::get('/testdresstotal/{id}',[TestController::class,'testdetail'])->name('testdetail'); ; 
